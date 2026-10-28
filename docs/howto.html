@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="img/favicon.svg" type="image/svg+xml"><meta property="og:image" content="https://knightchrism.github.io/sjrwmd-open-data/img/og.png">
+<title>How it was loaded into PostGIS · SJRWMD Open Data Mirror</title>
+<style>
+body{margin:0;font:15px/1.6 system-ui,sans-serif;color:#1d2733;background:#fafbfc}
+main{max-width:880px;margin:0 auto;padding:16px 20px 60px}h1{font-size:24px;margin:.2em 0}h2{margin-top:1.8em;border-bottom:1px solid #dde;padding-bottom:4px}
+pre{background:#0f1720;color:#e6edf3;padding:12px;border-radius:6px;overflow:auto;font-size:13px;line-height:1.45}
+code{font-family:ui-monospace,Menlo,Consolas,monospace}p code,li code{background:#eef1f5;padding:1px 4px;border-radius:3px}
+.tabs{display:flex;gap:4px;margin:8px 0 16px;padding:8px;border-radius:10px;background:linear-gradient(90deg,#0b5c6b,#0b7285 60%,#1c7ed6)}.tabs a{color:#dff6fa!important;border:0!important}.tabs a.on{background:#fff!important;color:#0b5c6b!important}.tabs a{padding:4px 10px;border:1px solid #ccd;border-radius:4px;text-decoration:none;color:#245}.tabs a.on{background:#245;color:#fff}
+.note{background:#fff8e1;border-left:4px solid #f0b400;padding:8px 12px}footer{margin-top:40px;color:#555;font-size:13px}
+table{border-collapse:collapse}td,th{border:1px solid #dde;padding:3px 8px;font-size:13px}
+</style></head><body><main>
+<h1>SJRWMD Open Data Mirror</h1>
+<nav class="tabs"><a href="./">Map</a><a href="./#downloads">Data downloads</a><a class="on" href="howto.html">How it was loaded into PostGIS</a><a href="./#about">About</a></nav>
+<p>This page walks through how the 15 published layers were copied from the St. Johns River Water Management District's public ArcGIS Online
+services into PostgreSQL/PostGIS. All code is in the <a href="https://github.com/knightchrism/sjrwmd-open-data">repository</a>
+(<code>harvest.py</code>, <code>layers.yaml</code>, <code>sql/</code>, <code>docker-compose.yml</code>).</p>
+
+<h2>1. The source: ArcGIS REST</h2>
+<p>SJRWMD publishes its data as ArcGIS Online FeatureServers (230 services, 454 layers) under one root, also surfaced on the
+<a href="https://data-floridaswater.opendata.arcgis.com">Florida's Water open data hub</a>. Each layer has a REST URL ending in <code>/FeatureServer/&lt;id&gt;</code>.</p>
+<pre><code>BASE=https://services.arcgis.com/s8wtJX9suxFen6TA/ArcGIS/rest/services
+L=$BASE/SJRWMD_Management_Area_viewLayer/FeatureServer/0
+curl -s "$L?f=json" | jq '{name, geometryType, maxRecordCount, lastEdit: .editingInfo.lastEditDate, fields: [.fields[].name]}'
+curl -s "$L/query?where=1%3D1&amp;returnCountOnly=true&amp;f=json"     # {"count":133}</code></pre>
+<p>The 15 layers are listed in <code>layers.yaml</code> under <code>select:</code>, each mapped to a short alias (<code>erp</code>, <code>cup_station</code>, …).</p>
+
+<h2>2. Harvester paging</h2>
+<p>Layers cap each response at <code>maxRecordCount</code> (often 1,000–2,000), so the harvester first asks for every OBJECTID, then
+fetches fixed-size OBJECTID ranges. This is stable even when <code>resultOffset</code> paging is not supported, and it is retried with backoff
+and a polite 0.3 s delay between requests.</p>
+<pre><code class="language-python">ids = sorted(get(f"{url}/query", where="1=1", returnIdsOnly="true")["objectIds"])
+page = min(1000, info["maxRecordCount"])
+for i in range(0, len(ids), page):
+    chunk = ids[i:i + page]
+    data = get(f"{url}/query", where=f"{oid_field} BETWEEN {chunk[0]} AND {chunk[-1]}",
+               outFields="*", outSR=3086, returnGeometry="true", f="json")   # Esri JSON, not GeoJSON
+    for feat in data["features"]:
+        rows.append(to_row(feat))</code></pre>
+<p>Esri JSON is used instead of <code>f=geojson</code> because the server's GeoJSON emits every polygon ring as its own polygon. The harvester
+rebuilds polygons from the rings by orientation (clockwise = outer ring, counter-clockwise = hole) with Shapely.</p>
+
+<h2>3. Reprojection</h2>
+<p>The server reprojects for us: every query passes <code>outSR=3086</code> (NAD83 / Florida GDL Albers, meters), so tables store
+geometry in an equal-area projection suitable for area and distance work. For web use each table has a companion view in WGS84:</p>
+<pre><code class="language-sql">CREATE VIEW sjrwmd.management_area_4326 AS
+SELECT source_oid, objectid, county, conservation_area, acres, ...,   -- every column except geom
+       ST_Transform(geom, 4326)::geometry(MultiPolygon, 4326) AS geom
+FROM sjrwmd.sjrwmd_management_area_viewlayer_0;</code></pre>
+<p>Doing it yourself with GDAL works too:</p>
+<pre><code>ogr2ogr -f PostgreSQL "PG:dbname=sjrwmd" "$L/query?where=1%3D1&amp;outFields=*&amp;f=json" \
+  -nln sjrwmd.management_area -t_srs EPSG:3086 -nlt PROMOTE_TO_MULTI -lco GEOMETRY_NAME=geom</code></pre>
+
+<h2>4. Typed tables</h2>
+<p>Column types come from each field's <code>esriFieldType</code>, so dates are real <code>timestamptz</code> values, not epoch numbers:</p>
+<table><tr><th>esriFieldType</th><th>PostgreSQL</th></tr>
+<tr><td>OID / Integer / SmallInteger</td><td>bigint / integer / smallint</td></tr>
+<tr><td>Double / Single</td><td>double precision / real</td></tr>
+<tr><td>String / GUID / GlobalID</td><td>text</td></tr>
+<tr><td>Date / TimestampOffset</td><td>timestamptz (from epoch ms)</td></tr>
+<tr><td>DateOnly</td><td>date</td></tr></table>
+<pre><code class="language-sql">CREATE TABLE sjrwmd.environmental_resource_permit_erp_0 (
+  source_oid bigint PRIMARY KEY,           -- the layer's OBJECTID
+  objectid bigint, cur_prmt_id text, prmt_proj_nm text, prmt_stts text, county text,
+  recv_dt timestamptz, prmt_decision_dt timestamptz, prmt_expir_dt timestamptz, proj_acres double precision, ...,
+  geom geometry(MultiPolygon, 3086),
+  _source_url text, _hub_item_id text, _fetched_at timestamptz, _source_last_edit timestamptz, _hash text);
+CREATE INDEX ON sjrwmd.environmental_resource_permit_erp_0 USING gist (geom);
+CREATE VIEW sjrwmd.erp AS SELECT * FROM sjrwmd.environmental_resource_permit_erp_0;   -- friendly alias</code></pre>
+
+<h2>5. Provenance</h2>
+<p>Every row carries where and when it came from, and every run is logged:</p>
+<pre><code class="language-sql">-- per row
+_source_url        -- the layer REST URL
+_hub_item_id       -- Hub dataset id, when one exists
+_fetched_at        -- when this mirror fetched it
+_source_last_edit  -- the layer's editingInfo.lastEditDate at fetch time
+_hash              -- md5 of attributes + geometry, used for change detection
+-- per layer / per run
+SELECT name, server_count, last_edit_date, last_harvested_at, last_status FROM meta.layer_registry;
+SELECT name, started_at, status, fetched, inserted, updated, deleted, seconds FROM meta.harvest_run ORDER BY run_id DESC;</code></pre>
+<p>A load counts as complete when the number of rows loaded equals the server's <code>returnCountOnly</code> count; the map shows that match for every layer.</p>
+
+<h2>6. Incremental updates</h2>
+<p>On each run, a layer is skipped when its <code>lastEditDate</code>, server count and schema signature are all unchanged.
+Otherwise it is fetched into a staging table and merged by hash in one transaction:</p>
+<pre><code class="language-sql">INSERT INTO sjrwmd.environmental_resource_permit_erp_0 AS t SELECT * FROM stage
+ON CONFLICT (source_oid) DO UPDATE SET (prmt_stts, ..., geom, _hash, _fetched_at) =
+  (excluded.prmt_stts, ..., excluded.geom, excluded._hash, excluded._fetched_at)
+WHERE t._hash IS DISTINCT FROM excluded._hash;           -- only rows that really changed
+DELETE FROM sjrwmd.environmental_resource_permit_erp_0 t WHERE NOT EXISTS (SELECT 1 FROM stage s WHERE s.source_oid = t.source_oid);</code></pre>
+<pre><code>python harvest.py                 # all 15 layers, skip unchanged
+python harvest.py --only erp      # one layer
+python harvest.py --force         # ignore lastEditDate and reload</code></pre>
+
+<h2>7. Example SQL</h2>
+<p>Run against this mirror (Oct 28, 2026); all of these use the friendly alias views.</p>
+<pre><code class="language-sql">-- ERP permits within 1 km of a point (lon/lat in downtown Orlando), nearest first
+SELECT cur_prmt_id, prmt_proj_nm, prmt_stts, round(ST_Distance(e.geom, p.g)) AS meters
+FROM sjrwmd.erp e, (SELECT ST_Transform(ST_SetSRID(ST_MakePoint(-81.38, 28.54), 4326), 3086) g) p
+WHERE ST_DWithin(e.geom, p.g, 1000) ORDER BY meters LIMIT 10;
+
+-- Consumptive-use permit stations inside each district management area
+SELECT a.conservation_area, count(*) FROM sjrwmd.management_area a
+JOIN sjrwmd.cup_station c ON ST_Intersects(a.geom, c.geom) GROUP BY 1 ORDER BY 2 DESC LIMIT 10;
+
+-- ERP permits issued per county per year since 2020
+SELECT county, extract(year FROM prmt_decision_dt)::int AS yr, count(*)
+FROM sjrwmd.erp WHERE prmt_decision_dt &gt;= '2020-01-01' GROUP BY 1, 2 ORDER BY 1, 2;
+
+-- Acres of 2020 land use by code inside conservation easements
+SELECT l.lucode, round(sum(ST_Area(ST_Intersection(l.geom, e.geom))) / 4046.86) AS acres
+FROM sjrwmd.land_use_2020 l JOIN sjrwmd.conservation_easement e ON ST_Intersects(l.geom, e.geom)
+GROUP BY 1 ORDER BY acres DESC LIMIT 10;
+
+-- Kilometers of mapped stream flowpath per management area
+SELECT a.conservation_area, round(sum(ST_Length(ST_Intersection(s.geom, a.geom))) / 1000) AS km
+FROM sjrwmd.management_area a JOIN sjrwmd.stream_flowpath s ON ST_Intersects(s.geom, a.geom)
+GROUP BY 1 ORDER BY 2 DESC LIMIT 10;</code></pre>
+
+<h2>8. Reproduce it with Docker Compose</h2>
+<pre><code>git clone https://github.com/knightchrism/sjrwmd-open-data && cd sjrwmd-open-data
+cp .env.example .env               # set your own passwords; .env is never committed
+docker compose up -d db            # PostGIS 17-3.5; runs sql/01_init.sql on first start
+python -m venv .venv && .venv/bin/pip install -r requirements.txt
+set -a; . ./.env; set +a
+.venv/bin/python harvest.py        # ~730k features, roughly 20-40 minutes
+docker compose up -d featureserv martin   # OGC API Features on :9000, vector tiles on :3000</code></pre>
+<p>Rebuild the map tiles and downloads with <code>scripts/build_tiles.sh</code> (tippecanoe) and <code>scripts/export.sh</code> (GDAL).
+On Windows, use Docker Desktop and keep the clone in a local folder such as <code>C:\dev</code> (not OneDrive).</p>
+
+<footer>Data: <a href="https://www.sjrwmd.com">St. Johns River Water Management District</a>, Florida public records (Chapter 119, F.S.).
+This is an unofficial mirror, not affiliated with or endorsed by SJRWMD, provided as-is with no warranty. See the
+<a href="https://www.sjrwmd.com/disclaimer/">SJRWMD disclaimer</a> and <a href="https://github.com/knightchrism/sjrwmd-open-data/blob/main/DATA-LICENSE.md">DATA-LICENSE</a>.
+Code: MIT.</footer>
+</main></body></html>

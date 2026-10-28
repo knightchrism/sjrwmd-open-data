@@ -215,11 +215,13 @@ def harvest(cfg, row, force, aliases):
 def main():
     global DELAY
     ap = argparse.ArgumentParser()
-    ap.add_argument("--force", action="store_true"); ap.add_argument("--only", nargs="*"); ap.add_argument("--limit", type=int)
+    ap.add_argument("--force", action="store_true"); ap.add_argument("--only", nargs="*"); ap.add_argument("--limit", type=int); ap.add_argument("--all", action="store_true", help="every layer in the inventory, not just `select`")
     ap.add_argument("--config", default=os.path.join(HERE, "layers.yaml")); a = ap.parse_args()
     cfg = yaml.safe_load(open(a.config)); DELAY = cfg.get("request_delay_s", 0.3)
-    aliases = cfg.get("aliases") or {}
+    aliases = cfg.get("select") or {}
     rows = list(csv.DictReader(open(os.path.join(HERE, cfg["inventory"]))))
+    if aliases and not a.all:
+        rows = [r for r in rows if f"{r['service']}/{r['layer_id']}" in aliases]
     if a.only:
         want = set(a.only)
         rows = [r for r in rows if table_name(r["service"], int(r["layer_id"])) in want

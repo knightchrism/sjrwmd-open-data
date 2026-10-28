@@ -1,14 +1,19 @@
 #!/usr/bin/env bash
-# Build local release artifacts: a pg_dump of the sjrwmd/meta/qc schemas plus GeoParquet and GeoPackage per layer.
-# Needs: pg_dump, ogr2ogr (GDAL >= 3.8 with the Parquet driver), libpq env vars (see .env.example).
-# Output: dist/ (git-ignored). Nothing is uploaded.
+# Build the per-layer download files published as GitHub release assets (one set per selected layer, named by alias):
+#   <alias>.gpkg       GeoPackage, EPSG:3086 (Florida GDL Albers, meters), with provenance columns
+#   <alias>.parquet    GeoParquet, EPSG:4326, ZSTD
+#   <alias>.csv.zip    CSV with WKT geometry (EPSG:4326)
+# Needs ogr2ogr (GDAL >= 3.8 with the Parquet driver), python3, and libpq env vars. Output: dist/ (git-ignored).
 set -euo pipefail
-OUT=${1:-dist}; mkdir -p "$OUT"/geoparquet "$OUT"/gpkg
+OUT=${1:-dist}; mkdir -p "$OUT"; TMP=$(mktemp -d)
 PG="PG:dbname=${PGDATABASE} host=${PGHOST} port=${PGPORT} user=${PGUSER} password=${PGPASSWORD}"
-pg_dump -Fc -n sjrwmd -n meta -n qc --no-owner -f "$OUT/sjrwmd.dump"
-psql -XAt -c "select name from meta.layer_registry where last_status='ok' order by name" | while read -r t; do
-  ogr2ogr -f Parquet "$OUT/geoparquet/$t.parquet" "$PG" "sjrwmd.$t" -lco COMPRESSION=ZSTD -overwrite 2>>"$OUT/export.log" || echo "parquet failed: $t" >>"$OUT/export.log"
-  ogr2ogr -f GPKG "$OUT/gpkg/$t.gpkg" "$PG" "sjrwmd.$t" -nln "$t" -overwrite 2>>"$OUT/export.log" || echo "gpkg failed: $t" >>"$OUT/export.log"
+psql -XAt -F' ' -c "select name, alias from meta.layer_registry where last_status='ok' and alias is not null order by alias" |
+while read -r t a; do
+  ogr2ogr -f GPKG "$OUT/$a.gpkg" "$PG" "sjrwmd.$t" -nln "$a" -overwrite
+  ogr2ogr -f Parquet "$OUT/$a.parquet" "$PG" "sjrwmd.${t}_4326" -nln "$a" -lco COMPRESSION=ZSTD -overwrite
+  ogr2ogr -f CSV "$TMP/$a.csv" "$PG" "sjrwmd.${t}_4326" -lco GEOMETRY=AS_WKT -overwrite
+  python3 -c "import sys,zipfile; zipfile.ZipFile(sys.argv[1],'w',zipfile.ZIP_DEFLATED,compresslevel=9).write(sys.argv[2],sys.argv[3])" "$OUT/$a.csv.zip" "$TMP/$a.csv" "$a.csv"
+  rm "$TMP/$a.csv"
+  echo "$a done"
 done
-( cd "$OUT" && sha256sum sjrwmd.dump geoparquet/* gpkg/* > SHA256SUMS )
-du -sh "$OUT"/sjrwmd.dump "$OUT"/geoparquet "$OUT"/gpkg
+rm -rf "$TMP"; (cd "$OUT" && sha256sum *.gpkg *.parquet *.csv.zip > SHA256SUMS); du -sh "$OUT"

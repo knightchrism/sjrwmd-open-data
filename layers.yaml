@@ -7,16 +7,26 @@ workers: 2                   # layers harvested in parallel
 keep_raw_attrs: false        # also store all source fields in an `attrs` jsonb column
 inventory: esri_inventory.csv  # every layer in the org (scripts/enumerate_esri.py regenerates it)
 
-# Phase 1 layers get friendly view names in schema `sjrwmd` (key = service/layer_id)
-aliases:
-  SJRWMD_Management_Area_viewLayer/0: management_area
-  SJRWMD_Individual_Parcel/0: individual_parcel
-  Consumptive_Use_Permit_CUP_Boundary/0: cup_boundary
-  Consumption_Use_Permit__CUP/0: cup_station
-  Environmental_Resource_Permit_ERP/0: erp
-  Regulatory_Conservation_Easement/0: conservation_easement
-  Water_Use_Allocated/0: water_use_allocated
-  Environmental_Data_Retrieval_Station/0: edr_station
-  Water_Resource_Information_WRI_Station/0: wri_station
-  Active_Groundwater_Monitoring_Network_Water_Level_Event_Type/0: gwmn_active_water_level
-  Active_Groundwater_Monitoring_Network_Water_Quality_Event_Type/0: gwmn_active_water_quality
+# The 15 published layers (5 polygon, 5 point, 5 line), chosen for public usefulness and for an API/MCP layer:
+# authoritative and current, listed on the Hub, stable OBJECTID/GlobalID, typed attributes with dates or status,
+# and useful for spatial questions (near, within a county or parcel, by date or status). Latest vintage only.
+# key = service/layer_id, value = friendly view name in schema `sjrwmd`.
+select:
+  # Polygons
+  Environmental_Resource_Permit_ERP/0: erp                        # ERP permit areas with permit numbers, dates and status; the core regulatory layer
+  Consumptive_Use_Permit_CUP_Boundary/0: cup_boundary             # Water-use permit project boundaries; join to CUP stations by permit number
+  Regulatory_Conservation_Easement/0: conservation_easement       # Recorded permit easements; key for parcel due diligence
+  SJRWMD_Management_Area_viewLayer/0: management_area             # District-managed conservation lands, with manager and acres
+  Land_cover_Land_use_2020/0: land_use_2020                       # Latest district land use/land cover (FLUCCS) vintage; supersedes 1973-2014
+  # Points
+  Consumption_Use_Permit__CUP/0: cup_station                      # Permitted wells and withdrawal points, with permit numbers and status
+  Well_completion_report_sites_District_issued_permits/0: well_completion   # District-issued well construction permits, with dates
+  Environmental_Data_Retrieval_Station/0: edr_station             # Hydrologic and water-quality monitoring stations
+  status_trend_2025_all_stations/0: st2025_surface_water          # 2025 Status & Trends surface-water stations
+  status_trend_2025_all_stations/2: st2025_groundwater            # 2025 Status & Trends groundwater stations
+  # Lines
+  Stream_flowpath_24K_HydroEdge/11: stream_flowpath               # District 1:24K stream network; more detailed than the USGS 100K layer
+  Reuse_Line/0: reuse_line                                        # Reclaimed-water lines reported to the district
+  DSTRCT_RD/0: management_area_road                               # Roads on district lands
+  Management_Area_Trail/5: management_area_trail                  # Public recreation trails on district lands
+  UFA_Potentiometric_Surface/0: ufa_potentiometric_2010           # Latest (Sep 2010) Upper Floridan aquifer potentiometric contours

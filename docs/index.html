@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SJRWMD Open Data Mirror · 15 water-management layers on a map</title>
+<meta name="description" content="An open, unofficial mirror of 15 St. Johns River Water Management District GIS layers: permits, monitoring stations, district lands, land use and streams. Browse them on a map and download GeoPackage, GeoParquet or CSV.">
+<meta property="og:title" content="SJRWMD Open Data Mirror"><meta property="og:type" content="website">
+<meta property="og:description" content="727,495 features from 15 SJRWMD layers, harvested into PostGIS and served as PMTiles on a static map. Free downloads.">
+<meta property="og:url" content="https://knightchrism.github.io/sjrwmd-open-data/">
+<meta property="og:image" content="https://knightchrism.github.io/sjrwmd-open-data/img/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0b5c6b">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="https://unpkg.com/pmtiles@3.2.1/dist/pmtiles.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="./"><img src="img/favicon.svg" alt="" width="28" height="28"><span>SJRWMD <b>Open Data</b> Mirror</span></a>
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <a href="#map" data-tab="map" role="tab">Map</a>
+    <a href="#downloads" data-tab="downloads" role="tab">Data downloads</a>
+    <a href="howto.html">How it was loaded into PostGIS</a>
+    <a href="#about" data-tab="about" role="tab">About</a>
+  </nav>
+  <button id="theme" class="btn ghost" aria-label="Toggle dark or light basemap" title="Dark / light basemap">◐</button>
+</header>
+
+<section id="view-map" class="view">
+  <aside id="side" aria-label="Layers">
+    <button id="collapse" class="btn ghost mobile" aria-expanded="true">Layers ▾</button>
+    <div id="stats" class="stats"></div>
+    <input id="filter" type="search" placeholder="Search 15 layers…" aria-label="Search layers">
+    <div id="layers"></div>
+    <p class="credit">Data © <a href="https://www.sjrwmd.com">St. Johns River Water Management District</a>. Unofficial mirror, provided as-is. <a href="https://www.sjrwmd.com/disclaimer/">Disclaimer</a>.</p>
+  </aside>
+  <div id="map" role="region" aria-label="Map"></div>
+  <div id="legend" class="legend" aria-live="polite"></div>
+</section>
+
+<section id="view-downloads" class="view page" hidden>
+  <div class="wrap">
+    <h1>Data downloads</h1>
+    <p class="lead">Every layer, three formats, straight from the GitHub release. GeoPackage is in EPSG:3086 (Florida GDL Albers, meters); GeoParquet and CSV (WKT geometry) are in EPSG:4326.
+    Checksums: <a id="sums" href="#">SHA256SUMS</a>.</p>
+    <div class="tablewrap"><table id="dltable"><thead><tr><th>Layer</th><th>Type</th><th class="num">Features</th><th>SJRWMD last edit</th><th>Download</th></tr></thead><tbody></tbody></table></div>
+  </div>
+</section>
+
+<section id="view-about" class="view page" hidden>
+  <div class="wrap prose">
+    <h1>About</h1>
+    <p class="lead">An open-source, reproducible mirror of 15 public GIS layers from the <a href="https://www.sjrwmd.com">St. Johns River Water Management District</a> (SJRWMD), which covers 18 counties of northeast and east-central Florida.</p>
+    <h2>Why these 15 layers</h2>
+    <p>Five polygon, five point and five line layers, chosen for usefulness and for clean API use: stable IDs, typed date and status fields, and easy spatial joins. Permits (ERP, CUP, wells, reuse), monitoring stations, district lands, 2020 land use and the stream network.</p>
+    <h2>How it works</h2>
+    <ol><li>A Python harvester pages each ArcGIS REST layer by OBJECTID and loads typed tables into PostGIS, with provenance on every row.</li>
+    <li>Every load is checked against the server's feature count. All 15 match.</li>
+    <li>tippecanoe turns each layer into a single PMTiles file, served directly by GitHub Pages and drawn with MapLibre GL. No tile server.</li>
+    <li>GDAL exports GeoPackage, GeoParquet and CSV for the downloads.</li></ol>
+    <p>Full walkthrough: <a href="howto.html">How it was loaded into PostGIS</a>. Source code: <a href="https://github.com/knightchrism/sjrwmd-open-data">github.com/knightchrism/sjrwmd-open-data</a> (MIT).</p>
+    <h2>Credit and disclaimer</h2>
+    <p>All data is from the St. Johns River Water Management District and is a Florida public record (Chapter 119, F.S.). This is an <b>unofficial</b> copy, not affiliated with or endorsed by SJRWMD, and provided as-is with no warranty of accuracy or currency. For authoritative data, use <a href="https://data-floridaswater.opendata.arcgis.com">SJRWMD's open data hub</a>. Read the <a href="https://www.sjrwmd.com/disclaimer/">SJRWMD disclaimer</a> and <a href="https://github.com/knightchrism/sjrwmd-open-data/blob/main/DATA-LICENSE.md">DATA-LICENSE</a>.</p>
+    <p>Basemaps: Esri World Light/Dark Gray Canvas (Esri, HERE, Garmin, © OpenStreetMap contributors). Built by Christopher Knight (KnightGeo).</p>
+  </div>
+</section>
+<script src="app.js"></script>
+</body>
+</html>
