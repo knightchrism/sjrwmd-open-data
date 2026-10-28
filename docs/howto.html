@@ -1,101 +1,256 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="img/favicon.svg" type="image/svg+xml"><meta property="og:image" content="https://knightchrism.github.io/sjrwmd-open-data/img/og.png">
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>How it was loaded into PostGIS · SJRWMD Open Data Mirror</title>
+<meta name="description" content="Step by step: how 15 SJRWMD ArcGIS layers were harvested into PostGIS, why each choice was made, the alternatives, the code, and the gotchas.">
+<meta property="og:title" content="How it was loaded into PostGIS · SJRWMD Open Data Mirror">
+<meta property="og:image" content="https://knightchrism.github.io/sjrwmd-open-data/img/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
 <style>
-body{margin:0;font:15px/1.6 system-ui,sans-serif;color:#1d2733;background:#fafbfc}
-main{max-width:880px;margin:0 auto;padding:16px 20px 60px}h1{font-size:24px;margin:.2em 0}h2{margin-top:1.8em;border-bottom:1px solid #dde;padding-bottom:4px}
-pre{background:#0f1720;color:#e6edf3;padding:12px;border-radius:6px;overflow:auto;font-size:13px;line-height:1.45}
-code{font-family:ui-monospace,Menlo,Consolas,monospace}p code,li code{background:#eef1f5;padding:1px 4px;border-radius:3px}
-.tabs{display:flex;gap:4px;margin:8px 0 16px;padding:8px;border-radius:10px;background:linear-gradient(90deg,#0b5c6b,#0b7285 60%,#1c7ed6)}.tabs a{color:#dff6fa!important;border:0!important}.tabs a.on{background:#fff!important;color:#0b5c6b!important}.tabs a{padding:4px 10px;border:1px solid #ccd;border-radius:4px;text-decoration:none;color:#245}.tabs a.on{background:#245;color:#fff}
-.note{background:#fff8e1;border-left:4px solid #f0b400;padding:8px 12px}footer{margin-top:40px;color:#555;font-size:13px}
-table{border-collapse:collapse}td,th{border:1px solid #dde;padding:3px 8px;font-size:13px}
-</style></head><body><main>
-<h1>SJRWMD Open Data Mirror</h1>
-<nav class="tabs"><a href="./">Map</a><a href="./#downloads">Data downloads</a><a class="on" href="howto.html">How it was loaded into PostGIS</a><a href="./#about">About</a></nav>
-<p>This page walks through how the 15 published layers were copied from the St. Johns River Water Management District's public ArcGIS Online
-services into PostgreSQL/PostGIS. All code is in the <a href="https://github.com/knightchrism/sjrwmd-open-data">repository</a>
-(<code>harvest.py</code>, <code>layers.yaml</code>, <code>sql/</code>, <code>docker-compose.yml</code>).</p>
-
-<h2>1. The source: ArcGIS REST</h2>
-<p>SJRWMD publishes its data as ArcGIS Online FeatureServers (230 services, 454 layers) under one root, also surfaced on the
-<a href="https://data-floridaswater.opendata.arcgis.com">Florida's Water open data hub</a>. Each layer has a REST URL ending in <code>/FeatureServer/&lt;id&gt;</code>.</p>
-<pre><code>BASE=https://services.arcgis.com/s8wtJX9suxFen6TA/ArcGIS/rest/services
+body{display:block;height:auto}.top{position:sticky;top:0}
+.layout{display:grid;grid-template-columns:240px minmax(0,1fr);gap:32px;max-width:1180px;margin:0 auto;padding:24px 20px 80px}
+nav.toc{position:sticky;top:72px;align-self:start;max-height:calc(100vh - 90px);overflow:auto;font-size:13px;border-left:2px solid var(--line);padding-left:12px}
+nav.toc a{display:block;padding:3px 0;color:var(--mute);text-decoration:none}nav.toc a.on,nav.toc a:hover{color:var(--accent);font-weight:600}
+nav.toc b{display:block;margin-bottom:6px;color:var(--ink)}
+main h1{font-size:28px;margin:0 0 6px}main section{scroll-margin-top:70px;border-top:1px solid var(--line);padding-top:8px;margin-top:28px}
+main h2{font-size:21px}.row h3{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--mute);margin:16px 0 4px}
+.row.why{background:var(--panel);border-left:4px solid var(--accent);padding:2px 14px 6px;border-radius:0 8px 8px 0}
+.row.gotcha ul{background:rgba(240,180,0,.08);border-left:4px solid #f0b400;padding:8px 14px 8px 30px;border-radius:0 8px 8px 0;margin:0}
+pre{background:#0f1720;color:#e6edf3;padding:12px;border-radius:8px;overflow:auto;font-size:12.5px;line-height:1.45}
+code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.92em}p code,li code,td code{background:var(--bg);border:1px solid var(--line);padding:0 4px;border-radius:4px}
+table.simple{border-collapse:collapse;margin:8px 0}table.simple td,table.simple th{border:1px solid var(--line);padding:4px 10px;text-align:left}
+.diagram{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;overflow:auto}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0}.facts div{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center}.facts b{display:block;font-size:20px;color:var(--accent)}
+footer{max-width:1180px;margin:0 auto;padding:0 20px 40px;color:var(--mute);font-size:13px}
+@media (max-width:860px){.layout{grid-template-columns:1fr}nav.toc{position:static;max-height:none}.facts{grid-template-columns:1fr 1fr}}
+pre.mermaid{background:transparent!important;color:inherit;text-align:center}
+</style></head><body>
+<header class="top">
+  <a class="brand" href="./"><img src="img/favicon.svg" alt="" width="28" height="28"><span>SJRWMD <b>Open Data</b> Mirror</span></a>
+  <nav class="tabs"><a href="./">Map</a><a href="./#downloads">Data downloads</a><a href="./#demo">Try it with AI</a><a href="./#mcp">AI / MCP</a><a class="on" href="howto.html">How it was loaded into PostGIS</a><a href="./#about">About</a></nav>
+  <button id="theme" class="btn ghost" aria-label="Toggle dark or light theme">◐</button>
+</header>
+<div class="layout">
+<nav class="toc" aria-label="Contents"><b>Contents</b><a href="#overview">Overview</a><a href="#source">Picking the source</a><a href="#discover">Discovering layers & fields</a><a href="#paging">Paging & retries</a><a href="#format">Esri JSON vs GeoJSON</a><a href="#srid">Reprojection</a><a href="#types">Typed columns</a><a href="#keys">Primary keys</a><a href="#provenance">Provenance</a><a href="#index">Spatial index</a><a href="#incremental">Incremental updates</a><a href="#counts">Count reconciliation</a><a href="#exports">Exports</a><a href="#tiles">PMTiles & tippecanoe</a><a href="#pages">GitHub Pages</a><a href="#reproduce">Docker compose</a><a href="#sql">Example SQL</a></nav>
+<main>
+<section id="overview" style="border:0;margin:0">
+<h1>How it was loaded into PostGIS</h1>
+<p class="lead">Every step from SJRWMD's ArcGIS REST services to PostGIS, map tiles, downloads and an MCP server. For each one: what we do, why, what else we considered, the actual code from <a href="https://github.com/knightchrism/sjrwmd-open-data">the repo</a>, and the gotchas we hit. All numbers are from the Oct 28, 2026 run.</p>
+<div class="facts"><div><b>15</b>layers</div><div><b>727,495</b>features</div><div><b>15 / 15</b>counts match</div><div><b>883 s</b>harvest (sum of layers, 2 workers)</div></div>
+<div class="diagram"><pre class="mermaid">flowchart LR
+  A[&quot;SJRWMD ArcGIS Online&lt;br/&gt;REST FeatureServers&quot;] --&gt;|&quot;returnIdsOnly, then OBJECTID-range pages&lt;br/&gt;Esri JSON, outSR=3086, 0.3 s delay, retries&quot;| B[&quot;harvest.py&lt;br/&gt;ring assembly, typed columns,&lt;br/&gt;provenance, hash&quot;]
+  B --&gt;|&quot;COPY into staging,&lt;br/&gt;hash-diff upsert + delete&quot;| C[(&quot;PostGIS&lt;br/&gt;sjrwmd.* EPSG:3086 + GiST&lt;br/&gt;*_4326 views, meta.harvest_run&quot;)]
+  C --&gt;|&quot;count check&quot;| Q[&quot;qc.sql: 15/15 OK&quot;]
+  C --&gt;|&quot;ogr2ogr to GeoJSONSeq, tippecanoe&quot;| D[&quot;PMTiles, 1 per layer&lt;br/&gt;275 MB in docs/tiles&quot;]
+  C --&gt;|&quot;ogr2ogr&quot;| E[&quot;GeoPackage · GeoParquet · CSV&lt;br/&gt;GitHub release, 1.9 GB&quot;]
+  D --&gt;|&quot;HTTP range requests&quot;| F[&quot;GitHub Pages&lt;br/&gt;MapLibre + pmtiles.js&quot;]
+  E --&gt; F
+  E --&gt;|&quot;DuckDB&quot;| M[&quot;sjrwmd-mcp&quot;]</pre></div>
+</section>
+<section id="source"><h2>1. Picking the source: ArcGIS REST, not Hub downloads</h2>
+<div class="row"><h3>What we do</h3><p>Read every layer straight from SJRWMD's ArcGIS Online REST services: <code>https://services.arcgis.com/s8wtJX9suxFen6TA/ArcGIS/rest/services</code> (230 FeatureServers, 454 layers, 7,158,579 features in our inventory). The Hub, <a href='https://data-floridaswater.opendata.arcgis.com'>data-floridaswater.opendata.arcgis.com</a>, is used only for metadata: 175 datasets, matched to 342 layers, and their item ids go into <code>_hub_item_id</code>.</p></div>
+<div class="row why"><h3>Why</h3><p>The REST API is the system of record behind the Hub. It exposes field types, <code>editingInfo.lastEditDate</code>, server-side reprojection (<code>outSR</code>), exact counts and OBJECTID queries: everything needed for typed tables, incremental updates and count checks. Hub downloads are generated files whose freshness and schema we can't control.</p></div>
+<div class="row"><h3>Alternatives considered</h3><ul><li><b>Hub downloads (CSV, shapefile, GeoJSON, file geodatabase):</b> one click for a person, but cached exports can lag the live layer, shapefiles truncate field names to 10 characters and dates to day precision, and there is no per-layer change signal to drive incremental updates.</li><li><b>Scraping the web viewers:</b> fragile and pointless when the same data is offered as an API.</li><li><b>Asking SJRWMD for a database dump:</b> not reproducible by anyone else, and not needed for public data.</li></ul></div>
+<div class="row"><h3>The code in this repo</h3><pre><code class="bash">BASE=https://services.arcgis.com/s8wtJX9suxFen6TA/ArcGIS/rest/services
 L=$BASE/SJRWMD_Management_Area_viewLayer/FeatureServer/0
-curl -s "$L?f=json" | jq '{name, geometryType, maxRecordCount, lastEdit: .editingInfo.lastEditDate, fields: [.fields[].name]}'
-curl -s "$L/query?where=1%3D1&amp;returnCountOnly=true&amp;f=json"     # {"count":133}</code></pre>
-<p>The 15 layers are listed in <code>layers.yaml</code> under <code>select:</code>, each mapped to a short alias (<code>erp</code>, <code>cup_station</code>, …).</p>
+curl -s &quot;$L?f=json&quot; | jq &#x27;{name, geometryType, maxRecordCount, objectIdField, lastEdit: .editingInfo.lastEditDate}&#x27;
+curl -s &quot;$L/query?where=1%3D1&amp;returnCountOnly=true&amp;f=json&quot;      # {&quot;count&quot;:133}</code></pre></div>
+<div class="row gotcha"><h3>Gotchas we hit</h3><ul><li>Several services are "view layers" (e.g. <code>SJRWMD_Management_Area_viewLayer</code>) rather than the underlying hosted layer; they are what's public, so we read those.</li><li>Hub dataset ids don't map 1:1 to layers (175 datasets cover 342 of 454 layers), so <code>_hub_item_id</code> is null for some rows.</li></ul></div></section><section id="discover"><h2>2. Discovering layers and fields</h2>
+<div class="row"><h3>What we do</h3><p><code>scripts/enumerate_esri.py</code> walks the services directory, reads every layer's JSON, and writes <code>esri_inventory.csv</code> (service, layer id, geometry type, feature count, <code>maxRecordCount</code>, change tracking, last edit, hub item id). <code>layers.yaml</code> then selects 15 of them with a one-line reason each and a short alias.</p></div>
+<div class="row why"><h3>Why</h3><p>A machine-generated inventory makes the selection reviewable and repeatable, and gives each layer's field list and paging limit up front. The 15 were chosen for usefulness and clean API use: 5 polygon, 5 point, 5 line, with stable ids, typed dates and status fields, and joinable permit numbers.</p></div>
+<div class="row"><h3>Alternatives considered</h3><ul><li><b>Mirroring all 454 layers:</b> we started that and stopped. Many are derived products or near-duplicates, and the long tail adds hours without adding value for the map or the MCP server.</li><li><b>Hand-picking from the Hub UI:</b> no record of field types or limits, hard to repeat.</li></ul></div>
+<div class="row"><h3>The code in this repo</h3><pre><code class="yaml"># layers.yaml (excerpt)
+base_url: https://services.arcgis.com/s8wtJX9suxFen6TA/ArcGIS/rest/services
+target_srid: 3086
+page_size: 1000
+request_delay_s: 0.3
+workers: 2
+select:
+  Environmental_Resource_Permit_ERP/0: erp        # ERP permit areas with permit numbers, dates and status
+  Consumption_Use_Permit__CUP/0: cup_station      # Permitted wells and withdrawal points
+  Stream_flowpath_24K_HydroEdge/11: stream_flowpath  # District 1:24K stream network
+  # ... 15 in total</code></pre></div>
+<div class="row gotcha"><h3>Gotchas we hit</h3><ul><li>Service names are inconsistent (<code>Consumption_Use_Permit__CUP</code> vs <code>Consumptive_Use_Permit_CUP_Boundary</code>), hence friendly aliases.</li><li>One service can hold several useful layers (<code>status_trend_2025_all_stations</code> layers 0 and 2), so the key is <code>service/layer_id</code>.</li></ul></div></section><section id="paging"><h2>3. Paging, maxRecordCount, throttling and retries</h2>
+<div class="row"><h3>What we do</h3><p>Ask for all OBJECTIDs once (<code>returnIdsOnly=true</code>), sort them, then request fixed chunks by OBJECTID range with page size = min(1000, the layer's <code>maxRecordCount</code>). Two layers are fetched in parallel, with a 0.3 s pause before every request and up to 6 attempts with exponential backoff on HTTP 429/5xx or an Esri error body.</p></div>
+<div class="row why"><h3>Why</h3><p>Every layer caps a response at <code>maxRecordCount</code> (2,000 on 403 layers, 1,000 on 51 in our inventory). OBJECTID ranges are deterministic: each chunk is independent, a retried chunk returns the same rows, and nothing is skipped or duplicated if the server's default ordering shifts. Two workers and a delay keep us a polite guest on a public service.</p></div>
+<div class="row"><h3>Alternatives considered</h3><ul><li><b><code>resultOffset</code> paging</b> (what GDAL's ESRIJSON driver and many scripts use): fine for small layers, but offsets on an unsorted query can skip or repeat rows, and it isn't supported on every layer.</li><li><b>One giant request:</b> silently truncated at <code>maxRecordCount</code> (the response just sets <code>exceededTransferLimit</code>).</li><li><b>More parallelism:</b> faster, but a public agency server is not ours to load-test.</li></ul></div>
+<div class="row"><h3>The code in this repo</h3><pre><code class="python">def get(url, **params):
+    params.setdefault(&quot;f&quot;, &quot;json&quot;)
+    for attempt in range(6):
+        time.sleep(DELAY)                                   # 0.3 s between requests
+        try:
+            r = session().post(url, data=params, timeout=180)
+            if r.status_code in (429, 500, 502, 503, 504):
+                raise requests.HTTPError(f&quot;HTTP {r.status_code}&quot;)
+            r.raise_for_status(); d = r.json()
+            if isinstance(d, dict) and &quot;error&quot; in d: raise RuntimeError(json.dumps(d[&quot;error&quot;])[:300])
+            return d
+        except Exception:
+            if attempt == 5: raise
+            time.sleep(min(60, 2 ** attempt * 2))           # 2, 4, 8, 16, 32 s
 
-<h2>2. Harvester paging</h2>
-<p>Layers cap each response at <code>maxRecordCount</code> (often 1,000–2,000), so the harvester first asks for every OBJECTID, then
-fetches fixed-size OBJECTID ranges. This is stable even when <code>resultOffset</code> paging is not supported, and it is retried with backoff
-and a polite 0.3 s delay between requests.</p>
-<pre><code class="language-python">ids = sorted(get(f"{url}/query", where="1=1", returnIdsOnly="true")["objectIds"])
-page = min(1000, info["maxRecordCount"])
+ids = sorted(get(f&quot;{url}/query&quot;, where=&quot;1=1&quot;, returnIdsOnly=&quot;true&quot;).get(&quot;objectIds&quot;) or [])
+page = min(cfg.get(&quot;page_size&quot;, 1000), info.get(&quot;maxRecordCount&quot;) or 1000)
 for i in range(0, len(ids), page):
     chunk = ids[i:i + page]
-    data = get(f"{url}/query", where=f"{oid_field} BETWEEN {chunk[0]} AND {chunk[-1]}",
-               outFields="*", outSR=3086, returnGeometry="true", f="json")   # Esri JSON, not GeoJSON
-    for feat in data["features"]:
-        rows.append(to_row(feat))</code></pre>
-<p>Esri JSON is used instead of <code>f=geojson</code> because the server's GeoJSON emits every polygon ring as its own polygon. The harvester
-rebuilds polygons from the rings by orientation (clockwise = outer ring, counter-clockwise = hole) with Shapely.</p>
+    d = get(f&quot;{url}/query&quot;, where=f&quot;{oid_field} &gt;= {chunk[0]} AND {oid_field} &lt;= {chunk[-1]}&quot;,
+            outFields=&quot;*&quot;, outSR=srid, returnGeometry=&quot;true&quot;)</code></pre></div>
+<div class="row gotcha"><h3>Gotchas we hit</h3><ul><li>ArcGIS returns errors as HTTP 200 with an <code>{"error": …}</code> body, so status codes alone aren't enough; we check the body too.</li><li>We use POST, because long <code>where</code> clauses and parameters can exceed URL length limits.</li><li>Real timings (seconds per layer): land use 2020 454.9 s for 309,325 polygons; ERP 132.1 s; streams 84.1 s; CUP stations 67.6 s; management areas 3.2 s.</li></ul></div></section><section id="format"><h2>4. Output format: Esri JSON, not GeoJSON</h2>
+<div class="row"><h3>What we do</h3><p>Request <code>f=json</code> (Esri JSON) and build geometries ourselves with Shapely: polygon rings are grouped by orientation, clockwise = outer ring, counter-clockwise = hole, and each hole is attached to the smallest outer ring that contains it.</p></div>
+<div class="row why"><h3>Why</h3><p>The server's <code>f=geojson</code> output emitted every ring as its own polygon, so holes came back as separate "nested shell" polygons stacked on their parents. Esri JSON keeps the rings and their orientation, which is all we need to rebuild correct polygons, the same way GDAL does.</p></div>
+<div class="row"><h3>Alternatives considered</h3><ul><li><b><code>f=geojson</code>:</b> convenient, but wrong for polygons with holes on this server.</li><li><b><code>f=pbf</code></b> (protocol buffers): smaller, but not supported uniformly and harder to debug.</li><li><b>ogr2ogr on the REST URL:</b> correct ring handling and great for one-off loads (see step 15), but we wanted typed columns, provenance and hash-diff upserts in one pass.</li></ul></div>
+<div class="row"><h3>The code in this repo</h3><pre><code class="python">if gtype == &quot;esriGeometryPolygon&quot;:
+    shells, holes = [], []
+    for ring in g.get(&quot;rings&quot;, []):
+        pts = [tuple(p[:2]) for p in ring]
+        if len(pts) &lt; 4: continue
+        lr = LinearRing(pts)
+        (holes if lr.is_ccw else shells).append(lr)   # Esri: clockwise = exterior
+    if not shells:                                     # some services return all rings counter-clockwise
+        shells, holes = holes, []
+    polys = [[s, []] for s in shells]; sp = [Polygon(s) for s in shells]
+    for h in holes:                                    # attach each hole to the smallest shell covering it
+        pt = Point(h.coords[0]); best = None
+        for i, p in enumerate(sp):
+            if p.covers(pt) and (best is None or p.area &lt; sp[best].area): best = i
+        if best is None: polys.append([LinearRing(list(h.coords)[::-1]), []])
+        else: polys[best][1].append(h)
+    return MultiPolygon([Polygon(s, hs) for s, hs in polys])</code></pre></div>
+<div class="row gotcha"><h3>Gotchas we hit</h3><ul><li>On District Management Areas, switching from GeoJSON to ring assembly cut invalid geometries from 30 to 10. The remaining 10 are rings that touch themselves, which Esri allows and OGC doesn't; the harvester repairs those with <code>ST_MakeValid</code> and flags them in <code>_geom_repaired</code>.</li><li>Some layers return all rings counter-clockwise; with no clockwise ring we treat them all as shells rather than producing empty polygons.</li></ul></div></section><section id="srid"><h2>5. Reprojection: EPSG:3086 tables, EPSG:4326 views</h2>
+<div class="row"><h3>What we do</h3><p>Ask the server to reproject (<code>outSR=3086</code>) and store <code>geom</code> in EPSG:3086, NAD83 / Florida GDL Albers (meters). Every table also gets a <code>&lt;table&gt;_4326</code> view that transforms to WGS84 on the fly for web maps, tiles and GeoParquet.</p></div>
+<div class="row why"><h3>Why</h3><p>Florida GDL Albers is an equal-area projection that covers the whole state, so <code>ST_Area</code>, <code>ST_Length</code> and <code>ST_DWithin</code> give real meters and acres with plain, index-friendly geometry math. Web tools (MapLibre, tippecanoe, GeoJSON, GeoParquet consumers) expect longitude/latitude, hence the 4326 view. One stored copy, two coordinate systems, no drift.</p></div>
+<div class="row"><h3>Alternatives considered</h3><ul><li><b>Store 4326 only:</b> distances and areas then need <code>geography</code> casts or spheroid functions, which are slower and easy to get wrong.</li><li><b>Florida State Plane (East/North zones, feet):</b> SJRWMD spans two zones; one statewide meter-based CRS is simpler.</li><li><b>Store both columns:</b> doubles storage and invites them to get out of sync.</li></ul></div>
+<div class="row"><h3>The code in this repo</h3><pre><code class="sql">CREATE OR REPLACE VIEW sjrwmd.sjrwmd_management_area_viewlayer_0_4326 AS
+SELECT t.source_oid, t.objectid, t.county, t.conservation_area, t.acres, ...,   -- every column except geom
+       ST_Transform(t.geom, 4326)::geometry(MultiPolygon, 4326) AS geom
+FROM sjrwmd.sjrwmd_management_area_viewlayer_0 t;</code></pre></div>
+<div class="row gotcha"><h3>Gotchas we hit</h3><ul><li>The view must cast to a typed <code>geometry(MultiPolygon, 4326)</code>; otherwise GDAL and Martin can't detect the geometry type and SRID.</li><li>PROJ printed harmless grid warnings (<code>us_noaa_alhpgn.tif</code>) on transform; set <code>PROJ_NETWORK=ON</code> or install proj-data to silence them.</li></ul></div></section><section id="types"><h2>6. Typed columns from Esri field types</h2>
+<div class="row"><h3>What we do</h3><p>Build each table's columns from the layer's <code>fields</code> list, mapping <code>esriFieldType</code> to a PostgreSQL type, and normalize values on the way in (Esri dates arrive as epoch milliseconds).</p><table class="simple"><tr><th>esriFieldType</th><th>PostgreSQL</th></tr>
+<tr><td>OID</td><td>bigint</td></tr><tr><td>SmallInteger / Integer / BigInteger</td><td>smallint / integer / bigint</td></tr>
+<tr><td>Single / Double</td><td>real / double precision</td></tr><tr><td>String, GUID, GlobalID, XML</td><td>text</td></tr>
+<tr><td>Date, TimestampOffset</td><td>timestamptz (from epoch ms)</td></tr><tr><td>DateOnly</td><td>date</td></tr><tr><td>TimeOnly</td><td>time</td></tr>
+<tr><td>Geometry / Blob / Raster</td><td>skipped (geometry goes to <code>geom</code>)</td></tr></table></div>
+<div class="row why"><h3>Why</h3><p>Typed columns make <code>WHERE prmt_decision_dt &gt;= '2020-01-01'</code>, numeric sorting and sums work correctly, and they carry through to GeoPackage, GeoParquet and the MCP server's field list.</p></div>
+<div class="row"><h3>Alternatives considered</h3><ul><li><b>One <code>jsonb</code> attributes column:</b> flexible, but every query needs casts, and exports and tile attributes lose their types. It is still available with <code>keep_raw_attrs: true</code>.</li><li><b>Everything as text:</b> what CSV-based loaders produce; dates sort as strings and numbers as text.</li></ul></div>
+<div class="row"><h3>The code in this repo</h3><pre><code class="python">TYPES = {&quot;esriFieldTypeSmallInteger&quot;: &quot;smallint&quot;, &quot;esriFieldTypeInteger&quot;: &quot;integer&quot;, &quot;esriFieldTypeBigInteger&quot;: &quot;bigint&quot;,
+         &quot;esriFieldTypeSingle&quot;: &quot;real&quot;, &quot;esriFieldTypeDouble&quot;: &quot;double precision&quot;, &quot;esriFieldTypeString&quot;: &quot;text&quot;,
+         &quot;esriFieldTypeDate&quot;: &quot;timestamptz&quot;, &quot;esriFieldTypeDateOnly&quot;: &quot;date&quot;, &quot;esriFieldTypeTimeOnly&quot;: &quot;time&quot;,
+         &quot;esriFieldTypeTimestampOffset&quot;: &quot;timestamptz&quot;, &quot;esriFieldTypeGUID&quot;: &quot;text&quot;, &quot;esriFieldTypeGlobalID&quot;: &quot;text&quot;,
+         &quot;esriFieldTypeXML&quot;: &quot;text&quot;, &quot;esriFieldTypeOID&quot;: &quot;bigint&quot;}
 
-<h2>3. Reprojection</h2>
-<p>The server reprojects for us: every query passes <code>outSR=3086</code> (NAD83 / Florida GDL Albers, meters), so tables store
-geometry in an equal-area projection suitable for area and distance work. For web use each table has a companion view in WGS84:</p>
-<pre><code class="language-sql">CREATE VIEW sjrwmd.management_area_4326 AS
-SELECT source_oid, objectid, county, conservation_area, acres, ...,   -- every column except geom
-       ST_Transform(geom, 4326)::geometry(MultiPolygon, 4326) AS geom
-FROM sjrwmd.sjrwmd_management_area_viewlayer_0;</code></pre>
-<p>Doing it yourself with GDAL works too:</p>
-<pre><code>ogr2ogr -f PostgreSQL "PG:dbname=sjrwmd" "$L/query?where=1%3D1&amp;outFields=*&amp;f=json" \
-  -nln sjrwmd.management_area -t_srs EPSG:3086 -nlt PROMOTE_TO_MULTI -lco GEOMETRY_NAME=geom</code></pre>
-
-<h2>4. Typed tables</h2>
-<p>Column types come from each field's <code>esriFieldType</code>, so dates are real <code>timestamptz</code> values, not epoch numbers:</p>
-<table><tr><th>esriFieldType</th><th>PostgreSQL</th></tr>
-<tr><td>OID / Integer / SmallInteger</td><td>bigint / integer / smallint</td></tr>
-<tr><td>Double / Single</td><td>double precision / real</td></tr>
-<tr><td>String / GUID / GlobalID</td><td>text</td></tr>
-<tr><td>Date / TimestampOffset</td><td>timestamptz (from epoch ms)</td></tr>
-<tr><td>DateOnly</td><td>date</td></tr></table>
-<pre><code class="language-sql">CREATE TABLE sjrwmd.environmental_resource_permit_erp_0 (
-  source_oid bigint PRIMARY KEY,           -- the layer's OBJECTID
-  objectid bigint, cur_prmt_id text, prmt_proj_nm text, prmt_stts text, county text,
-  recv_dt timestamptz, prmt_decision_dt timestamptz, prmt_expir_dt timestamptz, proj_acres double precision, ...,
+def norm(v, ftype):
+    if v is None: return None
+    if ftype in (&quot;esriFieldTypeDate&quot;, &quot;esriFieldTypeTimestampOffset&quot;) and isinstance(v, (int, float)):
+        try: return ts(v)                          # epoch ms -&gt; timezone-aware datetime
+        except (OverflowError, OSError, ValueError): return None
+    return v</code></pre></div>
+<div class="row gotcha"><h3>Gotchas we hit</h3><ul><li>Field names are lower-cased and sanitized into SQL identifiers; collisions get a trailing underscore.</li><li>Some date fields hold out-of-range sentinel values that overflow Python's datetime; those become NULL instead of failing the load.</li><li>A schema signature (md5 of columns, types, geometry type and SRID) is stored so a changed schema triggers a rebuild rather than a broken upsert.</li></ul></div></section><section id="keys"><h2>7. Primary keys and OBJECTID stability</h2>
+<div class="row"><h3>What we do</h3><p>Use the layer's OBJECTID as <code>source_oid bigint PRIMARY KEY</code>. It is the key for paging, upserts, deletes, <code>get_feature</code> in the MCP server and the <code>id</code> in every API result.</p></div>
+<div class="row why"><h3>Why</h3><p>OBJECTID is present on every layer, unique and indexed by the server, so it is the one key we can always page and diff on.</p></div>
+<div class="row"><h3>Alternatives considered</h3><ul><li><b>GlobalID:</b> more stable across republishing, but not present on every layer (Management Area has one; many permit layers don't).</li><li><b>Business keys such as permit numbers:</b> not unique; one permit can have several sequences and polygons.</li><li><b>A surrogate serial key:</b> would break every link back to the source.</li></ul></div>
+<div class="row"><h3>The code in this repo</h3><pre><code class="sql">CREATE TABLE IF NOT EXISTS sjrwmd.environmental_resource_permit_erp_0 (
+  source_oid bigint PRIMARY KEY,         -- the layer&#x27;s OBJECTID
+  objectid bigint, cur_prmt_id integer, prmt_proj_nm text, prmt_stts text, county text,
+  recv_dt timestamptz, prmt_decision_dt timestamptz, prmt_expir_dt timestamptz, ...,
   geom geometry(MultiPolygon, 3086),
-  _source_url text, _hub_item_id text, _fetched_at timestamptz, _source_last_edit timestamptz, _hash text);
-CREATE INDEX ON sjrwmd.environmental_resource_permit_erp_0 USING gist (geom);
-CREATE VIEW sjrwmd.erp AS SELECT * FROM sjrwmd.environmental_resource_permit_erp_0;   -- friendly alias</code></pre>
+  _source_url text NOT NULL, _hub_item_id text, _fetched_at timestamptz NOT NULL,
+  _source_last_edit timestamptz, _hash text NOT NULL, _geom_repaired boolean NOT NULL DEFAULT false);</code></pre></div>
+<div class="row gotcha"><h3>Gotchas we hit</h3><ul><li>OBJECTIDs can be reassigned if SJRWMD truncates and reloads a layer. The hash diff then shows up as a mass update/delete, which is correct but noisy; prefer GlobalID for cross-run joins when it exists.</li><li>ERP OBJECTIDs are large (e.g. 320108305), hence <code>bigint</code>.</li></ul></div></section><section id="provenance"><h2>8. Provenance columns</h2>
+<div class="row"><h3>What we do</h3><p>Every row carries <code>_source_url</code>, <code>_hub_item_id</code>, <code>_fetched_at</code>, <code>_source_last_edit</code> and <code>_hash</code>. Every layer attempt is logged in <code>meta.harvest_run</code>, and the latest state per layer lives in <code>meta.layer_registry</code>.</p></div>
+<div class="row why"><h3>Why</h3><p>A mirror is only trustworthy if any row can be traced to where and when it came from. The columns travel with the data into the GeoPackage downloads, and the run log answers "when did this layer last change?" without guessing.</p></div>
+<div class="row"><h3>Alternatives considered</h3><ul><li><b>A README note with the download date:</b> lost as soon as rows are copied or joined.</li><li><b>Provenance only at the layer level:</b> not enough once incremental updates leave rows of different ages in one table.</li></ul></div>
+<div class="row"><h3>The code in this repo</h3><pre><code class="sql">SELECT name, status, server_count, fetched, inserted, updated, deleted, seconds
+FROM meta.harvest_run ORDER BY run_id DESC LIMIT 5;
+-- a rerun with nothing changed on the server:
+-- {&quot;name&quot;: &quot;sjrwmd_management_area_viewlayer_0&quot;, &quot;status&quot;: &quot;skipped&quot;, &quot;server&quot;: 133, &quot;secs&quot;: 1.1}</code></pre></div>
+<div class="row gotcha"><h3>Gotchas we hit</h3><ul><li><code>_hash</code> covers the raw attributes and the raw Esri geometry, so it changes only when the source does, not when our parsing code changes.</li><li>Provenance columns are excluded from the map tiles and MCP results (they would bloat every tile and response) but kept in the GeoPackage.</li></ul></div></section><section id="index"><h2>9. Spatial index (GiST)</h2>
+<div class="row"><h3>What we do</h3><p>Create a GiST index on <code>geom</code> for every table as it is created.</p></div>
+<div class="row why"><h3>Why</h3><p>GiST indexes bounding boxes, so <code>ST_DWithin</code>, <code>ST_Intersects</code> and <code>&amp;&amp;</code> only examine nearby features. That is what makes the example queries, pg_featureserv, Martin and the MCP server's PostGIS backend fast. Sizes from our run: land use 2020 has a 14 MB GiST index on a 447 MB table; ERP 4.4 MB on 178 MB; CUP stations 4.0 MB on 80 MB.</p></div>
+<div class="row"><h3>Alternatives considered</h3><ul><li><b>SP-GiST or BRIN:</b> useful for special cases (very large, spatially sorted point tables); GiST is the general-purpose default and fine at this size.</li><li><b>No index:</b> every spatial query scans every row.</li></ul></div>
+<div class="row"><h3>The code in this repo</h3><pre><code class="sql">CREATE INDEX IF NOT EXISTS environmental_resource_permit_erp_0_gix
+  ON sjrwmd.environmental_resource_permit_erp_0 USING gist (geom);
 
-<h2>5. Provenance</h2>
-<p>Every row carries where and when it came from, and every run is logged:</p>
-<pre><code class="language-sql">-- per row
-_source_url        -- the layer REST URL
-_hub_item_id       -- Hub dataset id, when one exists
-_fetched_at        -- when this mirror fetched it
-_source_last_edit  -- the layer's editingInfo.lastEditDate at fetch time
-_hash              -- md5 of attributes + geometry, used for change detection
--- per layer / per run
-SELECT name, server_count, last_edit_date, last_harvested_at, last_status FROM meta.layer_registry;
-SELECT name, started_at, status, fetched, inserted, updated, deleted, seconds FROM meta.harvest_run ORDER BY run_id DESC;</code></pre>
-<p>A load counts as complete when the number of rows loaded equals the server's <code>returnCountOnly</code> count; the map shows that match for every layer.</p>
+-- uses the index: permits within 1 km of a point
+SELECT cur_prmt_id, prmt_proj_nm FROM sjrwmd.erp e
+WHERE ST_DWithin(e.geom, ST_Transform(ST_SetSRID(ST_MakePoint(-81.38, 28.54), 4326), 3086), 1000);</code></pre></div>
+<div class="row gotcha"><h3>Gotchas we hit</h3><ul><li>Queries must compare in the table's SRID (3086). Wrapping the column in <code>ST_Transform(geom, 4326)</code> defeats the index; transform the query point instead.</li><li>The 4326 views can't use the index for spatial filters, so the MCP PostGIS backend queries the 3086 views.</li></ul></div></section><section id="incremental"><h2>10. Incremental updates: lastEditDate skip + hash-diff upsert</h2>
+<div class="row"><h3>What we do</h3><p>Before downloading, compare the layer's <code>editingInfo.lastEditDate</code>, server count and schema signature with the previous successful run; if all three match, skip it. Otherwise load everything into a temporary staging table with <code>COPY</code>, upsert rows whose hash changed, insert new ones, and delete rows that disappeared, all in one transaction.</p></div>
+<div class="row why"><h3>Why</h3><p>Most layers change rarely, so a weekly run should cost a few metadata requests per layer (a skipped layer took 1.1 s). When a layer did change, the hash diff touches only changed rows, and the single transaction means readers never see a half-loaded table.</p></div>
+<div class="row"><h3>Alternatives considered</h3><ul><li><b><code>extractChanges</code> / change tracking:</b> only 19 services (41 layers) in the inventory have it enabled, so it can't be the general mechanism.</li><li><b>Drop and reload every time:</b> simple, but it rewrites every row, churns indexes, and briefly empties the table.</li><li><b>Query by <code>last_edited_date</code>:</b> not every layer has editor tracking, and it misses deletes.</li></ul></div>
+<div class="row"><h3>The code in this repo</h3><pre><code class="sql">if not force and prev and prev[2] == &quot;ok&quot; and prev[0] == last_edit and prev[1] == server_count and prev[3] == schema_sig:
+    return dict(name=name, status=&quot;skipped&quot;)             # nothing changed on the server
 
-<h2>6. Incremental updates</h2>
-<p>On each run, a layer is skipped when its <code>lastEditDate</code>, server count and schema signature are all unchanged.
-Otherwise it is fetched into a staging table and merged by hash in one transaction:</p>
-<pre><code class="language-sql">INSERT INTO sjrwmd.environmental_resource_permit_erp_0 AS t SELECT * FROM stage
-ON CONFLICT (source_oid) DO UPDATE SET (prmt_stts, ..., geom, _hash, _fetched_at) =
-  (excluded.prmt_stts, ..., excluded.geom, excluded._hash, excluded._fetched_at)
-WHERE t._hash IS DISTINCT FROM excluded._hash;           -- only rows that really changed
-DELETE FROM sjrwmd.environmental_resource_permit_erp_0 t WHERE NOT EXISTS (SELECT 1 FROM stage s WHERE s.source_oid = t.source_oid);</code></pre>
-<pre><code>python harvest.py                 # all 15 layers, skip unchanged
-python harvest.py --only erp      # one layer
-python harvest.py --force         # ignore lastEditDate and reload</code></pre>
+CREATE TEMP TABLE stage (LIKE sjrwmd.&lt;table&gt; INCLUDING DEFAULTS) ON COMMIT DROP;
+COPY stage (...) FROM STDIN;                               -- every page streamed in
+WITH up AS (
+  INSERT INTO sjrwmd.&lt;table&gt; AS t SELECT * FROM stage
+  ON CONFLICT (source_oid) DO UPDATE SET &lt;every column&gt; = excluded.&lt;column&gt;
+  WHERE t._hash IS DISTINCT FROM excluded._hash          -- only rows that really changed
+  RETURNING (xmax = 0) AS ins)
+SELECT count(*) FILTER (WHERE ins), count(*) FILTER (WHERE NOT ins) FROM up;
+DELETE FROM sjrwmd.&lt;table&gt; t WHERE NOT EXISTS (SELECT 1 FROM stage s WHERE s.source_oid = t.source_oid);</code></pre></div>
+<div class="row gotcha"><h3>Gotchas we hit</h3><ul><li><code>lastEditDate</code> doesn't always change when a view layer's underlying data is republished, so the server count is checked as well; <code>--force</code> exists for anything else.</li><li><code>(xmax = 0)</code> in <code>RETURNING</code> is the PostgreSQL idiom for telling inserts from updates in one upsert.</li><li>The weekly GitHub Actions workflow is in the repo but disabled until hosting for the database is chosen.</li></ul></div></section><section id="counts"><h2>11. Count reconciliation</h2>
+<div class="row"><h3>What we do</h3><p>After each load, compare rows fetched with the server's <code>returnCountOnly</code> count; the run is <code>ok</code> only if they're equal, otherwise <code>count_mismatch</code>. <code>qc/qc.sql</code> re-checks table counts against the registry, and the site shows the result per layer.</p></div>
+<div class="row why"><h3>Why</h3><p>It is the simplest end-to-end proof that paging didn't drop or duplicate anything. All 15 layers match: 727,495 rows loaded of 727,495 on the server.</p></div>
+<div class="row"><h3>Alternatives considered</h3><ul><li><b>Full geometry and attribute QC reports:</b> useful, but beyond the goal of a faithful copy; validity issues are the source's, and we flag rather than "fix" data.</li></ul></div>
+<div class="row"><h3>The code in this repo</h3><pre><code class="text">$ psql -f qc/qc.sql
+conservation_easement      loaded 13304 of 13304 OK
+cup_boundary               loaded 24462 of 24462 OK
+cup_station                loaded 96498 of 96498 OK
+erp                        loaded 96577 of 96577 OK
+land_use_2020              loaded 309325 of 309325 OK
+...                        (15 of 15 OK)</code></pre></div>
+<div class="row gotcha"><h3>Gotchas we hit</h3><ul><li>The count is captured at the start of the run; a layer edited mid-harvest can mismatch legitimately, and the next run fixes it.</li></ul></div></section><section id="exports"><h2>12. Exports: GeoPackage, GeoParquet and CSV</h2>
+<div class="row"><h3>What we do</h3><p><code>scripts/export.sh</code> writes three files per layer with GDAL and publishes them as GitHub release assets: GeoPackage in EPSG:3086 with provenance columns, GeoParquet (ZSTD) in EPSG:4326, and a zipped CSV with WKT geometry in EPSG:4326, plus <code>SHA256SUMS</code>. 1.9 GB in total; the largest file is the land-use GeoPackage at 519 MB.</p></div>
+<div class="row why"><h3>Why</h3><p>Each format serves a different audience. <b>GeoPackage</b> is the open, single-file format QGIS and ArcGIS Pro open natively, with no shapefile limits. <b>GeoParquet</b> is columnar and compressed, the fastest option for DuckDB, GeoPandas and cloud tools (and what the MCP server reads). <b>CSV</b> opens anywhere, including Excel. ERP is 214 MB as GeoPackage, 75 MB as GeoParquet and 86 MB as zipped CSV.</p></div>
+<div class="row"><h3>Alternatives considered</h3><ul><li><b>Shapefile:</b> 10-character field names, 2 GB limit, no real date-time, several files per layer.</li><li><b>GeoJSON:</b> human-readable but large and slow for 300k polygons; the map uses PMTiles instead.</li><li><b>The <code>pg_dump</code> only:</b> useful for PostGIS users, useless for everyone else.</li></ul></div>
+<div class="row"><h3>The code in this repo</h3><pre><code class="bash">ogr2ogr -f GPKG    &quot;$OUT/$a.gpkg&quot;    &quot;$PG&quot; &quot;sjrwmd.$t&quot;      -nln &quot;$a&quot;
+ogr2ogr -f Parquet &quot;$OUT/$a.parquet&quot; &quot;$PG&quot; &quot;sjrwmd.${t}_4326&quot; -nln &quot;$a&quot; -lco COMPRESSION=ZSTD
+ogr2ogr -f CSV     &quot;$TMP/$a.csv&quot;     &quot;$PG&quot; &quot;sjrwmd.${t}_4326&quot; -lco GEOMETRY=AS_WKT
+gh release create data-2026-10-28 dist/*</code></pre></div>
+<div class="row gotcha"><h3>Gotchas we hit</h3><ul><li>GDAL needs its PostgreSQL and Parquet drivers; conda-forge splits them into <code>libgdal-pg</code> and <code>libgdal-arrow-parquet</code>.</li><li>GitHub release assets are limited to 2 GB each; our largest is 519 MB.</li></ul></div></section><section id="tiles"><h2>13. PMTiles with tippecanoe</h2>
+<div class="row"><h3>What we do</h3><p><code>scripts/build_tiles.sh</code> exports each 4326 view as GeoJSON lines (without the <code>_</code> provenance columns) and runs tippecanoe into one <code>.pmtiles</code> file per layer: zooms 6–14, at most 500 KB per tile (<code>-M 500000</code>) and 200,000 features per tile (<code>-O 200000</code>). Points are thinned at low zooms (<code>--drop-densest-as-needed</code>), polygons are merged (<code>--coalesce-densest-as-needed --detect-shared-borders</code>) and lines and polygons simplified (<code>--simplification=4</code>).</p></div>
+<div class="row why"><h3>Why</h3><p>Small tiles keep the map responsive on phones, and dropping or merging only where tiles are dense keeps the full detail at high zoom. Zoom 6 shows the whole district; at zoom 14 the features are effectively at full resolution.</p></div>
+<div class="row"><h3>Alternatives considered</h3><ul><li><b>A tile server (Martin, pg_tileserv):</b> included in docker compose for local use, but it needs a running server; PMTiles needs only static hosting.</li><li><b>One combined PMTiles file:</b> fewer files, but every layer would be rebuilt on any change and the 100 MB file limit would be exceeded.</li><li><b>GeoJSON straight into MapLibre:</b> fine for 133 management areas, impossible for 309,325 land-use polygons.</li></ul></div>
+<div class="row"><h3>The code in this repo</h3><pre><code class="bash">tippecanoe -q -f -o docs/tiles/$t.pmtiles -l $t -Z6 -z14 \
+  --drop-densest-as-needed -r1                               # points
+  # --coalesce-densest-as-needed --detect-shared-borders --simplification=4   (polygons)
+  --extend-zooms-if-still-dropping -M 500000 -O 200000 $t.geojsonl
 
-<h2>7. Example SQL</h2>
-<p>Run against this mirror (Oct 28, 2026); all of these use the friendly alias views.</p>
-<pre><code class="language-sql">-- ERP permits within 1 km of a point (lon/lat in downtown Orlando), nearest first
+# the two heaviest layers, tuned to stay under GitHub&#x27;s 100 MB file limit:
+#  land use 2020: lucode, lccode only; -z12; --simplification=6   159.4 MB -&gt; 44.8 MB
+#  ERP: 11 key fields; -z13                                       96.4 MB -&gt; 39.6 MB</code></pre></div>
+<div class="row gotcha"><h3>Gotchas we hit</h3><ul><li>The first build was 438 MB in total, with land use at 159 MB, over GitHub's 100 MB per-file limit. After tuning: 275 MB in total, largest file 64 MB (streams).</li><li><code>--no-tile-stats-attributes-limit</code> isn't a valid tippecanoe option; the first script failed on it.</li><li>A management-area test build at these settings was 1.3 MB.</li></ul></div></section><section id="pages"><h2>14. Serving on GitHub Pages with HTTP range requests</h2>
+<div class="row"><h3>What we do</h3><p>Commit the <code>.pmtiles</code> files under <code>docs/tiles/</code> and serve <code>docs/</code> with GitHub Pages. In the browser, pmtiles.js reads a small header, then fetches only the byte ranges for the tiles in view, and MapLibre draws them.</p></div>
+<div class="row why"><h3>Why</h3><p>No server, no tile cache, no cost: Pages answers <code>Range</code> requests with <code>206 Partial Content</code> and sends <code>Access-Control-Allow-Origin: *</code>, which is all PMTiles needs. Checked on the live site: a 16 KB range of the 64 MB streams file returned 206 with the CORS header.</p></div>
+<div class="row"><h3>Alternatives considered</h3><ul><li><b>GitHub release assets for tiles:</b> we tested this first. Range requests return 206, but there is no <code>Access-Control-Allow-Origin</code> header, so browsers block them. Fine for downloads, not for tiles.</li><li><b>Cloudflare R2 or S3:</b> works and scales, but adds an account and a bill; it is the fallback if the tiles outgrow Pages' 1 GB guideline.</li><li><b>CARTO raster basemap:</b> its free tiles now show "API key required"; the basemap is Esri's Light/Dark Gray Canvas.</li></ul></div>
+<div class="row"><h3>The code in this repo</h3><pre><code class="text">$ curl -sI -H &quot;Range: bytes=0-16383&quot; -H &quot;Origin: https://example.com&quot; \
+    https://knightchrism.github.io/sjrwmd-open-data/tiles/stream_flowpath_24k_hydroedge_11.pmtiles
+HTTP/2 206
+access-control-allow-origin: *
+content-range: bytes 0-16383/63998328
+
+// app.js
+const protocol = new pmtiles.Protocol();
+maplibregl.addProtocol(&quot;pmtiles&quot;, protocol.tile);
+map.addSource(id, { type: &quot;vector&quot;, url: &quot;pmtiles://&quot; + new URL(l.tiles, location.href).href });</code></pre></div>
+<div class="row gotcha"><h3>Gotchas we hit</h3><ul><li>Python's built-in <code>http.server</code> ignores <code>Range</code>, so local previews need a range-capable server (we used <code>npx http-server</code>).</li><li>Files over 50 MB trigger a GitHub warning on push; over 100 MB are rejected.</li></ul></div></section><section id="reproduce"><h2>15. Reproducing it with docker compose</h2>
+<div class="row"><h3>What we do</h3><p>Clone, set passwords in <code>.env</code>, start PostGIS with docker compose, and run the harvester. Optional services: pg_featureserv (OGC API Features on :9000) and Martin (vector tiles on :3000).</p></div>
+<div class="row why"><h3>Why</h3><p>Pinned images (<code>postgis/postgis:17-3.5</code>) and a single compose file give anyone the same database in minutes, on Linux, macOS or Windows with Docker Desktop.</p></div>
+<div class="row"><h3>Alternatives considered</h3><ul><li><b>Native installs:</b> also documented (EDB installer + Stack Builder on Windows, apt on Linux), but more steps and version drift.</li><li><b>A hosted database:</b> the end goal for scheduled updates; not needed to reproduce the data.</li></ul></div>
+<div class="row"><h3>The code in this repo</h3><pre><code class="bash">git clone https://github.com/knightchrism/sjrwmd-open-data &amp;&amp; cd sjrwmd-open-data
+cp .env.example .env               # set your own passwords; .env is never committed
+docker compose up -d db            # PostGIS 17-3.5; runs sql/01_init.sql on first start
+python -m venv .venv &amp;&amp; .venv/bin/pip install -r requirements.txt
+set -a; . ./.env; set +a
+.venv/bin/python harvest.py        # 15 layers, 727,495 features
+psql -f qc/qc.sql                  # 15 of 15 OK
+docker compose up -d featureserv martin
+
+# one-off alternative for a single layer, no Python:
+ogr2ogr -f PostgreSQL &quot;PG:dbname=sjrwmd&quot; &quot;$L/query?where=1%3D1&amp;outFields=*&amp;f=json&quot; \
+  -nln sjrwmd.management_area -t_srs EPSG:3086 -nlt PROMOTE_TO_MULTI -lco GEOMETRY_NAME=geom</code></pre></div>
+<div class="row gotcha"><h3>Gotchas we hit</h3><ul><li>Port 5432 was already taken on our build machine; <code>PG_HOST_PORT</code> in <code>.env</code> moves PostGIS to another port (we used 55433).</li><li>On Windows, keep the clone in a local folder such as <code>C:\dev</code>, not OneDrive, which locks and syncs files mid-write.</li><li>Martin discovers tables at startup; restart it after the first harvest.</li></ul></div></section><section id="sql"><h2>Example SQL</h2><p>All five ran against this mirror on Oct 28, 2026 (3.7 s in total), using the friendly alias views.</p><pre><code class="sql">-- ERP permits within 1 km of downtown Orlando, nearest first
 SELECT cur_prmt_id, prmt_proj_nm, prmt_stts, round(ST_Distance(e.geom, p.g)) AS meters
 FROM sjrwmd.erp e, (SELECT ST_Transform(ST_SetSRID(ST_MakePoint(-81.38, 28.54), 4326), 3086) g) p
 WHERE ST_DWithin(e.geom, p.g, 1000) ORDER BY meters LIMIT 10;
@@ -104,9 +259,9 @@ WHERE ST_DWithin(e.geom, p.g, 1000) ORDER BY meters LIMIT 10;
 SELECT a.conservation_area, count(*) FROM sjrwmd.management_area a
 JOIN sjrwmd.cup_station c ON ST_Intersects(a.geom, c.geom) GROUP BY 1 ORDER BY 2 DESC LIMIT 10;
 
--- ERP permits issued per county per year since 2020
+-- ERP permits decided per county per year since 2020
 SELECT county, extract(year FROM prmt_decision_dt)::int AS yr, count(*)
-FROM sjrwmd.erp WHERE prmt_decision_dt &gt;= '2020-01-01' GROUP BY 1, 2 ORDER BY 1, 2;
+FROM sjrwmd.erp WHERE prmt_decision_dt &gt;= &#x27;2020-01-01&#x27; GROUP BY 1, 2 ORDER BY 1, 2;
 
 -- Acres of 2020 land use by code inside conservation easements
 SELECT l.lucode, round(sum(ST_Area(ST_Intersection(l.geom, e.geom))) / 4046.86) AS acres
@@ -116,21 +271,18 @@ GROUP BY 1 ORDER BY acres DESC LIMIT 10;
 -- Kilometers of mapped stream flowpath per management area
 SELECT a.conservation_area, round(sum(ST_Length(ST_Intersection(s.geom, a.geom))) / 1000) AS km
 FROM sjrwmd.management_area a JOIN sjrwmd.stream_flowpath s ON ST_Intersects(s.geom, a.geom)
-GROUP BY 1 ORDER BY 2 DESC LIMIT 10;</code></pre>
-
-<h2>8. Reproduce it with Docker Compose</h2>
-<pre><code>git clone https://github.com/knightchrism/sjrwmd-open-data && cd sjrwmd-open-data
-cp .env.example .env               # set your own passwords; .env is never committed
-docker compose up -d db            # PostGIS 17-3.5; runs sql/01_init.sql on first start
-python -m venv .venv && .venv/bin/pip install -r requirements.txt
-set -a; . ./.env; set +a
-.venv/bin/python harvest.py        # ~730k features, roughly 20-40 minutes
-docker compose up -d featureserv martin   # OGC API Features on :9000, vector tiles on :3000</code></pre>
-<p>Rebuild the map tiles and downloads with <code>scripts/build_tiles.sh</code> (tippecanoe) and <code>scripts/export.sh</code> (GDAL).
-On Windows, use Docker Desktop and keep the clone in a local folder such as <code>C:\dev</code> (not OneDrive).</p>
-
-<footer>Data: <a href="https://www.sjrwmd.com">St. Johns River Water Management District</a>, Florida public records (Chapter 119, F.S.).
-This is an unofficial mirror, not affiliated with or endorsed by SJRWMD, provided as-is with no warranty. See the
-<a href="https://www.sjrwmd.com/disclaimer/">SJRWMD disclaimer</a> and <a href="https://github.com/knightchrism/sjrwmd-open-data/blob/main/DATA-LICENSE.md">DATA-LICENSE</a>.
-Code: MIT.</footer>
-</main></body></html>
+GROUP BY 1 ORDER BY 2 DESC LIMIT 10;</code></pre></section>
+</main></div>
+<footer>Data: <a href="https://www.sjrwmd.com">St. Johns River Water Management District</a>, Florida public records (Chapter 119, F.S.). Unofficial mirror, not affiliated with or endorsed by SJRWMD, provided as-is with no warranty.
+See the <a href="https://www.sjrwmd.com/disclaimer/">SJRWMD disclaimer</a> and <a href="https://github.com/knightchrism/sjrwmd-open-data/blob/main/DATA-LICENSE.md">DATA-LICENSE</a>. Code: MIT.</footer>
+<script type="module">
+const dark = localStorage.getItem("theme") ? localStorage.getItem("theme") === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+document.documentElement.classList.toggle("dark", dark);
+document.getElementById("theme").onclick = () => { const d = !document.documentElement.classList.contains("dark"); localStorage.setItem("theme", d ? "dark" : "light"); location.reload(); };
+const links = [...document.querySelectorAll("nav.toc a")];
+const obs = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) links.forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + e.target.id)); }), { rootMargin: "-20% 0px -70% 0px" });
+document.querySelectorAll("main section").forEach(s => obs.observe(s));
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+mermaid.initialize({ startOnLoad: true, theme: dark ? "dark" : "neutral", securityLevel: "strict" });
+</script>
+</body></html>

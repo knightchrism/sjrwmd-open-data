@@ -1,0 +1,65 @@
+{
+ "slug": "erp-by-county",
+ "question": "Which counties have the most Environmental Resource Permits?",
+ "server": "sjrwmd 1.30.0",
+ "recorded_at": "2026-10-28T14:56:54-04:00",
+ "calls": [
+  {
+   "tool": "count_by",
+   "arguments": {
+    "layer": "erp",
+    "field": "county",
+    "limit": 10
+   },
+   "is_error": false,
+   "result": {
+    "layer": "erp",
+    "field": "county",
+    "count": 10,
+    "results": [
+     {
+      "value": "Duval",
+      "count": 15438
+     },
+     {
+      "value": "Brevard",
+      "count": 12520
+     },
+     {
+      "value": "Orange",
+      "count": 12382
+     },
+     {
+      "value": "Volusia",
+      "count": 9946
+     },
+     {
+      "value": "St. Johns",
+      "count": 8195
+     },
+     {
+      "value": "Lake",
+      "count": 8025
+     },
+     {
+      "value": "Seminole",
+      "count": 7556
+     },
+     {
+      "value": "Indian River",
+      "count": 4161
+     },
+     {
+      "value": "Clay",
+      "count": 3950
+     },
+     {
+      "value": "Marion",
+      "count": 3664
+     }
+    ],
+    "credit": "Data: St. Johns River Water Management District (Florida public records), via an unofficial mirror (https://knightchrism.github.io/sjrwmd-open-data/). Not endorsed by SJRWMD; no warranty. See https://www.sjrwmd.com/disclaimer/"
+   }
+  }
+ ]
+}

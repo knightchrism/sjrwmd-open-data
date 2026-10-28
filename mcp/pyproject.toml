@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sjrwmd-mcp"
+version = "0.1.0"
+description = "Read-only MCP server for 15 SJRWMD (Florida) water-management GIS layers: DuckDB over the published GeoParquet, or PostGIS."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [{ name = "Christopher Knight (KnightGeo)" }]
+dependencies = ["mcp>=1.2,<2", "duckdb>=1.1", "pytz"]
+keywords = ["mcp", "gis", "duckdb", "postgis", "florida", "open-data"]
+
+[project.optional-dependencies]
+postgis = ["psycopg[binary]>=3.1"]
+test = ["pytest>=8", "pytest-asyncio>=0.23", "psycopg[binary]>=3.1"]
+
+[project.scripts]
+sjrwmd-mcp = "sjrwmd_mcp.server:main"
+
+[project.urls]
+Homepage = "https://knightchrism.github.io/sjrwmd-open-data/"
+Source = "https://github.com/knightchrism/sjrwmd-open-data"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/sjrwmd_mcp"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+asyncio_default_fixture_loop_scope = "function"

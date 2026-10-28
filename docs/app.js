@@ -54,10 +54,11 @@ $("#theme").addEventListener("click", () => {
 
 // ---------- tabs ----------
 function showTab() {
-  const t = (location.hash.match(/^#(downloads|about)/) || [, "map"])[1];
+  const t = (location.hash.match(/^#(downloads|about|demo|mcp)/) || [, "map"])[1];
   document.querySelectorAll(".view").forEach(v => v.hidden = v.id !== "view-" + t);
   document.querySelectorAll(".tabs a[data-tab]").forEach(a => { a.classList.toggle("on", a.dataset.tab === t); a.setAttribute("aria-selected", a.dataset.tab === t); });
   if (t === "map") map.resize();
+  if (t === "demo" && window.renderDemos) window.renderDemos();
 }
 window.addEventListener("hashchange", showTab); showTab();
 document.querySelectorAll('.tabs a[data-tab="map"]').forEach(a => a.addEventListener("click", e => { e.preventDefault(); history.pushState(null, "", location.pathname); showTab(); }));

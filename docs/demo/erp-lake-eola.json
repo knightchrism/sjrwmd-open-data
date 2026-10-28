@@ -1,0 +1,5013 @@
+{
+ "slug": "erp-lake-eola",
+ "question": "What Environmental Resource Permits are on file around Lake Eola in downtown Orlando?",
+ "server": "sjrwmd 1.30.0",
+ "recorded_at": "2026-10-28T14:56:54-04:00",
+ "calls": [
+  {
+   "tool": "features_in_bbox",
+   "arguments": {
+    "layer": "erp",
+    "bbox": [
+     -81.385,
+     28.538,
+     -81.365,
+     28.552
+    ],
+    "limit": 25,
+    "include_geometry": true
+   },
+   "is_error": false,
+   "result": {
+    "layer": "erp",
+    "bbox": [
+     -81.385,
+     28.538,
+     -81.365,
+     28.552
+    ],
+    "count": 25,
+    "results": [
+     {
+      "layer": "erp",
+      "id": 177241469,
+      "centroid": {
+       "lat": 28.548312,
+       "lon": -81.377927
+      },
+      "properties": {
+       "objectid": 177241469,
+       "cur_prmt_id": 191797,
+       "offcl_prmt_id": 45536,
+       "seq_no": 5,
+       "site_id": 366731,
+       "site_nm": "Orange County Courthouse Vendor Parking Lot",
+       "seq_type": "Minor Modification",
+       "prmt_stage": "Compliance",
+       "rule_type": "62-330",
+       "rule_type_desc": "ERP Individual (<40 ac no WL <12 IMP)",
+       "prmt_proj_nm": "Orange County Courthouse Vendor Parking Lot",
+       "recv_dt": "2022-09-18T20:00:00-04:00",
+       "prmt_decision_dt": "2023-05-01T20:00:00-04:00",
+       "prmt_expir_dt": "2028-05-02T00:00:00",
+       "applicant": "Orange County Capital Projects",
+       "owner": "Orange County Capital Projects",
+       "prmt_recommend": "Approval",
+       "prmt_stts": "Issued",
+       "proj_acres": 0.25,
+       "county": "Orange",
+       "cmplnc_stts": "In Compliance",
+       "editor": "BVANSICK",
+       "edit_date": "2022-09-26T10:18:02-04:00",
+       "disc_prmt_stts": "Active",
+       "link": "https://permitting.sjrwmd.com/ep/#/prmtInfo?offclId=45536&seqNo=5",
+       "prmt_app_proc_stts_cd": "COMP",
+       "receiving_service_center": "Apopka",
+       "issuing_service_center": "Maitland",
+       "processing_service_center": "Maitland",
+       "reviewer_service_center": "Maitland",
+       "cmplnc_prioty_nm": "Tier 3",
+       "created_user": "SJRWMDGeospatialSolutions",
+       "created_date": "2026-08-31T16:52:36.373000-04:00",
+       "last_edited_user": "SJRWMDGeospatialSolutions",
+       "last_edited_date": "2026-08-31T16:52:36.373000-04:00",
+       "reviewers": "Kimberly Eisele,Leticia Castaneda",
+       "daysinhouse": 225,
+       "receivingwb": "Lake Ivanhoe",
+       "dtl_app_no": "IND-095-45536-5",
+       "shape__area": 30372.994384765625,
+       "shape__length": 777.3231918099411
+      },
+      "geometry": {
+       "type": "MultiPolygon",
+       "coordinates": [
+        [
+         [
+          [
+           -81.37716293252481,
+           28.549285714028496
+          ],
+          [
+           -81.37716409552213,
+           28.548933208256567
+          ],
+          [
+           -81.37801179457954,
+           28.548935305390486
+          ],
+          [
+           -81.37801182941413,
+           28.548924305420943
+          ],
+          [
+           -81.3781088979056,
+           28.548924545133847
+          ],
+          [
+           -81.37810886180729,
+           28.54893554623516
+          ],
+          [
+           -81.37901342801156,
+           28.54893778676702
+          ],
+          [
+           -81.37899281016813,
+           28.547640772118
+          ],
+          [
+           -81.37760744405948,
+           28.547637910602877
+          ],
+          [
+           -81.37753361438473,
+           28.547637759360196
+          ],
+          [
+           -81.37689583618632,
+           28.54763643737641
+          ],
+          [
+           -81.37690258192502,
+           28.548038079389087
+          ],
+          [
+           -81.37690723622048,
+           28.548315270302993
+          ],
+          [
+           -81.37692352155116,
+           28.549285120804672
+          ],
+          [
+           -81.37716293252481,
+           28.549285714028496
+          ]
+         ]
+        ]
+       ]
+      }
+     },
+     {
+      "layer": "erp",
+      "id": 177241761,
+      "centroid": {
+       "lat": 28.544782,
+       "lon": -81.384108
+      },
+      "properties": {
+       "objectid": 177241761,
+       "cur_prmt_id": 192204,
+       "offcl_prmt_id": 192204,
+       "seq_no": 1,
+       "site_id": 367152,
+       "site_nm": "FAMU College of Law",
+       "seq_type": "Initial Sequence",
+       "prmt_stage": "Closed",
+       "rule_type": "62-330",
+       "rule_type_desc": "ERP Individual (<40 ac no WL <12 IMP)",
+       "prmt_proj_nm": "DMS Zora Neale Hurston State of Florida Office Complex Courtyard",
+       "recv_dt": "2022-09-26T20:00:00-04:00",
+       "prmt_decision_dt": "2023-12-14T19:00:00-05:00",
+       "applicant": "Department of Management Services",
+       "owner": "Department of Management Services",
+       "prmt_recommend": "Administrative Denial",
+       "prmt_stts": "Never Issued",
+       "proj_acres": 0.0,
+       "county": "Orange",
+       "cmplnc_stts": "In Compliance",
+       "editor": "PDSLIB",
+       "edit_date": "2022-10-18T12:42:40-04:00",
+       "disc_prmt_stts": "Never Active",
+       "link": "https://permitting.sjrwmd.com/ep/#/prmtInfo?offclId=192204&seqNo=1",
+       "prmt_app_proc_stts_cd": "CLOS",
+       "receiving_service_center": "Apopka",
+       "issuing_service_center": "Maitland",
+       "processing_service_center": "Maitland",
+       "reviewer_service_center": "Maitland",
+       "cmplnc_prioty_nm": "Tier 3",
+       "created_user": "SJRWMDGeospatialSolutions",
+       "created_date": "2026-08-31T16:52:36.373000-04:00",
+       "last_edited_user": "SJRWMDGeospatialSolutions",
+       "last_edited_date": "2026-08-31T16:52:36.373000-04:00",
+       "reviewers": "Lee Kissick,Leticia Castaneda",
+       "daysinhouse": 444,
+       "receivingwb": "Lake Dot",
+       "dtl_app_no": "IND-095-192204-1",
+       "shape__area": 8305.7763671875,
+       "shape__length": 507.42745874824857
+      },
+      "geometry": {
+       "type": "MultiPolygon",
+       "coordinates": [
+        [
+         [
+          [
+           -81.38409671084796,
+           28.54505148723929
+          ],
+          [
+           -81.38440009788619,
+           28.54529808696269
+          ],
+          [
+           -81.38455556605835,
+           28.545165668579216
+          ],
+          [
+           -81.38460974702676,
+           28.545119519652353
+          ],
+          [
+           -81.38482871624437,
+           28.54493301503819
+          ],
+          [
+           -81.38479942415853,
+           28.544906676462713
+          ],
+          [
+           -81.3847554841425,
+           28.544867169156735
+          ],
+          [
+           -81.38461245334679,
+           28.54473856136723
+          ],
+          [
+           -81.38463424358473,
+           28.544567978455888
+          ],
+          [
+           -81.38437874644448,
+           28.544792486034954
+          ],
+          [
+           -81.38408772505458,
+           28.544562855989845
+          ],
+          [
+           -81.38438057066884,
+           28.54427567403617
+          ],
+          [
+           -81.38434222292983,
+           28.544240814057197
+          ],
+          [
+           -81.38430716470144,
+           28.54422685117821
+          ],
+          [
+           -81.38367562699337,
+           28.54422679679125
+          ],
+          [
+           -81.38367572008352,
+           28.54423414971245
+          ],
+          [
+           -81.383688905227,
+           28.54527668152014
+          ],
+          [
+           -81.38368933516269,
+           28.545310694277557
+          ],
+          [
+           -81.38380303875074,
+           28.54531803640788
+          ],
+          [
+           -81.38385640808754,
+           28.545269597352185
+          ],
+          [
+           -81.38409671084796,
+           28.54505148723929
+          ]
+         ]
+        ]
+       ]
+      }
+     },
+     {
+      "layer": "erp",
+      "id": 179374865,
+      "centroid": {
+       "lat": 28.541251,
+       "lon": -81.373821
+      },
+      "properties": {
+       "objectid": 179374865,
+       "cur_prmt_id": 192897,
+       "offcl_prmt_id": 192897,
+       "seq_no": 1,
+       "site_id": 367918,
+       "site_nm": "City of Orlando Downtown Bike Loop Gap Project",
+       "seq_type": "Pre-Application",
+       "prmt_stage": "Closed",
+       "rule_type": "ERP Pre-Application",
+       "rule_type_desc": "ERP Pre-Application",
+       "prmt_proj_nm": "City of Orlando Downtown Bike Loop Gap Project",
+       "recv_dt": "2022-10-12T20:00:00-04:00",
+       "prmt_decision_dt": "2025-01-15T19:00:00-05:00",
+       "applicant": "HDR",
+       "prmt_recommend": "Pre-App Complete",
+       "prmt_stts": "Never Issued",
+       "proj_acres": 3.61,
+       "county": "Orange",
+       "cmplnc_stts": "In Compliance",
+       "editor": "GISPROD",
+       "edit_date": "2022-10-13T06:45:14-04:00",
+       "disc_prmt_stts": "Never Active",
+       "link": "https://permitting.sjrwmd.com/ep/#/prmtInfo?offclId=192897&seqNo=1",
+       "prmt_app_proc_stts_cd": "CLOS",
+       "receiving_service_center": "Apopka",
+       "issuing_service_center": "Maitland",
+       "processing_service_center": "Maitland",
+       "reviewer_service_center": "Maitland",
+       "cmplnc_prioty_nm": "Tier 3",
+       "created_user": "SJRWMDGeospatialSolutions",
+       "created_date": "2026-08-31T16:52:36.373000-04:00",
+       "last_edited_user": "SJRWMDGeospatialSolutions",
+       "last_edited_date": "2026-08-31T16:52:36.373000-04:00",
+       "reviewers": "Juliana Serur*,Sandra Joiner*",
+       "daysinhouse": 826,
+       "dtl_app_no": "PRE-095-192897-1",
+       "shape__area": 11233.2255859375,
+       "shape__length": 4812.465668229545
+      },
+      "geometry": {
+       "type": "MultiPolygon",
+       "coordinates": [
+        [
+         [
+          [
+           -81.3810238168925,
+           28.543791944158112
+          ],
+          [
+           -81.38281469803573,
+           28.54376441326908
+          ],
+          [
+           -81.38102297833693,
+           28.543769127601614
+          ],
+          [
+           -81.38069575310428,
+           28.543453396894144
+          ],
+          [
+           -81.37762193678421,
+           28.54346988677878
+          ],
+          [
+           -81.37754952363733,
+           28.54221167176366
+          ],
+          [
+           -81.37752806723634,
+           28.541259745515823
+          ],
+          [
+           -81.36983549237821,
+           28.541264458099523
+          ],
+          [
+           -81.36978410505635,
+           28.538556356519017
+          ],
+          [
+           -81.36855833587218,
+           28.53855164598555
+          ],
+          [
+           -81.36853688351118,
+           28.5367137137768
+          ],
+          [
+           -81.36846714163974,
+           28.536713713451462
+          ],
+          [
+           -81.36849396583372,
+           28.538603488238607
+          ],
+          [
+           -81.36975996625321,
+           28.53859877449028
+          ],
+          [
+           -81.3698025817315,
+           28.542216949300535
+          ],
+          [
+           -81.36986695834626,
+           28.54220752183624
+          ],
+          [
+           -81.3698455027728,
+           28.541312153820527
+          ],
+          [
+           -81.37747369621364,
+           28.54130272727189
+          ],
+          [
+           -81.3775487987354,
+           28.543470451205813
+          ],
+          [
+           -81.37738615808132,
+           28.54350921164257
+          ],
+          [
+           -81.37713939308775,
+           28.543529231912398
+          ],
+          [
+           -81.3760105524045,
+           28.543541018766653
+          ],
+          [
+           -81.37601860852219,
+           28.54357871807904
+          ],
+          [
+           -81.37739726071948,
+           28.543566932139612
+          ],
+          [
+           -81.37760915304472,
+           28.543519811626076
+          ],
+          [
+           -81.38068653687927,
+           28.543491532479305
+          ],
+          [
+           -81.3810238168925,
+           28.543791944158112
+          ]
+         ]
+        ]
+       ]
+      }
+     },
+     {
+      "layer": "erp",
+      "id": 181661025,
+      "centroid": {
+       "lat": 28.547131,
+       "lon": -81.375872
+      },
+      "properties": {
+       "objectid": 181661025,
+       "cur_prmt_id": 193686,
+       "offcl_prmt_id": 153092,
+       "seq_no": 2,
+       "site_id": 368738,
+       "site_nm": "Rosalind & Livingston",
+       "seq_type": "Transfer of Ownership",
+       "prmt_stage": "Compliance",
+       "rule_type": "62-330",
+       "rule_type_desc": "ERP Individual (<40 ac no WL <12 IMP)",
+       "prmt_proj_nm": "Rosalind & Livingston (Transfer)",
+       "recv_dt": "2022-10-31T20:00:00-04:00",
+       "prmt_decision_dt": "2022-11-16T19:00:00-05:00",
+       "prmt_expir_dt": "2023-05-25T00:00:00",
+       "applicant": "Williams Portfolio 27, LLC",
+       "owner": "Williams Portfolio 27, LLC",
+       "prmt_recommend": "Approval",
+       "prmt_stts": "Issued",
+       "proj_acres": 3.58,
+       "county": "Orange",
+       "cmplnc_stts": "In Compliance",
+       "editor": "GISPROD",
+       "edit_date": "2022-11-01T07:12:07-04:00",
+       "disc_prmt_stts": "Active",
+       "link": "https://permitting.sjrwmd.com/ep/#/prmtInfo?offclId=153092&seqNo=2",
+       "prmt_app_proc_stts_cd": "COMP",
+       "receiving_service_center": "Apopka",
+       "issuing_service_center": "Palatka",
+       "processing_service_center": "Maitland",
+       "reviewer_service_center": "Palatka",
+       "cmplnc_prioty_nm": "Tier 2",
+       "created_user": "SJRWMDGeospatialSolutions",
+       "created_date": "2026-08-31T16:52:36.373000-04:00",
+       "last_edited_user": "SJRWMDGeospatialSolutions",
+       "last_edited_date": "2026-08-31T16:52:36.373000-04:00",
+       "reviewers": "Allen Baggett,Marianella Pacheco",
+       "daysinhouse": 16,
+       "receivingwb": "Lake Eola",
+       "dtl_app_no": "IND-095-153092-2",
+       "shape__area": 5686.95556640625,
+       "shape__length": 469.36539565042983
+      },
+      "geometry": {
+       "type": "MultiPolygon",
+       "coordinates": [
+        [
+         [
+          [
+           -81.37584533765832,
+           28.54669624494848
+          ],
+          [
+           -81.37563329681883,
+           28.54669776143705
+          ],
+          [
+           -81.37541190262523,
+           28.546699357613807
+          ],
+          [
+           -81.37541774624712,
+           28.547078841184717
+          ],
+          [
+           -81.37542338787016,
+           28.54744458701178
+          ],
+          [
+           -81.37557080443064,
+           28.547443520402656
+          ],
+          [
+           -81.37564479384423,
+           28.547442990773526
+          ],
+          [
+           -81.37585684636636,
+           28.547441465198446
+          ],
+          [
+           -81.37585120327834,
+           28.547075728429736
+          ],
+          [
+           -81.3758495851406,
+           28.54697123351205
+          ],
+          [
+           -81.37584533765832,
+           28.54669624494848
+          ]
+         ]
+        ],
+        [
+         [
+          [
+           -81.3760436406364,
+           28.546792928996446
+          ],
+          [
+           -81.37604614433141,
+           28.546959613811552
+          ],
+          [
+           -81.37605355260466,
+           28.547453729102507
+          ],
+          [
+           -81.37660714419718,
+           28.547449739561436
+          ],
+          [
+           -81.3765947787944,
+           28.547422116769376
+          ],
+          [
+           -81.37655867993719,
+           28.547352352046957
+          ],
+          [
+           -81.37651672259514,
+           28.547285185128572
+          ],
+          [
+           -81.37646916371881,
+           28.54722100343438
+          ],
+          [
+           -81.37641627035052,
+           28.54716015825035
+          ],
+          [
+           -81.37635832997535,
+           28.547103000805702
+          ],
+          [
+           -81.3762956913465,
+           28.547049864106697
+          ],
+          [
+           -81.3762404383347,
+           28.547003846847616
+          ],
+          [
+           -81.3761882221722,
+           28.546955149317842
+          ],
+          [
+           -81.37613920693141,
+           28.546903915489793
+          ],
+          [
+           -81.37609894720345,
+           28.546856953989785
+          ],
+          [
+           -81.3760613802111,
+           28.54680828804395
+          ],
+          [
+           -81.37604533554892,
+           28.54679523507774
+          ],
+          [
+           -81.3760436406364,
+           28.546792928996446
+          ]
+         ]
+        ]
+       ]
+      }
+     },
+     {
+      "layer": "erp",
+      "id": 181947393,
+      "centroid": {
+       "lat": 28.545698,
+       "lon": -81.367408
+      },
+      "properties": {
+       "objectid": 181947393,
+       "cur_prmt_id": 193856,
+       "offcl_prmt_id": 69909,
+       "seq_no": 2,
+       "site_id": 368973,
+       "site_nm": "Howard Middle School",
+       "seq_type": "Permit Determination/Exemption",
+       "prmt_stage": "Closed",
+       "rule_type": "62-330",
+       "rule_type_desc": "ERP Permit Determination/Exemption",
+       "prmt_proj_nm": "Howard Middle School",
+       "recv_dt": "2022-11-02T20:00:00-04:00",
+       "prmt_decision_dt": "2023-01-22T19:00:00-05:00",
+       "applicant": "Orange County Public Schools",
+       "owner": "Orange County Public Schools",
+       "prmt_recommend": "NPR - Rule Exemption",
+       "prmt_stts": "Never Issued",
+       "proj_acres": 10.72,
+       "county": "Orange",
+       "cmplnc_stts": "In Compliance",
+       "editor": "GISPROD",
+       "edit_date": "2022-11-03T11:22:58-04:00",
+       "disc_prmt_stts": "Never Active",
+       "link": "https://permitting.sjrwmd.com/ep/#/prmtInfo?offclId=69909&seqNo=2",
+       "prmt_app_proc_stts_cd": "CLOS",
+       "receiving_service_center": "Apopka",
+       "issuing_service_center": "Maitland",
+       "processing_service_center": "Maitland",
+       "reviewer_service_center": "Maitland",
+       "cmplnc_prioty_nm": "Tier 3",
+       "created_user": "SJRWMDGeospatialSolutions",
+       "created_date": "2026-08-31T16:52:36.373000-04:00",
+       "last_edited_user": "SJRWMDGeospatialSolutions",
+       "last_edited_date": "2026-08-31T16:52:36.373000-04:00",
+       "reviewers": "Nicole Martin,Sandra Joiner*",
+       "daysinhouse": 81,
+       "receivingwb": "Lake Eola",
+       "dtl_app_no": "PDEX-095-69909-2",
+       "shape__area": 33316.12097167969,
+       "shape__length": 1117.166731289261
+      },
+      "geometry": {
+       "type": "MultiPolygon",
+       "coordinates": [
+        [
+         [
+          [
+           -81.36838650220061,
+           28.54484073251861
+          ],
+          [
+           -81.36820915997922,
+           28.544842359885223
+          ],
+          [
+           -81.36805359068957,
+           28.5448437835829
+          ],
+          [
+           -81.36789802139364,
+           28.544845207102394
+          ],
+          [
+           -81.36774245209142,
+           28.5448466304437
+          ],
+          [
+           -81.36758689300517,
+           28.544848053579116
+          ],
+          [
+           -81.36743132369037,
+           28.54484947656404
+          ],
+          [
+           -81.36727575440061,
+           28.544850908397127
+          ],
+          [
+           -81.36712018507323,
+           28.54485233102567
+          ],
+          [
+           -81.36696461573958,
+           28.54485375347598
+          ],
+          [
+           -81.36680905662192,
+           28.544855175720503
+          ],
+          [
+           -81.36665348727571,
+           28.544856597814448
+          ],
+          [
+           -81.36649791795448,
+           28.544858028756565
+          ],
+          [
+           -81.36632181247906,
+           28.5448596322675
+          ],
+          [
+           -81.366325583334,
+           28.54527290822883
+          ],
+          [
+           -81.36632901373572,
+           28.54565868141976
+          ],
+          [
+           -81.36650546766248,
+           28.54565695057993
+          ],
+          [
+           -81.36666135467513,
+           28.545655410446216
+          ],
+          [
+           -81.36681724171245,
+           28.545653879159893
+          ],
+          [
+           -81.3669731185208,
+           28.54565234772233
+          ],
+          [
+           -81.36712900554488,
+           28.545650816078222
+          ],
+          [
+           -81.36728488234,
+           28.545649284282796
+          ],
+          [
+           -81.36744076935084,
+           28.545647752280825
+          ],
+          [
+           -81.36759665632373,
+           28.545646211073542
+          ],
+          [
+           -81.3677525433213,
+           28.545644678713757
+          ],
+          [
+           -81.36790840986757,
+           28.545643146230372
+          ],
+          [
+           -81.36806430707425,
+           28.545641613485024
+          ],
+          [
+           -81.36822015313118,
+           28.54564007167293
+          ],
+          [
+           -81.36839785406222,
+           28.545638325966184
+          ],
+          [
+           -81.36839237417435,
+           28.54525328055335
+          ],
+          [
+           -81.36838650220061,
+           28.54484073251861
+          ]
+         ]
+        ],
+        [
+         [
+          [
+           -81.36840058886901,
+           28.545830835138446
+          ],
+          [
+           -81.3682365954657,
+           28.54583244438685
+          ],
+          [
+           -81.36808129088027,
+           28.54583397572535
+          ],
+          [
+           -81.3679259965106,
+           28.54583550685852
+          ],
+          [
+           -81.36777069191199,
+           28.545837037841867
+          ],
+          [
+           -81.36761539749783,
+           28.545838559593548
+          ],
+          [
+           -81.36746009288602,
+           28.545840090221656
+          ],
+          [
+           -81.36730479849003,
+           28.545841620644566
+          ],
+          [
+           -81.3671494938651,
+           28.54584315091753
+          ],
+          [
+           -81.36699418920226,
+           28.545844671986497
+          ],
+          [
+           -81.36683889478655,
+           28.545846201876653
+          ],
+          [
+           -81.36668359014188,
+           28.545847731616856
+          ],
+          [
+           -81.36651897312844,
+           28.545849349501584
+          ],
+          [
+           -81.36652390666733,
+           28.546229125015298
+          ],
+          [
+           -81.36652875842253,
+           28.54660297936272
+          ],
+          [
+           -81.36669344991533,
+           28.54660186674004
+          ],
+          [
+           -81.36684881865828,
+           28.546600815211388
+          ],
+          [
+           -81.36700419761856,
+           28.54659976347736
+          ],
+          [
+           -81.36715956635115,
+           28.546598711593187
+          ],
+          [
+           -81.36731493510986,
+           28.54659766855762
+          ],
+          [
+           -81.36747031405459,
+           28.546596616290298
+          ],
+          [
+           -81.36762568277165,
+           28.546595563872824
+          ],
+          [
+           -81.36778105148353,
+           28.54659451127764
+          ],
+          [
+           -81.36793643041267,
+           28.546593458476988
+          ],
+          [
+           -81.36809179914556,
+           28.54659241455262
+          ],
+          [
+           -81.36824716784191,
+           28.546591361424152
+          ],
+          [
+           -81.36841139926409,
+           28.546590247965614
+          ],
+          [
+           -81.36840599913461,
+           28.546210537035908
+          ],
+          [
+           -81.36840058886901,
+           28.545830835138446
+          ]
+         ]
+        ]
+       ]
+      }
+     },
+     {
+      "layer": "erp",
+      "id": 183960209,
+      "centroid": {
+       "lat": 28.538793,
+       "lon": -81.373014
+      },
+      "properties": {
+       "objectid": 183960209,
+       "cur_prmt_id": 194604,
+       "offcl_prmt_id": 194604,
+       "seq_no": 1,
+       "site_id": 369775,
+       "site_nm": "Lake Avenue Relocation",
+       "seq_type": "Initial Sequence",
+       "prmt_stage": "Closed",
+       "rule_type": "62-330",
+       "rule_type_desc": "ERP Individual (<40 ac no WL <12 IMP)",
+       "prmt_proj_nm": "Lake Avenue Relocation",
+       "recv_dt": "2022-11-21T19:00:00-05:00",
+       "prmt_decision_dt": "2022-12-12T19:00:00-05:00",
+       "applicant": "Suncoast Manor Foundation, Inc.;Northland Thornton Park LLC",
+       "owner": "Northland Thornton Park LLC;Suncoast Manor Foundation, Inc.",
+       "prmt_recommend": "Withdrawn",
+       "prmt_stts": "Never Issued",
+       "proj_acres": 2.09,
+       "county": "Orange",
+       "cmplnc_stts": "In Compliance",
+       "editor": "BVANSICK",
+       "edit_date": "2022-12-01T11:20:14-05:00",
+       "disc_prmt_stts": "Never Active",
+       "link": "https://permitting.sjrwmd.com/ep/#/prmtInfo?offclId=194604&seqNo=1",
+       "prmt_app_proc_stts_cd": "CLOS",
+       "receiving_service_center": "Palm Bay",
+       "issuing_service_center": "Maitland",
+       "processing_service_center": "Maitland",
+       "reviewer_service_center": "Maitland",
+       "cmplnc_prioty_nm": "Tier 3",
+       "created_user": "SJRWMDGeospatialSolutions",
+       "created_date": "2026-08-31T16:52:36.373000-04:00",
+       "last_edited_user": "SJRWMDGeospatialSolutions",
+       "last_edited_date": "2026-08-31T16:52:36.373000-04:00",
+       "reviewers": "Nicole Martin,Rick Sobczak*",
+       "daysinhouse": 21,
+       "receivingwb": "Lake Olive",
+       "dtl_app_no": "IND-095-194604-1",
+       "shape__area": 5115.7813720703125,
+       "shape__length": 299.6091604006375
+      },
+      "geometry": {
+       "type": "MultiPolygon",
+       "coordinates": [
+        [
+         [
+          [
+           -81.37351524888061,
+           28.539022080500303
+          ],
+          [
+           -81.37350864432865,
+           28.538552572860624
+          ],
+          [
+           -81.3725062837937,
+           28.53855961351314
+          ],
+          [
+           -81.372532703176,
+           28.539040878024252
+          ],
+          [
+           -81.37351524888061,
+           28.539022080500303
+          ]
+         ]
+        ]
+       ]
+      }
+     },
+     {
+      "layer": "erp",
+      "id": 185112481,
+      "centroid": {
+       "lat": 28.544766,
+       "lon": -81.384162
+      },
+      "properties": {
+       "objectid": 185112481,
+       "cur_prmt_id": 194921,
+       "offcl_prmt_id": 44717,
+       "seq_no": 3,
+       "site_id": 370110,
+       "site_nm": "DMS Zora Neale Hurston State of Florida Office Complex Courtyard",
+       "seq_type": "Pre-Application",
+       "prmt_stage": "Closed",
+       "rule_type": "ERP Pre-Application",
+       "rule_type_desc": "ERP Pre-Application",
+       "prmt_proj_nm": "DMS Zora Neale Hurston State of Florida Office Complex Courtyard",
+       "recv_dt": "2022-11-30T19:00:00-05:00",
+       "prmt_decision_dt": "2022-12-13T19:00:00-05:00",
+       "applicant": "CPH",
+       "prmt_recommend": "Administratively Closed",
+       "prmt_stts": "Never Issued",
+       "proj_acres": 0.0,
+       "county": "Orange",
+       "cmplnc_stts": "In Compliance",
+       "editor": "GISPROD",
+       "edit_date": "2022-12-01T12:00:55-05:00",
+       "disc_prmt_stts": "Never Active",
+       "link": "https://permitting.sjrwmd.com/ep/#/prmtInfo?offclId=44717&seqNo=3",
+       "prmt_app_proc_stts_cd": "CLOS",
+       "receiving_service_center": "Apopka",
+       "issuing_service_center": "Maitland",
+       "processing_service_center": "Maitland",
+       "reviewer_service_center": "Maitland",
+       "cmplnc_prioty_nm": "Tier 3",
+       "created_user": "SJRWMDGeospatialSolutions",
+       "created_date": "2026-08-31T16:52:36.373000-04:00",
+       "last_edited_user": "SJRWMDGeospatialSolutions",
+       "last_edited_date": "2026-08-31T16:52:36.373000-04:00",
+       "reviewers": "Leticia Castaneda",
+       "daysinhouse": 13,
+       "dtl_app_no": "PRE-095-44717-3",
+       "shape__area": 11247.325073242188,
+       "shape__length": 410.71564127817794
+      },
+      "geometry": {
+       "type": "MultiPolygon",
+       "coordinates": [
+        [
+         [
+          [
+           -81.38369808791828,
+           28.54422220655352
+          ],
+          [
+           -81.38365517115798,
+           28.545042147445386
+          ],
+          [
+           -81.38368735685508,
+           28.545306035442408
+          ],
+          [
+           -81.38442227928493,
+           28.545287194667843
+          ],
+          [
+           -81.38480852319104,
+           28.544966753385403
+          ],
+          [
+           -81.384652952693,
+           28.54459919425962
+          ],
+          [
+           -81.38449738303436,
+           28.54421749045583
+          ],
+          [
+           -81.38369808791828,
+           28.54422220655352
+          ]
+         ]
+        ]
+       ]
+      }
+     },
+     {
+      "layer": "erp",
+      "id": 186125969,
+      "centroid": {
+       "lat": 28.540882,
+       "lon": -81.375217
+      },
+      "properties": {
+       "objectid": 186125969,
+       "cur_prmt_id": 195344,
+       "offcl_prmt_id": 110335,
+       "seq_no": 2,
+       "site_id": 370557,
+       "site_nm": "The Commons",
+       "seq_type": "Modification",
+       "prmt_stage": "Closed",
+       "rule_type": "62-330",
+       "rule_type_desc": "ERP Individual (<40 ac no WL <12 IMP)",
+       "prmt_proj_nm": "The Commons",
+       "recv_dt": "2022-12-11T19:00:00-05:00",
+       "prmt_decision_dt": "2023-03-02T19:00:00-05:00",
+       "prmt_expir_dt": "2028-03-03T00:00:00",
+       "applicant": "Highwoods Realty Limited Partnership",
+       "owner": "Highwoods Realty Limited Partnership",
+       "prmt_recommend": "Approval",
+       "prmt_stts": "Closed",
+       "proj_acres": 2.13,
+       "county": "Orange",
+       "cmplnc_stts": "In Compliance",
+       "editor": "GISPROD",
+       "edit_date": "2022-12-09T13:16:02-05:00",
+       "disc_prmt_stts": "Inactive",
+       "link": "https://permitting.sjrwmd.com/ep/#/prmtInfo?offclId=110335&seqNo=2",
+       "prmt_app_proc_stts_cd": "CLOS",
+       "receiving_service_center": "Apopka",
+       "issuing_service_center": "Maitland",
+       "processing_service_center": "Maitland",
+       "reviewer_service_center": "Maitland",
+       "cmplnc_prioty_nm": "Tier 3",
+       "created_user": "SJRWMDGeospatialSolutions",
+       "created_date": "2026-08-31T16:52:36.373000-04:00",
+       "last_edited_user": "SJRWMDGeospatialSolutions",
+       "last_edited_date": "2026-08-31T16:52:36.373000-04:00",
+       "reviewers": "Brandon Reynolds*,Lee Kissick",
+       "daysinhouse": 81,
+       "receivingwb": "Lake Eola",
+       "dtl_app_no": "IND-095-110335-2",
+       "shape__area": 8629.184936523438,
+       "shape__length": 372.00980886749164
+      },
+      "geometry": {
+       "type": "MultiPolygon",
+       "coordinates": [
+        [
+         [
+          [
+           -81.37573214655684,
+           28.54049227683129
+          ],
+          [
+           -81.37506328916058,
+           28.540505327618064
+          ],
+          [
+           -81.3746820062004,
+           28.540512761847562
+          ],
+          [
+           -81.37470073833248,
+           28.541256744425986
+          ],
+          [
+           -81.37508219381056,
+           28.541268400643133
+          ],
+          [
+           -81.37511994783716,
+           28.541269560066205
+          ],
+          [
+           -81.37574300941448,
+           28.54125770081409
+          ],
+          [
+           -81.37573866272547,
+           28.540951679269988
+          ],
+          [
+           -81.37573519937014,
+           28.540707342194235
+          ],
+          [
+           -81.37573214655684,
+           28.54049227683129
+          ]
+         ]
+        ]
+       ]
+      }
+     },
+     {
+      "layer": "erp",
+      "id": 187429889,
+      "centroid": {
+       "lat": 28.541764,
+       "lon": -81.374428
+      },
+      "properties": {
+       "objectid": 187429889,
+       "cur_prmt_id": 195717,
+       "offcl_prmt_id": 46628,
+       "seq_no": 2,
+       "site_id": 370951,
+       "site_nm": "Highwoods Bank Drive Thru",
+       "seq_type": "Minor Modification",
+       "prmt_stage": "Compliance",
+       "rule_type": "62-330",
+       "rule_type_desc": "ERP Individual",
+       "prmt_proj_nm": "Highwoods Bank Drive Thru",
+       "recv_dt": "2022-12-19T19:00:00-05:00",
+       "prmt_decision_dt": "2023-01-12T19:00:00-05:00",
+       "prmt_expir_dt": "2028-01-13T00:00:00",
+       "applicant": "Highwoods Properties, Inc",
+       "owner": "Highwoods Properties, Inc",
+       "prmt_recommend": "Approval",
+       "prmt_stts": "Issued",
+       "proj_acres": 0.3,
+       "county": "Orange",
+       "cmplnc_stts": "In Compliance",
+       "editor": "PDSLIB",
+       "edit_date": "2022-12-29T07:06:39-05:00",
+       "disc_prmt_stts": "Active",
+       "link": "https://permitting.sjrwmd.com/ep/#/prmtInfo?offclId=46628&seqNo=2",
+       "prmt_app_proc_stts_cd": "COMP",
+       "receiving_service_center": "Apopka",
+       "issuing_service_center": "Maitland",
+       "processing_service_center": "Maitland",
+       "reviewer_service_center": "Maitland",
+       "cmplnc_prioty_nm": "Tier 3",
+       "created_user": "SJRWMDGeospatialSolutions",
+       "created_date": "2026-08-31T16:52:36.373000-04:00",
+       "last_edited_user": "SJRWMDGeospatialSolutions",
+       "last_edited_date": "2026-08-31T16:52:36.373000-04:00",
+       "reviewers": "Lee Kissick,Rick Sobczak*",
+       "daysinhouse": 24,
+       "receivingwb": "Lake Eola",
+       "dtl_app_no": "IND-095-46628-2",
+       "shape__area": 12323.14697265625,
+       "shape__length": 473.52881634401626
+      },
+      "geometry": {
+       "type": "MultiPolygon",
+       "coordinates": [
+        [
+         [
+          [
+           -81.37524700359272,
+           28.541432503592056
+          ],
+          [
+           -81.37512229420489,
+           28.541434872326224
+          ],
+          [
+           -81.37362666695728,
+           28.541389182925506
+          ],
+          [
+           -81.37363718696432,
+           28.542129786345082
+          ],
+          [
+           -81.3752620798938,
+           28.542099180943065
+          ],
+          [
+           -81.37524700359272,
+           28.541432503592056
+          ]
+         ]
+        ]
+       ]
+      }
+     },
+     {
+      "layer": "erp",
+      "id": 199380033,
+      "centroid": {
+       "lat": 28.547164,
+       "lon": -81.3685
+      },
+      "properties": {
+       "objectid": 199380033,
+       "cur_prmt_id": 200123,
+       "offcl_prmt_id": 200123,
+       "seq_no": 1,
+       "site_id": 375592,
+       "site_nm": "Summerlin Avenue Improvements Project",
+       "seq_type": "Pre-Application",
+       "prmt_stage": "Closed",
+       "rule_type": "ERP Pre-Application",
+       "rule_type_desc": "ERP Pre-Application",
+       "prmt_proj_nm": "Summerlin Avenue Improvements Project",
+       "recv_dt": "2023-03-27T20:00:00-04:00",
+       "prmt_decision_dt": "2023-04-20T20:00:00-04:00",
+       "applicant": "CPH, LLC ",
+       "prmt_recommend": "Pre-App Complete",
+       "prmt_stts": "Never Issued",
+       "proj_acres": 43.21,
+       "county": "Orange",
+       "cmplnc_stts": "In Compliance",
+       "editor": "GISPROD",
+       "edit_date": "2023-03-28T05:20:33-04:00",
+       "disc_prmt_stts": "Never Active",
+       "link": "https://permitting.sjrwmd.com/ep/#/prmtInfo?offclId=200123&seqNo=1",
+       "prmt_app_proc_stts_cd": "CLOS",
+       "receiving_service_center": "Apopka",
+       "issuing_service_center": "Maitland",
+       "processing_service_center": "Maitland",
+       "reviewer_service_center": "Maitland",
+       "cmplnc_prioty_nm": "Tier 2",
+       "created_user": "SJRWMDGeospatialSolutions",
+       "created_date": "2026-08-31T16:52:36.373000-04:00",
+       "last_edited_user": "SJRWMDGeospatialSolutions",
+       "last_edited_date": "2026-08-31T16:52:36.373000-04:00",
+       "reviewers": "Tracy Miller*",
+       "daysinhouse": 24,
+       "dtl_app_no": "PRE-095-200123-1",
+       "shape__area": 134320.70568847656,
+       "shape__length": 4260.913114148254
+      },
+      "geometry": {
+       "type": "MultiPolygon",
+       "coordinates": [
+        [
+         [
+          [
+           -81.36802287268033,
+           28.538361547117375
+          ],
+          [
+           -81.36832328118626,
+           28.55698419843173
+          ],
+          [
+           -81.36888117986595,
+           28.55698420002631
+          ],
+          [
+           -81.36879535250941,
+           28.53855004574893
+          ],
+          [
+           -81.36879535186064,
+           28.538323842128836
+          ],
+          [
+           -81.36802287268033,
+           28.538361547117375
+          ]
+         ]
+        ]
+       ]
+      }
+     },
+     {
+      "layer": "erp",
+      "id": 201189249,
+      "centroid": {
+       "lat": 28.541434,
+       "lon": -81.374347
+      },
+      "properties": {
+       "objectid": 201189249,
+       "cur_prmt_id": 200890,
+       "offcl_prmt_id": 200890,
+       "seq_no": 1,
+       "site_id": 376382,
+       "site_nm": "City of Orlando Downtown Bike Loop Gap Project",
+       "seq_type": "Permit Determination/Exemption",
+       "prmt_stage": "Closed",
+       "rule_type": "62-330",
+       "rule_type_desc": "ERP Permit Determination/Exemption",
+       "prmt_proj_nm": "City of Orlando Downtown Bike Loop Gap Project",
+       "recv_dt": "2023-04-10T20:00:00-04:00",
+       "prmt_decision_dt": "2023-05-10T20:00:00-04:00",
+       "applicant": "City of Orlando",
+       "prmt_recommend": "NPR - Rule Exemption",
+       "prmt_stts": "Never Issued",
+       "proj_acres": 7.9,
+       "county": "Orange",
+       "cmplnc_stts": "In Compliance",
+       "editor": "GISPROD",
+       "edit_date": "2023-04-11T08:41:03-04:00",
+       "disc_prmt_stts": "Never Active",
+       "link": "https://permitting.sjrwmd.com/ep/#/prmtInfo?offclId=200890&seqNo=1",
+       "prmt_app_proc_stts_cd": "CLOS",
+       "receiving_service_center": "Apopka",
+       "issuing_service_center": "Maitland",
+       "processing_service_center": "Maitland",
+       "reviewer_service_center": "Maitland",
+       "cmplnc_prioty_nm": "Tier 3",
+       "created_user": "SJRWMDGeospatialSolutions",
+       "created_date": "2026-08-31T16:52:36.373000-04:00",
+       "last_edited_user": "SJRWMDGeospatialSolutions",
+       "last_edited_date": "2026-08-31T16:52:36.373000-04:00",
+       "reviewers": "Nicole Martin,Sandra Joiner*",
+       "daysinhouse": 30,
+       "dtl_app_no": "PDEX-095-200890-1",
+       "shape__area": 20740.952758789062,
+       "shape__length": 4809.686446626566
+      },
+      "geometry": {
+       "type": "MultiPolygon",
+       "coordinates": [
+        [
+         [
+          [
+           -81.37600499159306,
+           28.543512257776474
+          ],
+          [
+           -81.38063984731579,
+           28.543549956292814
+          ],
+          [
+           -81.3810260795716,
+           28.54383270133545
+          ],
+          [
+           -81.38280707380889,
+           28.54388925273801
+          ],
+          [
+           -81.38276415394968,
+           28.543813858309537
+          ],
+          [
+           -81.38113337335155,
+           28.543776156312404
+          ],
+          [
+           -81.3806613061032,
+           28.543436866708397
+          ],
+          [
+           -81.37759285510904,
+           28.543455714852552
+          ],
+          [
+           -81.37754994365503,
+           28.541231440863545
+          ],
+          [
+           -81.36988955256726,
+           28.541269140026404
+          ],
+          [
+           -81.36984663723854,
+           28.53851700228618
+          ],
+          [
+           -81.36858064185465,
+           28.538517004999207
+          ],
+          [
+           -81.36858063274522,
+           28.53676389062069
+          ],
+          [
+           -81.36849480208582,
+           28.536763897865985
+          ],
+          [
+           -81.36849481060946,
+           28.538611257746762
+          ],
+          [
+           -81.36976080712958,
+           28.53861125582349
+          ],
+          [
+           -81.36980372277354,
+           28.54223048590686
+          ],
+          [
+           -81.36991101409203,
+           28.542230482533178
+          ],
+          [
+           -81.36986809411039,
+           28.541344533449607
+          ],
+          [
+           -81.3774641123739,
+           28.541306833876906
+          ],
+          [
+           -81.37752848572462,
+           28.543455713297472
+          ],
+          [
+           -81.37600498961811,
+           28.543436859672934
+          ],
+          [
+           -81.37600499159306,
+           28.543512257776474
+          ]
+         ]
+        ]
+       ]
+      }
+     },
+     {
+      "layer": "erp",
+      "id": 205282401,
+      "centroid": {
+       "lat": 28.546915,
+       "lon": -81.368477
+      },
+      "properties": {
+       "objectid": 205282401,
+       "cur_prmt_id": 202662,
+       "offcl_prmt_id": 200123,
+       "seq_no": 2,
+       "site_id": 378199,
+       "site_nm": "Summerlin Avenue Improvement Project",
+       "seq_type": "Permit Determination/Exemption",
+       "prmt_stage": "Closed",
+       "rule_type": "62-330",
+       "rule_type_desc": "ERP Permit Determination/Exemption",
+       "prmt_proj_nm": "Summerlin Avenue Improvement Project",
+       "recv_dt": "2023-05-14T20:00:00-04:00",
+       "prmt_decision_dt": "2023-07-12T20:00:00-04:00",
+       "applicant": "City of Orlando ",
+       "owner": "City of Orlando ",
+       "prmt_recommend": "NPR - Rule Exemption",
+       "prmt_stts": "Never Issued",
+       "proj_acres": 11.15,
+       "county": "Orange",
+       "cmplnc_stts": "In Compliance",
+       "editor": "GISPROD",
+       "edit_date": "2023-05-15T06:05:34-04:00",
+       "disc_prmt_stts": "Never Active",
+       "link": "https://permitting.sjrwmd.com/ep/#/prmtInfo?offclId=200123&seqNo=2",
+       "prmt_app_proc_stts_cd": "CLOS",
+       "receiving_service_center": "Apopka",
+       "issuing_service_center": "Maitland",
+       "processing_service_center": "Maitland",
+       "reviewer_service_center": "Maitland",
+       "cmplnc_prioty_nm": "Tier 3",
+       "created_user": "SJRWMDGeospatialSolutions",
+       "created_date": "2026-08-31T16:52:36.373000-04:00",
+       "last_edited_user": "SJRWMDGeospatialSolutions",
+       "last_edited_date": "2026-08-31T16:52:36.373000-04:00",
+       "reviewers": "Grace Clements,Sandra Joiner*",
+       "daysinhouse": 59,
+       "dtl_app_no": "PDEX-095-200123-2",
+       "shape__area": 146874.41662597656,
+       "shape__length": 4261.547606459362
+      },
+      "geometry": {
+       "type": "MultiPolygon",
+       "coordinates": [
+        [
+         [
+          [
+           -81.36794669274244,
+           28.53835350332966
+          ],
+          [
+           -81.36829000967502,
+           28.55690076689328
+          ],
+          [
+           -81.36884790487636,
+           28.556976157603916
+          ],
+          [
+           -81.36884791310746,
+           28.53835349580054
+          ],
+          [
+           -81.36794669274244,
+           28.53835350332966
+          ]
+         ]
+        ]
+       ]
+      }
+     },
+     {
+      "layer": "erp",
+      "id": 217941729,
+      "centroid": {
+       "lat": 28.541107,
+       "lon": -81.382291
+      },
+      "properties": {
+       "objectid": 217941729,
+       "cur_prmt_id": 207359,
+       "offcl_prmt_id": 207359,
+       "seq_no": 1,
+       "site_id": 383041,
+       "site_nm": "City of Orlando Under I-4 Temporary Parking Lot",
+       "seq_type": "Pre-Application",
+       "prmt_stage": "Closed",
+       "rule_type": "ERP Pre-Application",
+       "rule_type_desc": "ERP Pre-Application",
+       "prmt_proj_nm": "City of Orlando Under I-4 Temporary Parking Lot",
+       "recv_dt": "2023-08-17T20:00:00-04:00",
+       "prmt_decision_dt": "2023-11-15T19:00:00-05:00",
+       "applicant": "Brindley Pieters & Associates, Inc.",
+       "prmt_recommend": "Pre-App Complete",
+       "prmt_stts": "Never Issued",
+       "proj_acres": 5.84,
+       "county": "Orange",
+       "cmplnc_stts": "In Compliance",
+       "editor": "GISPROD",
+       "edit_date": "2023-08-18T10:30:28-04:00",
+       "disc_prmt_stts": "Never Active",
+       "link": "https://permitting.sjrwmd.com/ep/#/prmtInfo?offclId=207359&seqNo=1",
+       "prmt_app_proc_stts_cd": "CLOS",
+       "receiving_service_center": "Apopka",
+       "issuing_service_center": "Maitland",
+       "processing_service_center": "Maitland",
+       "reviewer_service_center": "Maitland",
+       "cmplnc_prioty_nm": "Tier 3",
+       "created_user": "SJRWMDGeospatialSolutions",
+       "created_date": "2026-08-31T16:52:36.373000-04:00",
+       "last_edited_user": "SJRWMDGeospatialSolutions",
+       "last_edited_date": "2026-08-31T16:52:36.373000-04:00",
+       "reviewers": "Nicole Martin,Rick Sobczak*",
+       "daysinhouse": 90,
+       "receivingwb": "Lake Lucerne",
+       "dtl_app_no": "PRE-095-207359-1",
+       "shape__area": 18160.937744140625,
+       "shape__length": 562.1982862243575
+      },
+      "geometry": {
+       "type": "MultiPolygon",
+       "coordinates": [
+        [
+         [
+          [
+           -81.3817251472704,
+           28.540335878659533
+          ],
+          [
+           -81.38182170219538,
+           28.54192870703132
+          ],
+          [
+           -81.38280339316522,
+           28.541938128985908
+          ],
+          [
+           -81.38280338664389,
+           28.540279334638814
+          ],
+          [
+           -81.3817251472704,
+           28.540335878659533
+          ]
+         ]
+        ]
+       ]
+      }
+     },
+     {
+      "layer": "erp",
+      "id": 221860929,
+      "centroid": {
+       "lat": 28.542179,
+       "lon": -81.382327
+      },
+      "properties": {
+       "objectid": 221860929,
+       "cur_prmt_id": 209441,
+       "offcl_prmt_id": 209441,
+       "seq_no": 1,
+       "site_id": 385153,
+       "site_nm": "Default",
+       "seq_type": "Permit Determination/Exemption",
+       "prmt_stage": "Closed",
+       "rule_type": "62-330",
+       "rule_type_desc": "ERP Permit Determination/Exemption",
+       "prmt_proj_nm": "City of Orlando Temporary Parking Under I-4",
+       "recv_dt": "2023-10-02T20:00:00-04:00",
+       "prmt_decision_dt": "2023-11-16T19:00:00-05:00",
+       "applicant": "City of Orlando",
+       "prmt_recommend": "NPR - Rule Exemption",
+       "prmt_stts": "Never Issued",
+       "proj_acres": 1.82,
+       "county": "Orange",
+       "cmplnc_stts": "In Compliance",
+       "editor": "GISPROD",
+       "edit_date": "2023-10-03T10:55:21-04:00",
+       "disc_prmt_stts": "Never Active",
+       "link": "https://permitting.sjrwmd.com/ep/#/prmtInfo?offclId=209441&seqNo=1",
+       "prmt_app_proc_stts_cd": "CLOS",
+       "receiving_service_center": "Apopka",
+       "issuing_service_center": "Maitland",
+       "processing_service_center": "Maitland",
+       "reviewer_service_center": "Maitland",
+       "cmplnc_prioty_nm": "Other/Unknown",
+       "created_user": "SJRWMDGeospatialSolutions",
+       "created_date": "2026-08-31T16:52:36.373000-04:00",
+       "last_edited_user": "SJRWMDGeospatialSolutions",
+       "last_edited_date": "2026-08-31T16:52:36.373000-04:00",
+       "reviewers": "Lee Kissick,Sandra Joiner*",
+       "daysinhouse": 45,
+       "dtl_app_no": "PDEX-095-209441-1",
+       "shape__area": 30794.409301757812,
+       "shape__length": 1026.495195561739
+      },
+      "geometry": {
+       "type": "MultiPolygon",
+       "coordinates": [
+        [
+         [
+          [
+           -81.38280301415115,
+           28.542101906301475
+          ],
+          [
+           -81.38254737337996,
+           28.542102906519187
+          ],
+          [
+           -81.38227302645045,
+           28.542103985994984
+          ],
+          [
+           -81.38187865332793,
+           28.54210552887066
+          ],
+          [
+           -81.38188657990695,
+           28.54271330384709
+          ],
+          [
+           -81.3818895346541,
+           28.542940193866414
+          ],
+          [
+           -81.38189249960942,
+           28.54316707482289
+          ],
+          [
+           -81.3818945624189,
+           28.54332521273301
+          ],
+          [
+           -81.3818966252049,
+           28.543483341613108
+          ],
+          [
+           -81.38190035629775,
+           28.543769578442703
+          ],
+          [
+           -81.3822977048973,
+           28.543769372029224
+          ],
+          [
+           -81.38253144659505,
+           28.543769255355652
+          ],
+          [
+           -81.38282441595899,
+           28.5437691157409
+          ],
+          [
+           -81.38282070164493,
+           28.54347972866934
+          ],
+          [
+           -81.38281866811286,
+           28.54332159070362
+          ],
+          [
+           -81.3828166346224,
+           28.543163461760557
+          ],
+          [
+           -81.38281372898709,
+           28.5429365716438
+          ],
+          [
+           -81.3828108131808,
+           28.54270969057452
+          ],
+          [
+           -81.38280301415115,
+           28.542101906301475
+          ]
+         ]
+        ],
+        [
+         [
+          [
+           -81.3827999355958,
+           28.540645205277684
+          ],
+          [
+           -81.38233211827215,
+           28.540648220146828
+          ],
+          [
+           -81.38186429064771,
+           28.540651224407018
+          ],
+          [
+           -81.38177085419245,
+           28.540651902330413
+          ],
+          [
+           -81.3817769470322,
+           28.5411170372921
+          ],
+          [
+           -81.38180820589744,
+           28.54184845453301
+          ],
+          [
+           -81.38180836912126,
+           28.541851198120796
+          ],
+          [
+           -81.38180864475413,
+           28.541853932366067
+          ],
+          [
+           -81.38180903282871,
+           28.541856666295196
+          ],
+          [
+           -81.38180951283594,
+           28.541859381912893
+          ],
+          [
+           -81.3818101052523,
+           28.54186208818808
+          ],
+          [
+           -81.38181079979073,
+           28.541864767096687
+          ],
+          [
+           -81.38181158626183,
+           28.541867427693962
+          ],
+          [
+           -81.38181248507702,
+           28.54187006089587
+          ],
+          [
+           -81.38181348601431,
+           28.541872666731262
+          ],
+          [
+           -81.38181457881919,
+           28.541875236202483
+          ],
+          [
+           -81.3818157737462,
+           28.541877778307107
+          ],
+          [
+           -81.38181707073024,
+           28.541880274992455
+          ],
+          [
+           -81.38181844939243,
+           28.54188274436871
+          ],
+          [
+           -81.38181993007913,
+           28.541885159299273
+          ],
+          [
+           -81.38182150263346,
+           28.541887537865623
+          ],
+          [
+           -81.38182316699032,
+           28.54188986201505
+          ],
+          [
+           -81.38182491296028,
+           28.541892140802606
+          ],
+          [
+           -81.38182676092221,
+           28.541894356118107
+          ],
+          [
+           -81.3818286802427,
+           28.541896517074104
+          ],
+          [
+           -81.38183068114381,
+           28.54189862364187
+          ],
+          [
+           -81.3818327635929,
+           28.541900666795023
+          ],
+          [
+           -81.38183492762258,
+           28.541902655559934
+          ],
+          [
+           -81.38183716291319,
+           28.541904562886224
+          ],
+          [
+           -81.38183946956241,
+           28.541906415853017
+          ],
+          [
+           -81.38184184747257,
+           28.541908187381146
+          ],
+          [
+           -81.38184428648681,
+           28.541909895552145
+          ],
+          [
+           -81.38184679679455,
+           28.541911531310863
+          ],
+          [
+           -81.38184936814123,
+           28.541913085659687
+          ],
+          [
+           -81.38185199030492,
+           28.541914558627358
+          ],
+          [
+           -81.38185467354013,
+           28.54191595921148
+          ],
+          [
+           -81.3818574075923,
+           28.541917278414378
+          ],
+          [
+           -81.38186019242892,
+           28.541918507209758
+          ],
+          [
+           -81.38186301786052,
+           28.54191965465275
+          ],
+          [
+           -81.3818658941091,
+           28.54192072071445
+          ],
+          [
+           -81.38186880069811,
+           28.541921696426215
+          ],
+          [
+           -81.38187174788213,
+           28.541922590785454
+          ],
+          [
+           -81.3818747254066,
+           28.541923394794622
+          ],
+          [
+           -81.38187773323895,
+           28.54192409942735
+          ],
+          [
+           -81.38188077144427,
+           28.54192472273636
+          ],
+          [
+           -81.38188382976807,
+           28.54192525572403
+          ],
+          [
+           -81.38188689798831,
+           28.54192569841909
+          ],
+          [
+           -81.38188998629448,
+           28.541926041766473
+          ],
+          [
+           -81.38189309471902,
+           28.541926294792503
+          ],
+          [
+           -81.38189620281806,
+           28.541926457554688
+          ],
+          [
+           -81.38190037367697,
+           28.541926527063303
+          ],
+          [
+           -81.38234864712564,
+           28.541924976802058
+          ],
+          [
+           -81.38279290333986,
+           28.541923445411545
+          ],
+          [
+           -81.38279491972028,
+           28.541921345586893
+          ],
+          [
+           -81.38279684387446,
+           28.541919182836896
+          ],
+          [
+           -81.38279868605696,
+           28.54191696615912
+          ],
+          [
+           -81.38280044626784,
+           28.54191469555356
+          ],
+          [
+           -81.38280211431768,
+           28.541912380075477
+          ],
+          [
+           -81.38280369014132,
+           28.54191000167201
+          ],
+          [
+           -81.38280518405855,
+           28.54190758739363
+          ],
+          [
+           -81.38280657559284,
+           28.54190512827142
+          ],
+          [
+           -81.38280787499879,
+           28.541902633303035
+          ],
+          [
+           -81.3828090720218,
+           28.541900093490927
+          ],
+          [
+           -81.3828101769491,
+           28.541897526859
+          ],
+          [
+           -81.38281117949352,
+           28.541894915383384
+          ],
+          [
+           -81.38281208997483,
+           28.5418922861143
+          ],
+          [
+           -81.38281288791656,
+           28.541889630083077
+          ],
+          [
+           -81.38281359376259,
+           28.54188694723206
+          ],
+          [
+           -81.38281418710166,
+           28.541884246645235
+          ],
+          [
+           -81.38281467818837,
+           28.54188153732018
+          ],
+          [
+           -81.38281506699012,
+           28.541878810230557
+          ],
+          [
+           -81.38281535350683,
+           28.54187606537637
+          ],
+          [
+           -81.38281552758193,
+           28.541873320839095
+          ],
+          [
+           -81.38281560437275,
+           28.54186911428814
+          ],
+          [
+           -81.38281156871525,
+           28.541561485546605
+          ],
+          [
+           -81.3828061056797,
+           28.541144595398414
+          ],
+          [
+           -81.38280528608371,
+           28.541062086747758
+          ],
+          [
+           -81.3827999355958,
+           28.540645205277684
+          ]
+         ]
+        ]
+       ]
+      }
+     },
+     {
+      "layer": "erp",
+      "id": 224990529,
+      "centroid": {
+       "lat": 28.539471,
+       "lon": -81.372125
+      },
+      "properties": {
+       "objectid": 224990529,
+       "cur_prmt_id": 210455,
+       "offcl_prmt_id": 210455,
+       "seq_no": 1,
+       "site_id": 386192,
+       "site_nm": "Default",
+       "seq_type": "Pre-Application",
+       "prmt_stage": "Closed",
+       "rule_type": "ERP Pre-Application",
+       "rule_type_desc": "ERP Pre-Application",
+       "prmt_proj_nm": "Mariposa Grove Planned Development",
+       "recv_dt": "2023-10-24T20:00:00-04:00",
+       "prmt_decision_dt": "2023-11-20T19:00:00-05:00",
+       "applicant": "GAI Consultants;GAI Consultants",
+       "prmt_recommend": "Pre-App Complete",
+       "prmt_stts": "Never Issued",
+       "proj_acres": 0.9,
+       "county": "Orange",
+       "cmplnc_stts": "In Compliance",
+       "editor": "GISPROD",
+       "edit_date": "2023-10-25T12:25:15-04:00",
+       "disc_prmt_stts": "Never Active",
+       "link": "https://permitting.sjrwmd.com/ep/#/prmtInfo?offclId=210455&seqNo=1",
+       "prmt_app_proc_stts_cd": "CLOS",
+       "receiving_service_center": "Apopka",
+       "issuing_service_center": "Maitland",
+       "processing_service_center": "Maitland",
+       "reviewer_service_center": "Maitland",
+       "cmplnc_prioty_nm": "Tier 3",
+       "created_user": "SJRWMDGeospatialSolutions",
+       "created_date": "2026-08-31T16:52:36.373000-04:00",
+       "last_edited_user": "SJRWMDGeospatialSolutions",
+       "last_edited_date": "2026-08-31T16:52:36.373000-04:00",
+       "reviewers": "Nicole Martin,Rick Sobczak*",
+       "daysinhouse": 27,
+       "dtl_app_no": "PRE-095-210455-1",
+       "shape__area": 2803.6346435546875,
+       "shape__length": 215.11230354828686
+      },
+      "geometry": {
+       "type": "MultiPolygon",
+       "coordinates": [
+        [
+         [
+          [
+           -81.37238083542707,
+           28.539208807917948
+          ],
+          [
+           -81.37219398283861,
+           28.53921238011869
+          ],
+          [
+           -81.3719759864445,
+           28.539216551879267
+          ],
+          [
+           -81.37187319244661,
+           28.539218512321963
+          ],
+          [
+           -81.3718806491083,
+           28.539740962515502
+          ],
+          [
+           -81.371983412916,
+           28.539738993120253
+          ],
+          [
+           -81.37220141038489,
+           28.539734821338
+          ],
+          [
+           -81.37235400244197,
+           28.53973189367803
+          ],
+          [
+           -81.37235127108652,
+           28.5395394205555
+          ],
+          [
+           -81.37238552222342,
+           28.53953876699908
+          ],
+          [
+           -81.37238083542707,
+           28.539208807917948
+          ]
+         ]
+        ]
+       ]
+      }
+     },
+     {
+      "layer": "erp",
+      "id": 248582401,
+      "centroid": {
+       "lat": 28.541095,
+       "lon": -81.383908
+      },
+      "properties": {
+       "objectid": 248582401,
+       "cur_prmt_id": 226052,
+       "offcl_prmt_id": 226052,
+       "seq_no": 1,
+       "site_id": 402037,
+       "site_nm": "Westcourt Orlando",
+       "seq_type": "Pre-Application",
+       "prmt_stage": "Closed",
+       "rule_type": "ERP Pre-Application",
+       "rule_type_desc": "ERP Pre-Application",
+       "prmt_proj_nm": "Westcourt Orlando",
+       "recv_dt": "2024-09-23T20:00:00-04:00",
+       "prmt_decision_dt": "2024-11-25T19:00:00-05:00",
+       "applicant": "GAI Consultants;GAI Consultants",
+       "prmt_recommend": "Pre-App Complete",
+       "prmt_stts": "Never Issued",
+       "proj_acres": 10.99,
+       "county": "Orange",
+       "cmplnc_stts": "In Compliance",
+       "editor": "GISPROD",
+       "edit_date": "2024-09-24T07:10:59-04:00",
+       "disc_prmt_stts": "Never Active",
+       "link": "https://permitting.sjrwmd.com/ep/#/prmtInfo?offclId=226052&seqNo=1",
+       "prmt_app_proc_stts_cd": "CLOS",
+       "receiving_service_center": "Apopka",
+       "issuing_service_center": "Maitland",
+       "processing_service_center": "Maitland",
+       "reviewer_service_center": "Maitland",
+       "cmplnc_prioty_nm": "Tier 3",
+       "created_user": "SJRWMDGeospatialSolutions",
+       "created_date": "2026-08-31T16:52:36.373000-04:00",
+       "last_edited_user": "SJRWMDGeospatialSolutions",
+       "last_edited_date": "2026-08-31T16:52:36.373000-04:00",
+       "reviewers": "Rick Sobczak*",
+       "daysinhouse": 63,
+       "receivingwb": "Clear Lake",
+       "dtl_app_no": "PRE-095-226052-1",
+       "shape__area": 34159.11242675781,
+       "shape__length": 745.7450181710005
+      },
+      "geometry": {
+       "type": "MultiPolygon",
+       "coordinates": [
+        [
+         [
+          [
+           -81.38485321004417,
+           28.540254459099028
+          ],
+          [
+           -81.3843854063212,
+           28.540257896209063
+          ],
+          [
+           -81.383917602548,
+           28.54026133170783
+          ],
+          [
+           -81.38382416649998,
+           28.54026202006703
+          ],
+          [
+           -81.38335636266655,
+           28.5402654536328
+          ],
+          [
+           -81.38300448251522,
+           28.54026804418661
+          ],
+          [
+           -81.38300165521888,
+           28.54026919852227
+          ],
+          [
+           -81.38299889989956,
+           28.540270469998944
+          ],
+          [
+           -81.38299619604837,
+           28.54027184062164
+          ],
+          [
+           -81.382993574396,
+           28.540273328356527
+          ],
+          [
+           -81.38299102462273,
+           28.540274906153414
+          ],
+          [
+           -81.38298855701565,
+           28.540276592036165
+          ],
+          [
+           -81.38298618173127,
+           28.540278367923204
+          ],
+          [
+           -81.3829838987696,
+           28.54028023381455
+          ],
+          [
+           -81.38298170813061,
+           28.540282189710158
+          ],
+          [
+           -81.38297962000354,
+           28.540284226554913
+          ],
+          [
+           -81.38297763438831,
+           28.54028634434877
+          ],
+          [
+           -81.38297575128499,
+           28.540288543091766
+          ],
+          [
+           -81.38297399107186,
+           28.54029080467343
+          ],
+          [
+           -81.38297234355981,
+           28.540293138149046
+          ],
+          [
+           -81.38297081893799,
+           28.54029553446337
+          ],
+          [
+           -81.3829694069846,
+           28.5402979936452
+          ],
+          [
+           -81.38296812807798,
+           28.540300497584216
+          ],
+          [
+           -81.38296697199632,
+           28.540303046309198
+          ],
+          [
+           -81.38296594899411,
+           28.540305648817753
+          ],
+          [
+           -81.38296504875157,
+           28.54030827805943
+          ],
+          [
+           -81.38296429174504,
+           28.54031094300312
+          ],
+          [
+           -81.38296366775266,
+           28.540313643677532
+          ],
+          [
+           -81.38296317670918,
+           28.540316362030016
+          ],
+          [
+           -81.38296282880383,
+           28.540319089005262
+          ],
+          [
+           -81.38296257544096,
+           28.54032251977866
+          ],
+          [
+           -81.38295156484423,
+           28.540322081451773
+          ],
+          [
+           -81.38295578557083,
+           28.54064405278222
+          ],
+          [
+           -81.38301504088567,
+           28.54064367806166
+          ],
+          [
+           -81.38301563482163,
+           28.540683537279445
+          ],
+          [
+           -81.38295630953104,
+           28.54068435449475
+          ],
+          [
+           -81.38296123889101,
+           28.54106093395209
+          ],
+          [
+           -81.38296232434521,
+           28.541143432824747
+          ],
+          [
+           -81.38296778796297,
+           28.541560313934472
+          ],
+          [
+           -81.38297165606511,
+           28.54185540537577
+          ],
+          [
+           -81.38297173757596,
+           28.541858158218893
+          ],
+          [
+           -81.38297193149577,
+           28.54186090171847
+          ],
+          [
+           -81.38297223782463,
+           28.541863635874613
+          ],
+          [
+           -81.38297263611857,
+           28.541866360744923
+          ],
+          [
+           -81.38297314682153,
+           28.54186907627171
+          ],
+          [
+           -81.38297389455593,
+           28.54187232369179
+          ],
+          [
+           -81.38303642899655,
+           28.541924852868895
+          ],
+          [
+           -81.38308763069988,
+           28.541924663304542
+          ],
+          [
+           -81.38308769039645,
+           28.541935512951447
+          ],
+          [
+           -81.38337759480392,
+           28.541934414991573
+          ],
+          [
+           -81.3838452587321,
+           28.541932651595662
+          ],
+          [
+           -81.38393870768675,
+           28.54193229715492
+          ],
+          [
+           -81.3839388680105,
+           28.541945502424472
+          ],
+          [
+           -81.3841589159001,
+           28.541944726654442
+          ],
+          [
+           -81.38431854185704,
+           28.5419441666736
+          ],
+          [
+           -81.38440653238045,
+           28.541943854438035
+          ],
+          [
+           -81.38457177016201,
+           28.541943269247312
+          ],
+          [
+           -81.38472766508828,
+           28.541942719351646
+          ],
+          [
+           -81.38473077319135,
+           28.541942882048883
+          ],
+          [
+           -81.38473388093368,
+           28.541942945455972
+          ],
+          [
+           -81.38473699856999,
+           28.541942918570243
+          ],
+          [
+           -81.38474010565639,
+           28.541942801449675
+          ],
+          [
+           -81.38474321241478,
+           28.541942594065258
+          ],
+          [
+           -81.38474630859044,
+           28.541942287419626
+          ],
+          [
+           -81.38474939421609,
+           28.541941890539167
+          ],
+          [
+           -81.38475245903703,
+           28.541941394426388
+          ],
+          [
+           -81.3847555031188,
+           28.54194081713412
+          ],
+          [
+           -81.38475851617382,
+           28.541940140638552
+          ],
+          [
+           -81.38476150848966,
+           28.541939382963488
+          ],
+          [
+           -81.38476448003354,
+           28.54193853508252
+          ],
+          [
+           -81.38476740010671,
+           28.541937588056165
+          ],
+          [
+           -81.38477028925152,
+           28.54193656890562
+          ],
+          [
+           -81.38477313714756,
+           28.541935450580787
+          ],
+          [
+           -81.38477594389326,
+           28.541934260160712
+          ],
+          [
+           -81.38477869920104,
+           28.54193297962173
+          ],
+          [
+           -81.38478140310369,
+           28.54193161799009
+          ],
+          [
+           -81.3847840556012,
+           28.54193017526582
+          ],
+          [
+           -81.38478665669356,
+           28.541928651448995
+          ],
+          [
+           -81.38478918596962,
+           28.541927055623834
+          ],
+          [
+           -81.38479166387336,
+           28.54192538773246
+          ],
+          [
+           -81.38479406992799,
+           28.541923638806434
+          ],
+          [
+           -81.38479640419914,
+           28.541921826898527
+          ],
+          [
+           -81.38479867687596,
+           28.541919942953342
+          ],
+          [
+           -81.38480086751451,
+           28.541917987028853
+          ],
+          [
+           -81.38480298636958,
+           28.54191596812248
+          ],
+          [
+           -81.38480502321917,
+           28.54191388626315
+          ],
+          [
+           -81.38480698831809,
+           28.541911750448296
+          ],
+          [
+           -81.38480886122235,
+           28.541909560735924
+          ],
+          [
+           -81.3848106521212,
+           28.541907308070574
+          ],
+          [
+           -81.3848123508254,
+           28.54190500150767
+          ],
+          [
+           -81.38481396758975,
+           28.541902650044584
+          ],
+          [
+           -81.38481548197032,
+           28.54190025373929
+          ],
+          [
+           -81.38481691437826,
+           28.541897803507464
+          ],
+          [
+           -81.38481824443524,
+           28.54189531745978
+          ],
+          [
+           -81.38481949258515,
+           28.541892795538324
+          ],
+          [
+           -81.38482062816217,
+           28.541890237829968
+          ],
+          [
+           -81.38482167161021,
+           28.54188764427684
+          ],
+          [
+           -81.38482261274011,
+           28.54188502393424
+          ],
+          [
+           -81.38482345155187,
+           28.541882376802192
+          ],
+          [
+           -81.3848241880455,
+           28.541879702880653
+          ],
+          [
+           -81.38482482225382,
+           28.541877011196117
+          ],
+          [
+           -81.38482535417684,
+           28.541874301748386
+          ],
+          [
+           -81.38482578381456,
+           28.541871574537662
+          ],
+          [
+           -81.38482610097779,
+           28.54186883861917
+          ],
+          [
+           -81.38482632614335,
+           28.541866102961343
+          ],
+          [
+           -81.38482645304559,
+           28.541861643526705
+          ],
+          [
+           -81.38483559253646,
+           28.541603144719545
+          ],
+          [
+           -81.38483310206485,
+           28.54140727741818
+          ],
+          [
+           -81.38483211198039,
+           28.54132892145226
+          ],
+          [
+           -81.38482962152796,
+           28.541133054142836
+          ],
+          [
+           -81.38486413028527,
+           28.541132857056038
+          ],
+          [
+           -81.38486310468109,
+           28.541050358038856
+          ],
+          [
+           -81.38485790347607,
+           28.540631779304714
+          ],
+          [
+           -81.38485321004417,
+           28.540254459099028
+          ]
+         ]
+        ]
+       ]
+      }
+     },
+     {
+      "layer": "erp",
+      "id": 251633185,
+      "centroid": {
+       "lat": 28.541151,
+       "lon": -81.383892
+      },
+      "properties": {
+       "objectid": 251633185,
+       "cur_prmt_id": 228861,
+       "offcl_prmt_id": 226052,
+       "seq_no": 2,
+       "site_id": 404879,
+       "site_nm": "Westcourt Master Site",
+       "seq_type": "Initial Sequence",
+       "prmt_stage": "Compliance",
+       "rule_type": "62-330",
+       "rule_type_desc": "ERP Individual (<40 ac no WL <12 IMP)",
+       "prmt_proj_nm": "Westcourt Master Site",
+       "recv_dt": "2024-12-01T19:00:00-05:00",
+       "prmt_decision_dt": "2025-02-06T19:00:00-05:00",
+       "prmt_expir_dt": "2030-02-07T00:00:00",
+       "applicant": "SED Development, LLC;Orlando SED Partners, LLC",
+       "owner": "SED Development, LLC",
+       "prmt_recommend": "Approval",
+       "prmt_stts": "Issued",
+       "proj_acres": 8.42,
+       "county": "Orange",
+       "cmplnc_stts": "In Compliance",
+       "editor": "PDSLIB",
+       "edit_date": "2024-12-06T07:49:51-05:00",
+       "disc_prmt_stts": "Active",
+       "link": "https://permitting.sjrwmd.com/ep/#/prmtInfo?offclId=226052&seqNo=2",
+       "prmt_app_proc_stts_cd": "COMP",
+       "receiving_service_center": "Apopka",
+       "issuing_service_center": "Maitland",
+       "processing_service_center": "Maitland",
+       "reviewer_service_center": "Maitland",
+       "cmplnc_prioty_nm": "Tier 3",
+       "created_user": "SJRWMDGeospatialSolutions",
+       "created_date": "2026-08-31T16:52:36.373000-04:00",
+       "last_edited_user": "SJRWMDGeospatialSolutions",
+       "last_edited_date": "2026-08-31T16:52:36.373000-04:00",
+       "reviewers": "Nicole Martin,Rick Sobczak*",
+       "daysinhouse": 67,
+       "receivingwb": "Clear Lake",
+       "dtl_app_no": "IND-095-226052-2",
+       "shape__area": 37478.69348144531,
+       "shape__length": 774.4646029371929
+      },
+      "geometry": {
+       "type": "MultiPolygon",
+       "coordinates": [
+        [
+         [
+          [
+           -81.38485321004417,
+           28.540254459099028
+          ],
+          [
+           -81.3829134101288,
+           28.54027222752369
+          ],
+          [
+           -81.38291616506434,
+           28.54203476772637
+          ],
+          [
+           -81.38487957445145,
+           28.542035615794692
+          ],
+          [
+           -81.38485321004417,
+           28.540254459099028
+          ]
+         ]
+        ]
+       ]
+      }
+     },
+     {
+      "layer": "erp",
+      "id": 270437985,
+      "centroid": {
+       "lat": 28.542932,
+       "lon": -81.377479
+      },
+      "properties": {
+       "objectid": 270437985,
+       "cur_prmt_id": 234426,
+       "offcl_prmt_id": 234426,
+       "seq_no": 1,
+       "site_id": 410568,
+       "site_nm": "Magnolia Avenue Improvements",
+       "seq_type": "Permit Determination/Exemption",
+       "prmt_stage": "Review",
+       "rule_type": "62-330",
+       "rule_type_desc": "ERP Permit Determination/Exemption",
+       "prmt_proj_nm": "Magnolia Avenue Improvements",
+       "recv_dt": "2025-04-09T20:00:00-04:00",
+       "applicant": "City of Orlando Community Redevelopment Agency",
+       "owner": "City of Orlando",
+       "prmt_recommend": "Pending",
+       "prmt_stts": "Pending",
+       "proj_acres": 6.69,
+       "county": "Orange",
+       "cmplnc_stts": "In Compliance",
+       "editor": "GISPROD",
+       "edit_date": "2025-04-10T12:20:14-04:00",
+       "disc_prmt_stts": "Pending",
+       "link": "https://permitting.sjrwmd.com/ep/#/prmtInfo?offclId=234426&seqNo=1",
+       "prmt_app_proc_stts_cd": "REVW",
+       "receiving_service_center": "Palm Bay",
+       "processing_service_center": "Maitland",
+       "reviewer_service_center": "Maitland",
+       "cmplnc_prioty_nm": "Tier 3",
+       "created_user": "SJRWMDGeospatialSolutions",
+       "created_date": "2026-08-31T16:52:36.373000-04:00",
+       "last_edited_user": "SJRWMDGeospatialSolutions",
+       "last_edited_date": "2026-08-31T16:52:36.373000-04:00",
+       "reviewers": "Marjorie Cook,Nicole Martin",
+       "daysinhouse": 508,
+       "dtl_app_no": "PDEX-095-234426-1",
+       "shape__area": 20802.0322265625,
+       "shape__length": 2077.2835041915914
+      },
+      "geometry": {
+       "type": "MultiPolygon",
+       "coordinates": [
+        [
+         [
+          [
+           -81.37744457513801,
+           28.547559956194824
+          ],
+          [
+           -81.37764842452503,
+           28.547559958042957
+          ],
+          [
+           -81.37751967510314,
+           28.53838959364448
+          ],
+          [
+           -81.37753040792073,
+           28.538389590888336
+          ],
+          [
+           -81.3773050944798,
+           28.538370737910626
+          ],
+          [
+           -81.37744457513801,
+           28.547559956194824
+          ]
+         ]
+        ]
+       ]
+      }
+     },
+     {
+      "layer": "erp",
+      "id": 276332854,
+      "centroid": {
+       "lat": 28.540004,
+       "lon": -81.373606
+      },
+      "properties": {
+       "objectid": 276332854,
+       "cur_prmt_id": 236815,
+       "offcl_prmt_id": 46311,
+       "seq_no": 3,
+       "site_id": 412987,
+       "site_nm": "Orlando Lutheran Towers Fountain Facade Renovation",
+       "seq_type": "Modification",
+       "prmt_stage": "Compliance",
+       "rule_type": "62-330",
+       "rule_type_desc": "ERP Individual (<40 ac no WL <12 IMP)",
+       "prmt_proj_nm": "Orlando Lutheran Towers Fountain Facade Renovation",
+       "recv_dt": "2025-06-01T20:00:00-04:00",
+       "prmt_decision_dt": "2025-09-22T20:00:00-04:00",
+       "prmt_expir_dt": "2030-09-23T00:00:00",
+       "applicant": "Orlando Lutheran Towers Inc",
+       "owner": "Orlando Lutheran Towers Inc",
+       "prmt_recommend": "Approval",
+       "prmt_stts": "Issued",
+       "proj_acres": 0.07,
+       "county": "Orange",
+       "cmplnc_stts": "In Compliance",
+       "editor": "PDSLIB",
+       "edit_date": "2025-06-05T12:08:34-04:00",
+       "disc_prmt_stts": "Active",
+       "link": "https://permitting.sjrwmd.com/ep/#/prmtInfo?offclId=46311&seqNo=3",
+       "prmt_app_proc_stts_cd": "COMP",
+       "receiving_service_center": "Palatka",
+       "issuing_service_center": "Maitland",
+       "processing_service_center": "Maitland",
+       "reviewer_service_center": "Maitland",
+       "cmplnc_prioty_nm": "Tier 2",
+       "created_user": "SJRWMDGeospatialSolutions",
+       "created_date": "2026-08-31T16:52:36.373000-04:00",
+       "last_edited_user": "SJRWMDGeospatialSolutions",
+       "last_edited_date": "2026-08-31T16:52:36.373000-04:00",
+       "reviewers": "Allison Helms,Richard Perez",
+       "daysinhouse": 113,
+       "receivingwb": "Lake Eola",
+       "impairedwb": "Lake Eola",
+       "dtl_app_no": "IND-095-46311-3",
+       "shape__area": 9087.830200195312,
+       "shape__length": 507.92056490208915
+      },
+      "geometry": {
+       "type": "MultiPolygon",
+       "coordinates": [
+        [
+         [
+          [
+           -81.37295779409727,
+           28.54035290802549
+          ],
+          [
+           -81.37426574986092,
+           28.540327808574308
+          ],
+          [
+           -81.37425833138816,
+           28.53980541494476
+          ],
+          [
+           -81.37425676974802,
+           28.539695436145223
+          ],
+          [
+           -81.37425622483848,
+           28.539656944237358
+          ],
+          [
+           -81.37294826572904,
+           28.539682007447865
+          ],
+          [
+           -81.37294881273081,
+           28.539720502743172
+          ],
+          [
+           -81.3729503743031,
+           28.53983048495142
+          ],
+          [
+           -81.37295779409727,
+           28.54035290802549
+          ]
+         ],
+         [
+          [
+           -81.3736145179626,
+           28.54012162274704
+          ],
+          [
+           -81.37361764839979,
+           28.540120529829217
+          ],
+          [
+           -81.37362058652525,
+           28.54011961458496
+          ],
+          [
+           -81.37362355692822,
+           28.540118794029873
+          ],
+          [
+           -81.37362656087844,
+           28.540118065903847
+          ],
+          [
+           -81.37362959327699,
+           28.54011743360574
+          ],
+          [
+           -81.37363264773522,
+           28.54011689715316
+          ],
+          [
+           -81.37363572170169,
+           28.540116457681513
+          ],
+          [
+           -81.37363881134321,
+           28.54011611520129
+          ],
+          [
+           -81.37364191410035,
+           28.540115868591194
+          ],
+          [
+           -81.37364502360045,
+           28.540115722382044
+          ],
+          [
+           -81.37364813728007,
+           28.540115674324255
+          ],
+          [
+           -81.37365125129409,
+           28.540115721043453
+          ],
+          [
+           -81.37365436055553,
+           28.540115869323547
+          ],
+          [
+           -81.37365746249301,
+           28.54011611465835
+          ],
+          [
+           -81.37366055199163,
+           28.540116455933557
+          ],
+          [
+           -81.37366362778167,
+           28.540116895409398
+          ],
+          [
+           -81.37366668091505,
+           28.540117431982125
+          ],
+          [
+           -81.37366971266552,
+           28.540118064519927
+          ],
+          [
+           -81.3736727166365,
+           28.54011879078378
+          ],
+          [
+           -81.37367568899882,
+           28.54011961191255
+          ],
+          [
+           -81.37367862591529,
+           28.540120526788467
+          ],
+          [
+           -81.37368152354878,
+           28.540121534293814
+          ],
+          [
+           -81.37368438060564,
+           28.540122629918923
+          ],
+          [
+           -81.3736871907092,
+           28.540123817066178
+          ],
+          [
+           -81.37368995000635,
+           28.540125090104755
+          ],
+          [
+           -81.37369265722737,
+           28.54012645129468
+          ],
+          [
+           -81.37369530724538,
+           28.540127896136905
+          ],
+          [
+           -81.373697897501,
+           28.540129423510116
+          ],
+          [
+           -81.37370042414909,
+           28.540131030039994
+          ],
+          [
+           -81.37370288336045,
+           28.540132716865347
+          ],
+          [
+           -81.37370527511918,
+           28.540134479473014
+          ],
+          [
+           -81.3737075930326,
+           28.54013631675228
+          ],
+          [
+           -81.3737098345334,
+           28.540138225325286
+          ],
+          [
+           -81.37371199706209,
+           28.540140204070774
+          ],
+          [
+           -81.37371408060277,
+           28.540142248475554
+          ],
+          [
+           -81.37371607876679,
+           28.54014435855718
+          ],
+          [
+           -81.37371799025651,
+           28.540146528677713
+          ],
+          [
+           -81.37371981251249,
+           28.54014875771587
+          ],
+          [
+           -81.37372154425304,
+           28.54015104454691
+          ],
+          [
+           -81.37372318418052,
+           28.5401533835328
+          ],
+          [
+           -81.37372472462458,
+           28.54015577356638
+          ],
+          [
+           -81.37372617195791,
+           28.540158210116864
+          ],
+          [
+           -81.37372751594674,
+           28.5401606898275
+          ],
+          [
+           -81.37372876169799,
+           28.540163211555964
+          ],
+          [
+           -81.37372990280315,
+           28.540165769678264
+          ],
+          [
+           -81.37373094053191,
+           28.540168361934363
+          ],
+          [
+           -81.37373187487637,
+           28.540170986067594
+          ],
+          [
+           -81.37373269943193,
+           28.540173637582424
+          ],
+          [
+           -81.37373341674605,
+           28.540176314215188
+          ],
+          [
+           -81.37373402807654,
+           28.54017901032088
+          ],
+          [
+           -81.37373452830855,
+           28.54018172478523
+          ],
+          [
+           -81.37373491870783,
+           28.540184454219908
+          ],
+          [
+           -81.37373519797669,
+           28.54018719298687
+          ],
+          [
+           -81.37373536738495,
+           28.540189938826078
+          ],
+          [
+           -81.37373542436913,
+           28.540192689487863
+          ],
+          [
+           -81.37373537273857,
+           28.54019543819197
+          ],
+          [
+           -81.3737352073823,
+           28.540198184952413
+          ],
+          [
+           -81.37373493211359,
+           28.540200924117205
+          ],
+          [
+           -81.37373454692847,
+           28.54020365455802
+          ],
+          [
+           -81.37373405052132,
+           28.54020636838024
+          ],
+          [
+           -81.37373344545155,
+           28.540209066705177
+          ],
+          [
+           -81.373732732977,
+           28.540211743887866
+          ],
+          [
+           -81.37373191180798,
+           28.540214396546794
+          ],
+          [
+           -81.37373098321424,
+           28.54021702242197
+          ],
+          [
+           -81.3737299497353,
+           28.54021961699309
+          ],
+          [
+           -81.37372881391069,
+           28.54022217573995
+          ],
+          [
+           -81.37372757190718,
+           28.540224698673132
+          ],
+          [
+           -81.37372623137529,
+           28.54022718125829
+          ],
+          [
+           -81.3737247897435,
+           28.54022961898928
+          ],
+          [
+           -81.37372325211886,
+           28.54023201072373
+          ],
+          [
+           -81.37372161720765,
+           28.540234351951966
+          ],
+          [
+           -81.37371989010884,
+           28.540236639275008
+          ],
+          [
+           -81.37371807081846,
+           28.54023887156458
+          ],
+          [
+           -81.3737161631577,
+           28.540241045425255
+          ],
+          [
+           -81.37371416839638,
+           28.540243158596816
+          ],
+          [
+           -81.37371209034771,
+           28.540245205427315
+          ],
+          [
+           -81.3737099290157,
+           28.540247187044983
+          ],
+          [
+           -81.3737076920508,
+           28.540249098915574
+          ],
+          [
+           -81.37370537689358,
+           28.54025093991785
+          ],
+          [
+           -81.37370298991674,
+           28.540252705520942
+          ],
+          [
+           -81.37370053239403,
+           28.54025439459305
+          ],
+          [
+           -81.37369800815463,
+           28.540256005995374
+          ],
+          [
+           -81.37369542229756,
+           28.540257536328948
+          ],
+          [
+           -81.37369277482277,
+           28.540258985593653
+          ],
+          [
+           -81.37369006954755,
+           28.540260349265925
+          ],
+          [
+           -81.37368731158679,
+           28.540261628459852
+          ],
+          [
+           -81.37368450347206,
+           28.54026281639869
+          ],
+          [
+           -81.3736816490525,
+           28.540263917585033
+          ],
+          [
+           -81.37367875342306,
+           28.54026492749164
+          ],
+          [
+           -81.37367581786151,
+           28.540265846115012
+          ],
+          [
+           -81.37367284747477,
+           28.540266672312757
+          ],
+          [
+           -81.37366984353261,
+           28.540267403824775
+          ],
+          [
+           -81.37366681497515,
+           28.540268039498123
+          ],
+          [
+           -81.37366376052469,
+           28.540268579336363
+          ],
+          [
+           -81.37366068657386,
+           28.540269024450208
+          ],
+          [
+           -81.37365759821763,
+           28.540269370312345
+          ],
+          [
+           -81.37365449546795,
+           28.540269620307704
+          ],
+          [
+           -81.37365138725701,
+           28.540269771026804
+          ],
+          [
+           -81.37364827231504,
+           28.540269824729727
+          ],
+          [
+           -81.37364515830046,
+           28.540269779138775
+          ],
+          [
+           -81.3736420477767,
+           28.540269636503528
+          ],
+          [
+           -81.37363894457296,
+           28.540269395685158
+          ],
+          [
+           -81.3736358550779,
+           28.540269056666062
+          ],
+          [
+           -81.37363278057319,
+           28.540268620571055
+          ],
+          [
+           -81.37362972489608,
+           28.540268088517866
+          ],
+          [
+           -81.37362669315746,
+           28.540267460492405
+          ],
+          [
+           -81.37362368791277,
+           28.540266736487688
+          ],
+          [
+           -81.37362071428491,
+           28.540265919874535
+          ],
+          [
+           -81.37361777609908,
+           28.540265008385827
+          ],
+          [
+           -81.3736148759227,
+           28.540264005399372
+          ],
+          [
+           -81.3736120163152,
+           28.540262912036507
+          ],
+          [
+           -81.37360920622869,
+           28.540261730529217
+          ],
+          [
+           -81.3736064430997,
+           28.54026045862792
+          ],
+          [
+           -81.37360373461851,
+           28.540259103081276
+          ],
+          [
+           -81.37360108205091,
+           28.540257660501
+          ],
+          [
+           -81.37359848925398,
+           28.540256137646185
+          ],
+          [
+           -81.37359596005294,
+           28.54025453224981
+          ],
+          [
+           -81.37359349702312,
+           28.540252849946267
+          ],
+          [
+           -81.37359110527551,
+           28.540251090721586
+          ],
+          [
+           -81.3735887835363,
+           28.540249255707522
+          ],
+          [
+           -81.37358653821006,
+           28.54024734939967
+          ],
+          [
+           -81.37358437186423,
+           28.540245375175953
+          ],
+          [
+           -81.37358228705023,
+           28.54024333190105
+          ],
+          [
+           -81.373580283788,
+           28.540241225216427
+          ],
+          [
+           -81.37357836847013,
+           28.540239056232817
+          ],
+          [
+           -81.37357654238632,
+           28.54023682833164
+          ],
+          [
+           -81.3735748068262,
+           28.54023454489416
+          ],
+          [
+           -81.3735731643572,
+           28.54023220929841
+          ],
+          [
+           -81.37357161753472,
+           28.54022982153728
+          ],
+          [
+           -81.37357016893023,
+           28.540227386116943
+          ],
+          [
+           -81.37356881856348,
+           28.54022490867896
+          ],
+          [
+           -81.37356757154551,
+           28.540222389209163
+          ],
+          [
+           -81.3735664253367,
+           28.540219832227802
+          ],
+          [
+           -81.37356538250052,
+           28.540217239984507
+          ],
+          [
+           -81.37356444560828,
+           28.54021461698544
+          ],
+          [
+           -81.37356361594968,
+           28.54021196661196
+          ],
+          [
+           -81.3735628922589,
+           28.540209292252438
+          ],
+          [
+           -81.37356227837711,
+           28.540206596152935
+          ],
+          [
+           -81.37356177432018,
+           28.540203882826766
+          ],
+          [
+           -81.37356138009213,
+           28.54020115340212
+          ],
+          [
+           -81.37356109443905,
+           28.540198414652348
+          ],
+          [
+           -81.3735609212061,
+           28.54019566995171
+          ],
+          [
+           -81.37356085911551,
+           28.540192919303866
+          ],
+          [
+           -81.37356090691745,
+           28.540190170610337
+          ],
+          [
+           -81.37356106844506,
+           28.54018742386057
+          ],
+          [
+           -81.37356133860332,
+           28.54018468358187
+          ],
+          [
+           -81.3735617199597,
+           28.540181953152043
+          ],
+          [
+           -81.37356220997854,
+           28.54017923821968
+          ],
+          [
+           -81.37356280993761,
+           28.540176538781164
+          ],
+          [
+           -81.37356352113852,
+           28.540173861602913
+          ],
+          [
+           -81.3735643371926,
+           28.540171206702396
+          ],
+          [
+           -81.37356525940147,
+           28.540168580845876
+          ],
+          [
+           -81.37356629032453,
+           28.540165985154676
+          ],
+          [
+           -81.37356742231137,
+           28.540163424163044
+          ],
+          [
+           -81.37356865920312,
+           28.540160900117062
+          ],
+          [
+           -81.37356999589677,
+           28.540158415287372
+          ],
+          [
+           -81.37357143241229,
+           28.540155975315404
+          ],
+          [
+           -81.37357296747989,
+           28.54015358246138
+          ],
+          [
+           -81.37357459727829,
+           28.54015124012067
+          ],
+          [
+           -81.37357632180752,
+           28.540148948293222
+          ],
+          [
+           -81.37357813725826,
+           28.540146713759494
+          ],
+          [
+           -81.37358003980133,
+           28.54014453765817
+          ],
+          [
+           -81.37358203200411,
+           28.540142423367303
+          ],
+          [
+           -81.3735841074859,
+           28.540140373160874
+          ],
+          [
+           -81.37358626497301,
+           28.54013838817084
+          ],
+          [
+           -81.3735885006521,
+           28.54013647404905
+          ],
+          [
+           -81.37359081196777,
+           28.540134630802772
+          ],
+          [
+           -81.37359319509476,
+           28.540132860698954
+          ],
+          [
+           -81.37359565004903,
+           28.540131168250927
+          ],
+          [
+           -81.37359817172364,
+           28.540129554600888
+          ],
+          [
+           -81.37360075628938,
+           28.540128020887824
+          ],
+          [
+           -81.3736034024725,
+           28.540126568243465
+          ],
+          [
+           -81.37360610517808,
+           28.54012520119507
+          ],
+          [
+           -81.37360885929517,
+           28.540123919756713
+          ],
+          [
+           -81.37361166610948,
+           28.54012272618151
+          ],
+          [
+           -81.3736145179626,
+           28.54012162274704
+          ]
+         ],
+         [
+          [
+           -81.37362712247835,
+           28.539753210788263
+          ],
+          [
+           -81.37363307575514,
+           28.53975366152949
+          ],
+          [
+           -81.37363616030339,
+           28.53975405133629
+          ],
+          [
+           -81.37363922477039,
+           28.53975454387445
+          ],
+          [
+           -81.37364226533094,
+           28.539755141411153
+          ],
+          [
+           -81.37364527559244,
+           28.539755842835582
+          ],
+          [
+           -81.37364825426526,
+           28.539756644766456
+          ],
+          [
+           -81.37365119623848,
+           28.53975754721776
+          ],
+          [
+           -81.37365409512753,
+           28.53975855133542
+          ],
+          [
+           -81.37365694963478,
+           28.53975965148147
+          ],
+          [
+           -81.37365975337556,
+           28.539760848801762
+          ],
+          [
+           -81.37366250251276,
+           28.53976214217856
+          ],
+          [
+           -81.37366519318934,
+           28.539763524852553
+          ],
+          [
+           -81.37366782413955,
+           28.539765000212263
+          ],
+          [
+           -81.37367038512564,
+           28.539766563772574
+          ],
+          [
+           -81.37367287613964,
+           28.539768213276915
+          ],
+          [
+           -81.37367529589591,
+           28.5397699464722
+          ],
+          [
+           -81.37367763543847,
+           28.539771759998143
+          ],
+          [
+           -81.37367989604101,
+           28.53977365272291
+          ],
+          [
+           -81.37368207129903,
+           28.539775620150905
+          ],
+          [
+           -81.37368415865707,
+           28.539777662289165
+          ],
+          [
+           -81.37368615553582,
+           28.53977977237493
+          ],
+          [
+           -81.37368806064958,
+           28.539781948155138
+          ],
+          [
+           -81.3736898676057,
+           28.539784188519043
+          ],
+          [
+           -81.37369157510265,
+           28.53978648670044
+          ],
+          [
+           -81.37369318058893,
+           28.539788843834582
+          ],
+          [
+           -81.37369468276691,
+           28.53979125428354
+          ],
+          [
+           -81.37369607905724,
+           28.539793711284574
+          ],
+          [
+           -81.37369736690447,
+           28.539796214844642
+          ],
+          [
+           -81.3736985437412,
+           28.539798761586013
+          ],
+          [
+           -81.37369960954754,
+           28.539801345867055
+          ],
+          [
+           -81.37370056176005,
+           28.5398039654383
+          ],
+          [
+           -81.3737013977994,
+           28.539806613536946
+          ],
+          [
+           -81.3737021176656,
+           28.539809290163
+          ],
+          [
+           -81.37370272133073,
+           28.539811987418386
+          ],
+          [
+           -81.37370320495766,
+           28.539814704185357
+          ],
+          [
+           -81.37370357108587,
+           28.539817435943657
+          ],
+          [
+           -81.37370381714001,
+           28.539820177058917
+          ],
+          [
+           -81.37370394438987,
+           28.539822925270922
+          ],
+          [
+           -81.3737039489863,
+           28.53982567607702
+          ],
+          [
+           -81.37370383601633,
+           28.539828422693486
+          ],
+          [
+           -81.37370360292445,
+           28.53983116512718
+          ],
+          [
+           -81.37370324840907,
+           28.539833896611942
+          ],
+          [
+           -81.37370277629539,
+           28.539836614880606
+          ],
+          [
+           -81.37370218401603,
+           28.539839316555284
+          ],
+          [
+           -81.37370147665793,
+           28.539841994852143
+          ],
+          [
+           -81.37370065293143,
+           28.539844646389746
+          ],
+          [
+           -81.3736997115509,
+           28.539847268915103
+          ],
+          [
+           -81.37369865760324,
+           28.539849855644256
+          ],
+          [
+           -81.37369749363997,
+           28.53985240544193
+          ],
+          [
+           -81.37369621709364,
+           28.53985491493027
+          ],
+          [
+           -81.37369483177757,
+           28.5398573784572
+          ],
+          [
+           -81.37369334023519,
+           28.539859792630804
+          ],
+          [
+           -81.37369174501404,
+           28.53986215518743
+          ],
+          [
+           -81.3736900473719,
+           28.53986446048209
+          ],
+          [
+           -81.37368824986024,
+           28.539866707379414
+          ],
+          [
+           -81.373686357566,
+           28.539868889095644
+          ],
+          [
+           -81.37368436793781,
+           28.539871006765967
+          ],
+          [
+           -81.37368228989978,
+           28.53987305472435
+          ],
+          [
+           -81.37368012344392,
+           28.539875030714168
+          ],
+          [
+           -81.37367787238752,
+           28.539876930211733
+          ],
+          [
+           -81.37367553928202,
+           28.539878752081613
+          ],
+          [
+           -81.37367312923035,
+           28.539880494053207
+          ],
+          [
+           -81.37367064477205,
+           28.53988215160627
+          ],
+          [
+           -81.37366808974426,
+           28.539883725858576
+          ],
+          [
+           -81.37366546795229,
+           28.539885208901463
+          ],
+          [
+           -81.37366278323726,
+           28.539886602980935
+          ],
+          [
+           -81.37366003941646,
+           28.539887903573312
+          ],
+          [
+           -81.37365724160473,
+           28.539889111792796
+          ],
+          [
+           -81.3736543910639,
+           28.539890223122693
+          ],
+          [
+           -81.37365149673008,
+           28.539891235281765
+          ],
+          [
+           -81.3736485586072,
+           28.539892149398316
+          ],
+          [
+           -81.37364558434975,
+           28.539892962066407
+          ],
+          [
+           -81.37364257523541,
+           28.539893673282414
+          ],
+          [
+           -81.37363953892257,
+           28.539894280768753
+          ],
+          [
+           -81.373636476689,
+           28.539894784521856
+          ],
+          [
+           -81.37363339492327,
+           28.539895184524127
+          ],
+          [
+           -81.3736302987284,
+           28.539895478504892
+          ],
+          [
+           -81.37362719066772,
+           28.539895668713815
+          ],
+          [
+           -81.37362407839171,
+           28.539895750616488
+          ],
+          [
+           -81.37362096447173,
+           28.539895728719138
+          ],
+          [
+           -81.37361785272107,
+           28.539895597369757
+          ],
+          [
+           -81.37361475082994,
+           28.539895363317015
+          ],
+          [
+           -81.37361166006417,
+           28.53989502317247
+          ],
+          [
+           -81.37360858809406,
+           28.53989457804334
+          ],
+          [
+           -81.37360553747507,
+           28.539894027922607
+          ],
+          [
+           -81.37360251077064,
+           28.53989337505985
+          ],
+          [
+           -81.37359951692083,
+           28.539892618302208
+          ],
+          [
+           -81.37359655721933,
+           28.53989176215926
+          ],
+          [
+           -81.3735936380468,
+           28.53989080435688
+          ],
+          [
+           -81.37359076068888,
+           28.539889747148177
+          ],
+          [
+           -81.37358793410961,
+           28.539888596150046
+          ],
+          [
+           -81.37358515829303,
+           28.53988734684929
+          ],
+          [
+           -81.3735824409254,
+           28.53988600486625
+          ],
+          [
+           -81.37357978328447,
+           28.539884570197476
+          ],
+          [
+           -81.37357718921933,
+           28.539883047345626
+          ],
+          [
+           -81.37357466512651,
+           28.539881438549735
+          ],
+          [
+           -81.37357221227983,
+           28.53987974267794
+          ],
+          [
+           -81.37356983453233,
+           28.539877965361235
+          ],
+          [
+           -81.3735675382766,
+           28.53987610771034
+          ],
+          [
+           -81.3735653248103,
+           28.53987417536326
+          ],
+          [
+           -81.37356319540712,
+           28.539872167188154
+          ],
+          [
+           -81.37356115647562,
+           28.53987008880893
+          ],
+          [
+           -81.37355920930146,
+           28.539867942478697
+          ],
+          [
+           -81.37355735772978,
+           28.539865731571805
+          ],
+          [
+           -81.37355560304623,
+           28.539863458341383
+          ],
+          [
+           -81.37355395038162,
+           28.53986112841482
+          ],
+          [
+           -81.37355239846215,
+           28.539858742923958
+          ],
+          [
+           -81.37355095497016,
+           28.53985630636089
+          ],
+          [
+           -81.37354961608435,
+           28.539853822121067
+          ],
+          [
+           -81.373548389491,
+           28.539851295824864
+          ],
+          [
+           -81.37354727263862,
+           28.539848728607666
+          ],
+          [
+           -81.37354626809851,
+           28.53984612497563
+          ],
+          [
+           -81.37354537971984,
+           28.539843489431373
+          ],
+          [
+           -81.37354460496304,
+           28.53984082649517
+          ],
+          [
+           -81.37354394766923,
+           28.539838138413046
+          ],
+          [
+           -81.37354340785035,
+           28.53983542856995
+          ],
+          [
+           -81.37354298808572,
+           28.53983270372853
+          ],
+          [
+           -81.37354268710953,
+           28.539829967277292
+          ],
+          [
+           -81.37354250620345,
+           28.539827220341028
+          ],
+          [
+           -81.3735424453954,
+           28.53982447081775
+          ],
+          [
+           -81.37354250341954,
+           28.539821722095958
+          ],
+          [
+           -81.37354268156155,
+           28.539818976428684
+          ],
+          [
+           -81.37354297983732,
+           28.539816238329177
+          ],
+          [
+           -81.3735433969851,
+           28.53981351231404
+          ],
+          [
+           -81.37354393558017,
+           28.53981080401785
+          ],
+          [
+           -81.3735445892379,
+           28.539808114586375
+          ],
+          [
+           -81.37354536053762,
+           28.53980545078247
+          ],
+          [
+           -81.3735462482056,
+           28.539802813737925
+          ],
+          [
+           -81.3735472497102,
+           28.539800210229476
+          ],
+          [
+           -81.3735483637817,
+           28.539797642517357
+          ],
+          [
+           -81.37354958788055,
+           28.539795115121684
+          ],
+          [
+           -81.37355092457017,
+           28.53979263029203
+          ],
+          [
+           -81.37355236747781,
+           28.53979019255923
+          ],
+          [
+           -81.37355391534572,
+           28.539787807568253
+          ],
+          [
+           -81.37355556689215,
+           28.539785474194325
+          ],
+          [
+           -81.37355731831576,
+           28.539783201474357
+          ],
+          [
+           -81.37355916833485,
+           28.539780988283578
+          ],
+          [
+           -81.37356111313619,
+           28.53977884027398
+          ],
+          [
+           -81.37356315144993,
+           28.539776759705727
+          ],
+          [
+           -81.37356527690346,
+           28.539774751109544
+          ],
+          [
+           -81.37356748950072,
+           28.539772815613752
+          ],
+          [
+           -81.37356978414277,
+           28.53977095661725
+          ],
+          [
+           -81.37357216084557,
+           28.539769178633296
+          ],
+          [
+           -81.37357461066499,
+           28.539767481686436
+          ],
+          [
+           -81.37357713361303,
+           28.539765869161617
+          ],
+          [
+           -81.37357972586844,
+           28.539764344454234
+          ],
+          [
+           -81.3735823810466,
+           28.539762908710163
+          ],
+          [
+           -81.37358509787379,
+           28.53976156306119
+          ],
+          [
+           -81.37358787253672,
+           28.53976031315942
+          ],
+          [
+           -81.37359069864286,
+           28.539759157894082
+          ],
+          [
+           -81.37359357236693,
+           28.539758099532285
+          ],
+          [
+           -81.3735964911655,
+           28.539757141466005
+          ],
+          [
+           -81.37359944991572,
+           28.53975628032438
+          ],
+          [
+           -81.37360244225287,
+           28.539755522894755
+          ],
+          [
+           -81.373605468169,
+           28.539754866920557
+          ],
+          [
+           -81.37360852000974,
+           28.539754315807794
+          ],
+          [
+           -81.37361159266023,
+           28.539753868442183
+          ],
+          [
+           -81.3736146822873,
+           28.539753524834282
+          ],
+          [
+           -81.37361778506971,
+           28.539753288379522
+          ],
+          [
+           -81.3736208958847,
+           28.53975315570707
+          ],
+          [
+           -81.373624010915,
+           28.539753131340696
+          ],
+          [
+           -81.37362712247835,
+           28.539753210788263
+          ]
+         ]
+        ]
+       ]
+      }
+     },
+     {
+      "layer": "erp",
+      "id": 282589025,
+      "centroid": {
+       "lat": 28.54027,
+       "lon": -81.381315
+      },
+      "properties": {
+       "objectid": 282589025,
+       "cur_prmt_id": 238192,
+       "offcl_prmt_id": 238192,
+       "seq_no": 1,
+       "site_id": 414377,
+       "site_nm": "Church Street Festival Street Design Project",
+       "seq_type": "Permit Determination/Exemption",
+       "prmt_stage": "Closed",
+       "rule_type": "62-330",
+       "rule_type_desc": "ERP Permit Determination/Exemption",
+       "prmt_proj_nm": "Church Street Festival Street Design Project",
+       "recv_dt": "2025-06-30T20:00:00-04:00",
+       "prmt_decision_dt": "2025-08-11T20:00:00-04:00",
+       "applicant": "City of Orlando, Public Works",
+       "prmt_recommend": "NPR - Rule Exemption",
+       "prmt_stts": "Never Issued",
+       "proj_acres": 0.33,
+       "county": "Orange",
+       "cmplnc_stts": "In Compliance",
+       "editor": "GISPROD",
+       "edit_date": "2025-06-30T14:10:11-04:00",
+       "disc_prmt_stts": "Never Active",
+       "link": "https://permitting.sjrwmd.com/ep/#/prmtInfo?offclId=238192&seqNo=1",
+       "prmt_app_proc_stts_cd": "CLOS",
+       "receiving_service_center": "Palatka",
+       "issuing_service_center": "Maitland",
+       "processing_service_center": "Maitland",
+       "reviewer_service_center": "Maitland",
+       "cmplnc_prioty_nm": "Other/Unknown",
+       "created_user": "SJRWMDGeospatialSolutions",
+       "created_date": "2026-08-31T16:52:36.373000-04:00",
+       "last_edited_user": "SJRWMDGeospatialSolutions",
+       "last_edited_date": "2026-08-31T16:52:36.373000-04:00",
+       "reviewers": "Brian Silverman,Elsie Moran",
+       "daysinhouse": 42,
+       "dtl_app_no": "PDEX-095-238192-1",
+       "shape__area": 1520.486083984375,
+       "shape__length": 232.79418317585166
+      },
+      "geometry": {
+       "type": "MultiPolygon",
+       "coordinates": [
+        [
+         [
+          [
+           -81.38155875401876,
+           28.540176803384732
+          ],
+          [
+           -81.38155650608034,
+           28.54018272203971
+          ],
+          [
+           -81.3808801510059,
+           28.540233354597035
+          ],
+          [
+           -81.38088148721734,
+           28.54038886793574
+          ],
+          [
+           -81.38168749385207,
+           28.540337031564935
+          ],
+          [
+           -81.38169017885221,
+           28.54017444823792
+          ],
+          [
+           -81.38165798707813,
+           28.540060173315226
+          ],
+          [
+           -81.38158557246093,
+           28.540070775304592
+          ],
+          [
+           -81.3815694796714,
+           28.540152067795482
+          ],
+          [
+           -81.38155875401876,
+           28.540176803384732
+          ]
+         ],
+         [
+          [
+           -81.38155607070559,
+           28.540183878651295
+          ],
+          [
+           -81.38155650608034,
+           28.54018272203971
+          ],
+          [
+           -81.38165128874977,
+           28.54017563168819
+          ],
+          [
+           -81.38155606897234,
+           28.540186234565347
+          ],
+          [
+           -81.38155607070559,
+           28.540183878651295
+          ]
+         ]
+        ]
+       ]
+      }
+     },
+     {
+      "layer": "erp",
+      "id": 290095297,
+      "centroid": {
+       "lat": 28.541856,
+       "lon": -81.382267
+      },
+      "properties": {
+       "objectid": 290095297,
+       "cur_prmt_id": 240671,
+       "offcl_prmt_id": 240671,
+       "seq_no": 1,
+       "site_id": 416880,
+       "site_nm": "The Canopy",
+       "seq_type": "Permit Determination/Exemption",
+       "prmt_stage": "Closed",
+       "rule_type": "62-330",
+       "rule_type_desc": "ERP Permit Determination/Exemption",
+       "prmt_proj_nm": "The Canopy",
+       "recv_dt": "2025-08-24T20:00:00-04:00",
+       "prmt_decision_dt": "2026-04-19T20:00:00-04:00",
+       "applicant": "City of Orlando",
+       "owner": "City of Orlando",
+       "prmt_recommend": "NPR - Rule Exemption",
+       "prmt_stts": "Never Issued",
+       "proj_acres": 11.38,
+       "county": "Orange",
+       "cmplnc_stts": "In Compliance",
+       "editor": "GISPROD",
+       "edit_date": "2025-08-25T10:01:11-04:00",
+       "disc_prmt_stts": "Never Active",
+       "link": "https://permitting.sjrwmd.com/ep/#/prmtInfo?offclId=240671&seqNo=1",
+       "prmt_app_proc_stts_cd": "CLOS",
+       "receiving_service_center": "Palatka",
+       "issuing_service_center": "Maitland",
+       "processing_service_center": "Maitland",
+       "reviewer_service_center": "Maitland",
+       "cmplnc_prioty_nm": "Tier 3",
+       "created_user": "SJRWMDGeospatialSolutions",
+       "created_date": "2026-08-31T16:52:36.373000-04:00",
+       "last_edited_user": "SJRWMDGeospatialSolutions",
+       "last_edited_date": "2026-08-31T16:52:36.373000-04:00",
+       "reviewers": "Nicole Martin,Richard Perez,Zachary McFall",
+       "daysinhouse": 238,
+       "dtl_app_no": "PDEX-095-240671-1",
+       "shape__area": 35374.05822753906,
+       "shape__length": 1105.26684178078
+      },
+      "geometry": {
+       "type": "MultiPolygon",
+       "coordinates": [
+        [
+         [
+          [
+           -81.38201461884593,
+           28.544188382961522
+          ],
+          [
+           -81.38258324771896,
+           28.544197803377433
+          ],
+          [
+           -81.38271199823993,
+           28.539890614490602
+          ],
+          [
+           -81.38176786462114,
+           28.539862347212807
+          ],
+          [
+           -81.38201461884593,
+           28.544188382961522
+          ]
+         ]
+        ]
+       ]
+      }
+     },
+     {
+      "layer": "erp",
+      "id": 295644977,
+      "centroid": {
+       "lat": 28.540882,
+       "lon": -81.375217
+      },
+      "properties": {
+       "objectid": 295644977,
+       "cur_prmt_id": 243875,
+       "offcl_prmt_id": 110335,
+       "seq_no": 3,
+       "site_id": 420217,
+       "site_nm": "The Commons",
+       "seq_type": "Transfer of Ownership",
+       "prmt_stage": "Compliance",
+       "rule_type": "62-330",
+       "rule_type_desc": "ERP Individual (<40 ac no WL <12 IMP)",
+       "prmt_proj_nm": "The Commons (Transfer)",
+       "recv_dt": "2025-11-06T19:00:00-05:00",
+       "prmt_decision_dt": "2026-01-05T19:00:00-05:00",
+       "prmt_expir_dt": "2028-03-03T00:00:00",
+       "applicant": "Parkway Orlando LLC ",
+       "owner": "Parkway Orlando LLC ",
+       "prmt_recommend": "Approval",
+       "prmt_stts": "Issued",
+       "proj_acres": 2.13,
+       "county": "Orange",
+       "cmplnc_stts": "In Compliance",
+       "editor": "GISPROD",
+       "edit_date": "2025-11-07T08:47:25-05:00",
+       "disc_prmt_stts": "Active",
+       "link": "https://permitting.sjrwmd.com/ep/#/prmtInfo?offclId=110335&seqNo=3",
+       "prmt_app_proc_stts_cd": "COMP",
+       "receiving_service_center": "Palm Bay",
+       "issuing_service_center": "Palatka",
+       "processing_service_center": "Maitland",
+       "reviewer_service_center": "Maitland",
+       "cmplnc_prioty_nm": "Tier 3",
+       "created_user": "SJRWMDGeospatialSolutions",
+       "created_date": "2026-08-31T16:52:36.373000-04:00",
+       "last_edited_user": "SJRWMDGeospatialSolutions",
+       "last_edited_date": "2026-08-31T16:52:36.373000-04:00",
+       "reviewers": "Marianella Pacheco",
+       "daysinhouse": 60,
+       "receivingwb": "Lake Eola",
+       "dtl_app_no": "IND-095-110335-3",
+       "shape__area": 8629.184936523438,
+       "shape__length": 372.00980886749164
+      },
+      "geometry": {
+       "type": "MultiPolygon",
+       "coordinates": [
+        [
+         [
+          [
+           -81.37573214655684,
+           28.54049227683129
+          ],
+          [
+           -81.37506328916058,
+           28.540505327618064
+          ],
+          [
+           -81.3746820062004,
+           28.540512761847562
+          ],
+          [
+           -81.37470073833248,
+           28.541256744425986
+          ],
+          [
+           -81.37508219381056,
+           28.541268400643133
+          ],
+          [
+           -81.37511994783716,
+           28.541269560066205
+          ],
+          [
+           -81.37574300941448,
+           28.54125770081409
+          ],
+          [
+           -81.37573866272547,
+           28.540951679269988
+          ],
+          [
+           -81.37573519937014,
+           28.540707342194235
+          ],
+          [
+           -81.37573214655684,
+           28.54049227683129
+          ]
+         ]
+        ]
+       ]
+      }
+     },
+     {
+      "layer": "erp",
+      "id": 296538429,
+      "centroid": {
+       "lat": 28.538712,
+       "lon": -81.377922
+      },
+      "properties": {
+       "objectid": 296538429,
+       "cur_prmt_id": 245962,
+       "offcl_prmt_id": 124983,
+       "seq_no": 7,
+       "site_id": 422328,
+       "site_nm": "Lake Lucerne Magnolia Avenue Outfall Stormwater Treatment Improvements",
+       "seq_type": "Pre-Application",
+       "prmt_stage": "Closed",
+       "rule_type": "ERP Pre-Application",
+       "rule_type_desc": "ERP Pre-Application",
+       "prmt_proj_nm": "Dr Phillips Center - Butterfly Lot",
+       "recv_dt": "2026-01-05T19:00:00-05:00",
+       "prmt_decision_dt": "2026-02-10T19:00:00-05:00",
+       "applicant": "Spencer Consulting Services / New Venture V LLC;Dr. Phillips Center",
+       "owner": "Spencer Consulting Services / New Venture V LLC",
+       "prmt_recommend": "Pre-App Complete",
+       "prmt_stts": "Never Issued",
+       "proj_acres": 0.9500000000000001,
+       "county": "Orange",
+       "cmplnc_stts": "In Compliance",
+       "editor": "PDSLIB",
+       "edit_date": "2026-01-26T09:42:58-05:00",
+       "disc_prmt_stts": "Never Active",
+       "link": "https://permitting.sjrwmd.com/ep/#/prmtInfo?offclId=124983&seqNo=7",
+       "prmt_app_proc_stts_cd": "CLOS",
+       "receiving_service_center": "Palm Bay",
+       "issuing_service_center": "Maitland",
+       "processing_service_center": "Maitland",
+       "reviewer_service_center": "Maitland",
+       "cmplnc_prioty_nm": "Tier 3",
+       "created_user": "SJRWMDGeospatialSolutions",
+       "created_date": "2026-08-31T16:52:36.373000-04:00",
+       "last_edited_user": "SJRWMDGeospatialSolutions",
+       "last_edited_date": "2026-08-31T16:52:36.373000-04:00",
+       "reviewers": "Elsie Moran,Nicole Martin",
+       "daysinhouse": 36,
+       "dtl_app_no": "PRE-095-124983-7",
+       "shape__area": 3841.6146240234375,
+       "shape__length": 268.24662230038655
+      },
+      "geometry": {
+       "type": "MultiPolygon",
+       "coordinates": [
+        [
+         [
+          [
+           -81.37753040090637,
+           28.538958942657494
+          ],
+          [
+           -81.37789411632365,
+           28.538955268259716
+          ],
+          [
+           -81.37821290726414,
+           28.538952047474034
+          ],
+          [
+           -81.3782095984592,
+           28.538719277425447
+          ],
+          [
+           -81.37830305624871,
+           28.538718240845004
+          ],
+          [
+           -81.37839648720777,
+           28.538717205403355
+          ],
+          [
+           -81.37839325299826,
+           28.53848968742671
+          ],
+          [
+           -81.3781711556555,
+           28.5384920673541
+          ],
+          [
+           -81.37792815305909,
+           28.538494669828747
+          ],
+          [
+           -81.37788765220084,
+           28.538495104097574
+          ],
+          [
+           -81.37769760220922,
+           28.538497023988842
+          ],
+          [
+           -81.3776188636498,
+           28.53850479133851
+          ],
+          [
+           -81.37760349149892,
+           28.53850696545729
+          ],
+          [
+           -81.37759140867593,
+           28.538509632526676
+          ],
+          [
+           -81.37757959194816,
+           28.538513108981444
+          ],
+          [
+           -81.37757094526806,
+           28.53851623474405
+          ],
+          [
+           -81.37756251734221,
+           28.53851979316882
+          ],
+          [
+           -81.37755166446878,
+           28.538525189580962
+          ],
+          [
+           -81.37754902863833,
+           28.538526652428004
+          ],
+          [
+           -81.37754642235595,
+           28.538528160325157
+          ],
+          [
+           -81.37754385072444,
+           28.53852971100177
+          ],
+          [
+           -81.37754131502145,
+           28.538531304454192
+          ],
+          [
+           -81.37753881014024,
+           28.538532941824947
+          ],
+          [
+           -81.37753634373897,
+           28.538534620836142
+          ],
+          [
+           -81.37753391325822,
+           28.538536340366623
+          ],
+          [
+           -81.3775315199797,
+           28.53853810154103
+          ],
+          [
+           -81.3775291677325,
+           28.538539903220506
+          ],
+          [
+           -81.37752547306864,
+           28.538542552607183
+          ],
+          [
+           -81.37752455062069,
+           28.538543646246826
+          ],
+          [
+           -81.37753040090637,
+           28.538958942657494
+          ]
+         ]
+        ]
+       ]
+      }
+     },
+     {
+      "layer": "erp",
+      "id": 316358257,
+      "centroid": {
+       "lat": 28.543234,
+       "lon": -81.37771
+      },
+      "properties": {
+       "objectid": 316358257,
+       "cur_prmt_id": 249004,
+       "offcl_prmt_id": 46651,
+       "seq_no": 2,
+       "site_id": 425405,
+       "site_nm": "ORANGE COUNTY REGIONAL HISTORY CENTER EAST TERRACE RENOVATION",
+       "seq_type": "Modification",
+       "prmt_stage": "Compliance",
+       "rule_type": "62-330",
+       "rule_type_desc": "ERP Individual (<40 ac no WL <12 IMP)",
+       "prmt_proj_nm": "Orange County Regional History Center East Terrace Renovation",
+       "recv_dt": "2026-03-15T20:00:00-04:00",
+       "prmt_decision_dt": "2026-08-27T20:00:00-04:00",
+       "prmt_expir_dt": "2031-08-28T00:00:00",
+       "applicant": "Orange County BCC",
+       "owner": "Orange County BCC",
+       "prmt_recommend": "Approval",
+       "prmt_stts": "Issued",
+       "proj_acres": 0.3,
+       "county": "Orange",
+       "cmplnc_stts": "In Compliance",
+       "editor": "GISPROD",
+       "edit_date": "2026-03-16T05:30:26-04:00",
+       "disc_prmt_stts": "Active",
+       "link": "https://permitting.sjrwmd.com/ep/#/prmtInfo?offclId=46651&seqNo=2",
+       "prmt_app_proc_stts_cd": "COMP",
+       "receiving_service_center": "Palatka",
+       "issuing_service_center": "Maitland",
+       "processing_service_center": "Maitland",
+       "reviewer_service_center": "Maitland",
+       "cmplnc_prioty_nm": "Tier 2",
+       "created_user": "SJRWMDGeospatialSolutions",
+       "created_date": "2026-08-31T16:52:36.373000-04:00",
+       "last_edited_user": "SJRWMDGeospatialSolutions",
+       "last_edited_date": "2026-08-31T16:52:36.373000-04:00",
+       "reviewers": "Leticia Castaneda,Zachary McFall",
+       "daysinhouse": 165,
+       "receivingwb": "Lake Eola",
+       "impairedwb": "Lake Eola",
+       "dtl_app_no": "IND-095-46651-2",
+       "shape__area": 1343.199462890625,
+       "shape__length": 219.45721854532673
+      },
+      "geometry": {
+       "type": "MultiPolygon",
+       "coordinates": [
+        [
+         [
+          [
+           -81.37757731498202,
+           28.54347225845019
+          ],
+          [
+           -81.37800379187532,
+           28.54346518668215
+          ],
+          [
+           -81.37800378740943,
+           28.543337949579573
+          ],
+          [
+           -81.37772216169736,
+           28.543342668784803
+          ],
+          [
+           -81.37771411467772,
+           28.542854927801592
+          ],
+          [
+           -81.37757463314816,
+           28.542854927562168
+          ],
+          [
+           -81.37757731498202,
+           28.54347225845019
+          ]
+         ]
+        ]
+       ]
+      }
+     },
+     {
+      "layer": "erp",
+      "id": 320108305,
+      "centroid": {
+       "lat": 28.545088,
+       "lon": -81.379306
+      },
+      "properties": {
+       "objectid": 320108305,
+       "cur_prmt_id": 250022,
+       "offcl_prmt_id": 20451,
+       "seq_no": 2,
+       "site_id": 426435,
+       "site_nm": "LAKE EOLA PK RENOVATION",
+       "seq_type": "Pre-Application",
+       "prmt_stage": "Review",
+       "rule_type": "ERP Pre-Application",
+       "rule_type_desc": "ERP Pre-Application",
+       "prmt_proj_nm": "Lake Eola Park Renovation",
+       "recv_dt": "2026-04-06T20:00:00-04:00",
+       "applicant": "AECOM",
+       "prmt_recommend": "Pending",
+       "prmt_stts": "Pending",
+       "proj_acres": 322.21,
+       "county": "Orange",
+       "cmplnc_stts": "In Compliance",
+       "editor": "GISPROD",
+       "edit_date": "2026-04-07T05:45:46-04:00",
+       "disc_prmt_stts": "Pending",
+       "link": "https://permitting.sjrwmd.com/ep/#/prmtInfo?offclId=20451&seqNo=2",
+       "prmt_app_proc_stts_cd": "REVW",
+       "receiving_service_center": "Palatka",
+       "processing_service_center": "Maitland",
+       "reviewer_service_center": "Maitland",
+       "cmplnc_prioty_nm": "Other/Unknown",
+       "created_user": "SJRWMDGeospatialSolutions",
+       "created_date": "2026-08-31T16:52:36.373000-04:00",
+       "last_edited_user": "SJRWMDGeospatialSolutions",
+       "last_edited_date": "2026-08-31T16:52:36.373000-04:00",
+       "reviewers": "Anthony Young",
+       "daysinhouse": 146,
+       "dtl_app_no": "PRE-095-20451-2",
+       "shape__area": 1001749.8923339844,
+       "shape__length": 4655.707061399873
+      },
+      "geometry": {
+       "type": "MultiPolygon",
+       "coordinates": [
+        [
+         [
+          [
+           -81.37666881934744,
+           28.55319886459898
+          ],
+          [
+           -81.38220489413952,
+           28.553123474469995
+          ],
+          [
+           -81.38224780957941,
+           28.539702943628377
+          ],
+          [
+           -81.38216197457076,
+           28.53736548198045
+          ],
+          [
+           -81.37615383127934,
+           28.537139280800233
+          ],
+          [
+           -81.37666881934744,
+           28.55319886459898
+          ]
+         ]
+        ]
+       ]
+      }
+     }
+    ],
+    "credit": "Data: St. Johns River Water Management District (Florida public records), via an unofficial mirror (https://knightchrism.github.io/sjrwmd-open-data/). Not endorsed by SJRWMD; no warranty. See https://www.sjrwmd.com/disclaimer/"
+   }
+  }
+ ]
+}
