@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Run on Kubernetes · SJRWMD Open Data Mirror</title>
+<meta name="description" content="Run the SJRWMD mirror stack (PostGIS, weekly harvester, pg_featureserv, Martin, MCP server) on Kubernetes with Kustomize.">
+<meta property="og:title" content="Run on Kubernetes · SJRWMD Open Data Mirror">
+<meta property="og:image" content="https://knightchrism.github.io/sjrwmd-open-data/img/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+<style>
+body{display:block;height:auto}.top{position:sticky;top:0}
+.layout{display:grid;grid-template-columns:240px minmax(0,1fr);gap:32px;max-width:1180px;margin:0 auto;padding:24px 20px 80px}
+nav.toc{position:sticky;top:72px;align-self:start;max-height:calc(100vh - 90px);overflow:auto;font-size:13px;border-left:2px solid var(--line);padding-left:12px}
+nav.toc a{display:block;padding:3px 0;color:var(--mute);text-decoration:none}nav.toc a.on,nav.toc a:hover{color:var(--accent);font-weight:600}
+nav.toc b{display:block;margin-bottom:6px;color:var(--ink)}
+main h1{font-size:28px;margin:0 0 6px}main section{scroll-margin-top:70px;border-top:1px solid var(--line);padding-top:8px;margin-top:28px}
+main h2{font-size:21px}.row h3{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--mute);margin:16px 0 4px}
+.row.why{background:var(--panel);border-left:4px solid var(--accent);padding:2px 14px 6px;border-radius:0 8px 8px 0}
+.row.gotcha ul{background:rgba(240,180,0,.08);border-left:4px solid #f0b400;padding:8px 14px 8px 30px;border-radius:0 8px 8px 0;margin:0}
+pre{background:#0f1720;color:#e6edf3;padding:12px;border-radius:8px;overflow:auto;font-size:12.5px;line-height:1.45}
+code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.92em}p code,li code,td code{background:var(--bg);border:1px solid var(--line);padding:0 4px;border-radius:4px}
+table.simple{border-collapse:collapse;margin:8px 0}table.simple td,table.simple th{border:1px solid var(--line);padding:4px 10px;text-align:left}
+.diagram{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;overflow:auto}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0}.facts div{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center}.facts b{display:block;font-size:20px;color:var(--accent)}
+footer{max-width:1180px;margin:0 auto;padding:0 20px 40px;color:var(--mute);font-size:13px}
+@media (max-width:860px){.layout{grid-template-columns:1fr}nav.toc{position:static;max-height:none}.facts{grid-template-columns:1fr 1fr}}
+pre.mermaid{background:transparent!important;color:inherit;text-align:center}
+</style></head><body>
+<header class="top">
+  <a class="brand" href="./"><img src="img/favicon.svg" alt="" width="28" height="28"><span>SJRWMD <b>Open Data</b> Mirror</span></a>
+  <nav class="tabs"><a href="./">Map</a><a href="./#downloads">Data downloads</a><a href="./#demo">Try it with AI</a><a href="./#mcp">AI / MCP</a><a href="howto.html">How it was loaded into PostGIS</a><a class="on" href="k8s.html">Run on Kubernetes</a><a href="./#about">About</a></nav>
+  <button id="theme" class="btn ghost" aria-label="Toggle dark or light theme">◐</button>
+</header>
+<div class="layout">
+<nav class="toc" aria-label="Contents"><b>Contents</b><a href="#overview">Overview</a><a href="#layout">Folder layout</a><a href="#ns">Namespace</a><a href="#secret">Secret</a><a href="#postgis">PostGIS StatefulSet</a><a href="#harvester">Harvester CronJob</a><a href="#featureserv">pg_featureserv</a><a href="#martin">Martin tiles</a><a href="#mcp">MCP server</a><a href="#ingress">Ingress</a><a href="#probes">Requests, limits &amp; probes</a><a href="#steps">Step by step</a><a href="#scaling">Scaling notes</a><a href="#cost">Cost notes</a><a href="#tested">What was tested</a></nav>
+<main>
+<section id="overview" style="border:0;margin:0"><h1>Run on Kubernetes</h1>
+<p class="lead">The same stack as <code>docker compose</code> (see <a href="howto.html#reproduce">the how-to</a>), packaged for Kubernetes with <a href="https://kustomize.io">Kustomize</a> in <a href="https://github.com/knightchrism/sjrwmd-open-data/tree/main/deploy/k8s"><code>deploy/k8s/</code></a>: one base plus a <b>local</b> overlay (kind, k3d, minikube, Docker Desktop) and a <b>cloud</b> overlay (EKS, GKE, AKS…). You do <b>not</b> need Kubernetes to use the data. The map, downloads and MCP server work without it. Kubernetes is for running your own always-on copy with a live database and APIs.</p>
+<div class="facts"><div><b>1</b>namespace</div><div><b>5</b>workloads</div><div><b>2</b>overlays</div><div><b>0</b>real secrets in git</div></div>
+<div class="diagram"><pre class="mermaid">
+flowchart LR
+  subgraph ns[namespace sjrwmd]
+    CJ[CronJob harvester<br/>weekly] -->|loader role| PG[(StatefulSet postgis<br/>PVC 10 Gi)]
+    FS[Deployment pg_featureserv :9000] -->|reader role| PG
+    MT[Deployment martin :3000] -->|reader role| PG
+    MCP[Deployment sjrwmd-mcp :8000/mcp] -->|reader role| PG
+    SEC{{Secret sjrwmd-db}} -.-> CJ & FS & MT & MCP & PG
+  end
+  ESRI[SJRWMD ArcGIS REST] --> CJ
+  ING[Ingress + TLS] --> FS & MT & MCP
+  U[Browsers, GIS apps, AI assistants] --> ING
+</pre></div></section>
+<section id="layout"><h2>Folder layout</h2><div class="row"><h3>What</h3><p>A Kustomize <b>base</b> with every resource, and two small <b>overlays</b> that patch it.</p></div><div class="row why"><h3>Why</h3><p>Kustomize ships inside <code>kubectl</code> (<code>kubectl apply -k</code>), so there is no extra tool and no templating language. Overlays keep local and cloud differences (image names, storage size, replicas, Ingress) to a few lines.</p></div><div class="row"><h3>Alternatives</h3><ul><li><b>Helm chart:</b> better for publishing to many users with lots of knobs, but more templating than five workloads need.</li><li><b>Plain YAML:</b> works, but you would copy-edit files for each environment.</li></ul></div><div class="row"><h3>The code</h3><pre><code>deploy/k8s/
+├── base/
+│   ├── kustomization.yaml       # namespace, labels, configMapGenerator for initdb SQL
+│   ├── namespace.yaml
+│   ├── secret.example.yaml      # placeholders only
+│   ├── postgis.yaml             # StatefulSet + headless Service
+│   ├── harvester-cronjob.yaml
+│   ├── featureserv.yaml         # Deployment + Service
+│   ├── martin.yaml              # Deployment + Service
+│   ├── mcp.yaml                 # Deployment + Service (streamable HTTP)
+│   └── initdb/01_init.sql       # copy of sql/01_init.sql
+└── overlays/
+    ├── local/                   # local images, 3 Gi PVC, CronJob suspended; harvest-one.yaml Job
+    └── cloud/                   # 2 replicas per API, 20 Gi PVC + storageClass, Ingress</code></pre></div><div class="row gotcha"><h3>Gotchas</h3><ul><li>Kustomize refuses files outside the kustomization folder, so <code>sql/01_init.sql</code> is copied into <code>base/initdb/</code>. Keep the two copies in sync.</li></ul></div></section>
+<section id="ns"><h2>Namespace</h2><div class="row"><h3>What</h3><p>Everything lives in namespace <code>sjrwmd</code>. The base sets it once with <code>namespace:</code>.</p></div><div class="row why"><h3>Why</h3><p>One namespace keeps teardown to a single <code>kubectl delete ns sjrwmd</code> and makes quotas and RBAC simple.</p></div><div class="row"><h3>The code</h3><pre><code>apiVersion: v1
+kind: Namespace
+metadata:
+  name: sjrwmd</code></pre></div></section>
+<section id="secret"><h2>Secret (placeholders only)</h2><div class="row"><h3>What</h3><p>One Secret <code>sjrwmd-db</code> holds the superuser password, the loader password, and the reader connection URL that the three APIs use.</p></div><div class="row why"><h3>Why</h3><p>The services read credentials from <code>secretKeyRef</code>, so no password is baked into an image or a Deployment. The file in git uses the same <code>change_me_*</code> placeholders as docker compose.</p></div><div class="row"><h3>Alternatives</h3><ul><li><b>Sealed Secrets</b> (encrypted YAML safe to commit)</li><li><b>External Secrets Operator</b> pulling from AWS Secrets Manager, GCP Secret Manager or Azure Key Vault</li><li><b>CloudNativePG</b> generates the app user secret for you (see below)</li></ul></div><div class="row"><h3>The code</h3><pre><code># PLACEHOLDERS ONLY. Replace before any real deployment, e.g.
+#   kubectl -n sjrwmd create secret generic sjrwmd-db --from-literal=... --dry-run=client -o yaml | kubeseal ...
+# or use External Secrets / your cloud secret manager. Never commit real values.
+# The role passwords must match those set by initdb/01_init.sql (change them there too, or ALTER ROLE after init).
+apiVersion: v1
+kind: Secret
+metadata:
+  name: sjrwmd-db
+type: Opaque
+stringData:
+  POSTGRES_PASSWORD: change_me_postgres
+  LOADER_PASSWORD: change_me_loader
+  READER_URL: postgres://sjrwmd_reader:change_me_reader@postgis:5432/sjrwmd</code></pre></div><div class="row gotcha"><h3>Gotchas</h3><ul><li>The role passwords are created by <code>01_init.sql</code> on <i>first</i> start only. If you change the Secret later, also run <code>ALTER ROLE … PASSWORD</code>.</li><li>Base64 in a Secret is encoding, not encryption. Enable etcd encryption or use one of the alternatives in production.</li></ul></div></section>
+<section id="postgis"><h2>PostGIS as a StatefulSet</h2><div class="row"><h3>What</h3><p><code>postgis/postgis:17-3.5</code> in a 1-replica StatefulSet with a <code>volumeClaimTemplate</code> (10 Gi in the base) and a headless Service <code>postgis</code>. The init SQL is mounted from a ConfigMap into <code>/docker-entrypoint-initdb.d</code>.</p></div><div class="row why"><h3>Why</h3><p>A StatefulSet gives the pod a stable name and its own PersistentVolumeClaim that survives restarts and rescheduling. The 15 layers use about 1.2 GB with indexes (land use alone is 447 MB), so 10 Gi leaves room for growth or <code>--all</code>.</p></div><div class="row"><h3>Alternatives</h3><ul><li><b><a href="https://cloudnative-pg.io">CloudNativePG</a></b>: an operator that runs Postgres with streaming replicas, automatic failover, and backups/PITR to S3, GCS or Azure. Use the <code>ghcr.io/cloudnative-pg/postgis</code> image and add <code>postgis</code> in <code>bootstrap.initdb.postInitApplicationSQL</code>. This is the recommended choice for anything beyond a demo.</li><li><b>Managed Postgres</b> (RDS, Cloud SQL, Azure Flexible Server; all support PostGIS): delete <code>postgis.yaml</code> and point the Secret URLs at it.</li></ul></div><div class="row"><h3>The code</h3><pre><code># Single-instance PostGIS. For HA, backups and failover use the CloudNativePG operator instead
+# (Cluster resource with imageName ghcr.io/cloudnative-pg/postgis:17) -- see the &quot;Run on Kubernetes&quot; tab.
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgis
+spec:
+  clusterIP: None
+  selector: {app: postgis}
+  ports: [{name: pg, port: 5432}]
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgis
+spec:
+  serviceName: postgis
+  replicas: 1
+  selector: {matchLabels: {app: postgis}}
+  template:
+    metadata: {labels: {app: postgis}}
+    spec:
+      securityContext: {fsGroup: 999}
+      containers:
+        - name: postgis
+          image: postgis/postgis:17-3.5
+          ports: [{name: pg, containerPort: 5432}]
+          env:
+            - {name: POSTGRES_DB, value: sjrwmd}
+            - {name: POSTGRES_USER, value: postgres}
+            - name: POSTGRES_PASSWORD
+              valueFrom: {secretKeyRef: {name: sjrwmd-db, key: POSTGRES_PASSWORD}}
+            - {name: PGDATA, value: /var/lib/postgresql/data/pgdata}
+          volumeMounts:
+            - {name: data, mountPath: /var/lib/postgresql/data}
+            - {name: initdb, mountPath: /docker-entrypoint-initdb.d, readOnly: true}
+          resources:
+            requests: {cpu: 250m, memory: 512Mi}
+            limits: {cpu: &quot;2&quot;, memory: 2Gi}
+          readinessProbe:
+            exec: {command: [pg_isready, -U, postgres, -d, sjrwmd]}
+            periodSeconds: 10
+          livenessProbe:
+            exec: {command: [pg_isready, -U, postgres, -d, sjrwmd]}
+            initialDelaySeconds: 30
+            periodSeconds: 20
+      volumes:
+        - name: initdb
+          configMap: {name: postgis-initdb}
+  volumeClaimTemplates:
+    - metadata: {name: data}
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources: {requests: {storage: 10Gi}}   # 15 layers ~1.2 GB incl. indexes; headroom for --all</code></pre></div><div class="row gotcha"><h3>Gotchas</h3><ul><li><code>PGDATA</code> is set to a subfolder because many volumes have a <code>lost+found</code> directory at the root, which makes <code>initdb</code> fail.</li><li>Deleting the StatefulSet does <b>not</b> delete the PVC. That is deliberate. Delete the namespace or PVC to really wipe data.</li></ul></div></section>
+<section id="harvester"><h2>Harvester as a weekly CronJob</h2><div class="row"><h3>What</h3><p>Runs <code>python harvest.py</code> from the repo <code>Dockerfile</code> every Monday 06:00 (cluster time, usually UTC), as the <code>sjrwmd_loader</code> role.</p></div><div class="row why"><h3>Why</h3><p>The harvester is incremental: a layer whose <code>lastEditDate</code>, count and schema have not changed is skipped in about 1 s, so a weekly run is cheap. The full first load of all 15 layers was about 883 s of layer time (land use alone was 455 s). <code>concurrencyPolicy: Forbid</code> stops two runs from overlapping, and <code>activeDeadlineSeconds: 7200</code> kills a stuck run.</p></div><div class="row"><h3>The code</h3><pre><code># Weekly harvest. Unchanged layers are skipped (~1 s each); a full first load of the 15 layers took ~883 s of layer time.
+# Run once by hand:  kubectl -n sjrwmd create job harvest-now --from=cronjob/harvester
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: harvester
+spec:
+  schedule: &quot;0 6 * * 1&quot;          # Mondays 06:00 (cluster time zone, usually UTC)
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 7200
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: harvest
+              image: ghcr.io/knightchrism/sjrwmd-harvest:latest   # build from the repo Dockerfile
+              args: []                                             # e.g. [&quot;--only&quot;, &quot;management_area&quot;]
+              env:
+                - {name: PGHOST, value: postgis}
+                - {name: PGDATABASE, value: sjrwmd}
+                - {name: PGUSER, value: sjrwmd_loader}
+                - name: PGPASSWORD
+                  valueFrom: {secretKeyRef: {name: sjrwmd-db, key: LOADER_PASSWORD}}
+              resources:
+                requests: {cpu: 250m, memory: 512Mi}
+                limits: {cpu: &quot;1&quot;, memory: 2Gi}</code></pre><pre><code># Dockerfile (repo root)
+# Harvester image: python harvest.py [--only ALIAS ...]
+FROM python:3.12-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY harvest.py layers.yaml esri_inventory.csv ./
+USER 10001
+ENTRYPOINT [&quot;python&quot;, &quot;harvest.py&quot;]</code></pre></div><div class="row gotcha"><h3>Gotchas</h3><ul><li>The image is not published to a registry. Build it yourself (step-by-step below). The local overlay renames it to <code>sjrwmd-harvest:dev</code>.</li><li>The local overlay sets <code>suspend: true</code> so a laptop cluster does not start a full harvest on its own. Trigger runs by hand with <code>kubectl create job --from=cronjob/harvester</code>.</li><li>The pod needs egress to <code>services.arcgis.com</code>. Strict NetworkPolicies must allow it.</li></ul></div></section>
+<section id="featureserv"><h2>pg_featureserv</h2><div class="row"><h3>What</h3><p>A Deployment and Service on port 9000 serving OGC API – Features (GeoJSON) from the <code>sjrwmd</code> views, connected as the read-only role.</p></div><div class="row why"><h3>Why</h3><p>It is stateless, so it scales horizontally and restarts freely. The readiness probe hits <code>/collections.json</code>, which needs a working DB connection, so traffic only goes to pods that can actually answer.</p></div><div class="row"><h3>The code</h3><pre><code>apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: featureserv
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: featureserv}}
+  template:
+    metadata: {labels: {app: featureserv}}
+    spec:
+      containers:
+        - name: featureserv
+          image: pramsey/pg_featureserv:latest
+          ports: [{name: http, containerPort: 9000}]
+          env:
+            - name: DATABASE_URL
+              valueFrom: {secretKeyRef: {name: sjrwmd-db, key: READER_URL}}
+          resources:
+            requests: {cpu: 50m, memory: 64Mi}
+            limits: {cpu: 500m, memory: 256Mi}
+          readinessProbe:
+            httpGet: {path: /collections.json, port: http}
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: {path: /, port: http}
+            initialDelaySeconds: 15
+            periodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: featureserv
+spec:
+  selector: {app: featureserv}
+  ports: [{name: http, port: 9000, targetPort: http}]</code></pre></div></section>
+<section id="martin"><h2>Martin vector tiles</h2><div class="row"><h3>What</h3><p>A Deployment and Service on port 3000 serving MVT tiles straight from PostGIS, auto-discovering the tables and views.</p></div><div class="row why"><h3>Why</h3><p>The static site uses prebuilt PMTiles; Martin is for a live copy where tiles reflect the latest harvest without re-running tippecanoe. Probes use Martin's built-in <code>/health</code>.</p></div><div class="row"><h3>The code</h3><pre><code>apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: martin
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: martin}}
+  template:
+    metadata: {labels: {app: martin}}
+    spec:
+      containers:
+        - name: martin
+          image: ghcr.io/maplibre/martin:latest
+          ports: [{name: http, containerPort: 3000}]
+          env:
+            - name: DATABASE_URL       # martin reads DATABASE_URL and auto-publishes tables/views
+              valueFrom: {secretKeyRef: {name: sjrwmd-db, key: READER_URL}}
+          resources:
+            requests: {cpu: 100m, memory: 128Mi}
+            limits: {cpu: &quot;1&quot;, memory: 512Mi}
+          readinessProbe:
+            httpGet: {path: /health, port: http}
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: {path: /health, port: http}
+            initialDelaySeconds: 10
+            periodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: martin
+spec:
+  selector: {app: martin}
+  ports: [{name: http, port: 3000, targetPort: http}]</code></pre></div><div class="row gotcha"><h3>Gotchas</h3><ul><li>Put a CDN or caching proxy in front of Martin in the cloud. Tiles are very cacheable, and the busiest layers (land use, ERP) are the most expensive to render on the fly.</li></ul></div></section>
+<section id="mcp"><h2>MCP server over streamable HTTP</h2><div class="row"><h3>What</h3><p><code>sjrwmd-mcp</code> runs as a Deployment on <code>:8000/mcp</code> using the MCP SDK's <b>streamable HTTP</b> transport (set <code>SJRWMD_MCP_TRANSPORT=streamable-http</code>). With <code>DATABASE_URL</code> set it queries PostGIS read-only; remove it to fall back to DuckDB on the published GeoParquet.</p></div><div class="row why"><h3>Why</h3><p>Over stdio, each AI client starts its own server process. Over HTTP, one shared server in the cluster can serve a whole team, and clients only need a URL. The same safety rules apply in both modes: whitelisted layers and fields, parameterized SQL, max 500 rows, a read-only transaction and a 30 s statement timeout.</p></div><div class="row"><h3>The code</h3><pre><code># MCP server over streamable HTTP at http://mcp:8000/mcp. Uses PostGIS (read-only role) via DATABASE_URL.
+# Remove DATABASE_URL to use the DuckDB backend on the published GeoParquet instead (needs egress to github.com).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: mcp}}
+  template:
+    metadata: {labels: {app: mcp}}
+    spec:
+      securityContext: {runAsNonRoot: true, runAsUser: 10001}
+      containers:
+        - name: mcp
+          image: ghcr.io/knightchrism/sjrwmd-mcp:latest   # build from mcp/Dockerfile
+          ports: [{name: http, containerPort: 8000}]
+          env:
+            - {name: SJRWMD_MCP_TRANSPORT, value: streamable-http}
+            - {name: SJRWMD_MCP_HOST, value: 0.0.0.0}
+            - {name: SJRWMD_MCP_PORT, value: &quot;8000&quot;}
+            - name: DATABASE_URL
+              valueFrom: {secretKeyRef: {name: sjrwmd-db, key: READER_URL}}
+          resources:
+            requests: {cpu: 50m, memory: 128Mi}
+            limits: {cpu: &quot;1&quot;, memory: 1Gi}
+          readinessProbe:
+            tcpSocket: {port: http}
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket: {port: http}
+            initialDelaySeconds: 10
+            periodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mcp
+spec:
+  selector: {app: mcp}
+  ports: [{name: http, port: 8000, targetPort: http}]</code></pre><pre><code># MCP server image (streamable HTTP on :8000/mcp). Build: docker build -t sjrwmd-mcp:dev mcp/
+FROM python:3.12-slim
+WORKDIR /app
+COPY . .
+RUN pip install --no-cache-dir &quot;.[postgis]&quot;
+USER 10001
+ENV SJRWMD_MCP_TRANSPORT=streamable-http SJRWMD_MCP_HOST=0.0.0.0 SJRWMD_MCP_PORT=8000 HOME=/tmp
+EXPOSE 8000
+ENTRYPOINT [&quot;sjrwmd-mcp&quot;]</code></pre><pre><code>// VS Code .vscode/mcp.json pointing at the cluster
+{&quot;servers&quot;: {&quot;sjrwmd&quot;: {&quot;type&quot;: &quot;http&quot;, &quot;url&quot;: &quot;https://mcp.example.org/mcp&quot;}}}</code></pre></div><div class="row gotcha"><h3>Gotchas</h3><ul><li>The HTTP endpoint has no authentication built in. Keep it cluster-internal, or put it behind your Ingress auth (OAuth2 proxy, basic auth, IP allowlist) before exposing it.</li><li>The SDK's DNS-rebinding guard rejects non-localhost Host headers, so the server turns it off when bound to <code>0.0.0.0</code>. Rely on the Ingress host rules instead.</li><li>Streamable HTTP keeps sessions in memory. With 2+ replicas, enable sticky sessions on the Ingress or keep 1 replica.</li></ul></div></section>
+<section id="ingress"><h2>Ingress example</h2><div class="row"><h3>What</h3><p>The cloud overlay adds an ingress-nginx Ingress with cert-manager TLS and one host per service: <code>features.</code>, <code>tiles.</code> and <code>mcp.</code>.</p></div><div class="row why"><h3>Why</h3><p>Separate hosts avoid path rewriting. pg_featureserv and Martin generate absolute links and expect to be served at <code>/</code>. Rate limiting and a longer read timeout (for streamed MCP responses) are set as annotations.</p></div><div class="row"><h3>Alternatives</h3><ul><li>Gateway API <code>HTTPRoute</code></li><li>Cloud load balancer Services (<code>type: LoadBalancer</code>), one per service, which cost more</li></ul></div><div class="row"><h3>The code</h3><pre><code># Example only: ingress-nginx + cert-manager. One host per service so no path rewriting is needed.
+# Replace example.org with your domain.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sjrwmd
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/proxy-read-timeout: &quot;300&quot;   # MCP streams responses
+    nginx.ingress.kubernetes.io/limit-rps: &quot;10&quot;
+spec:
+  ingressClassName: nginx
+  tls: [{hosts: [features.example.org, tiles.example.org, mcp.example.org], secretName: sjrwmd-tls}]
+  rules:
+    - host: features.example.org
+      http: {paths: [{path: /, pathType: Prefix, backend: {service: {name: featureserv, port: {name: http}}}}]}
+    - host: tiles.example.org
+      http: {paths: [{path: /, pathType: Prefix, backend: {service: {name: martin, port: {name: http}}}}]}
+    - host: mcp.example.org
+      http: {paths: [{path: /mcp, pathType: Prefix, backend: {service: {name: mcp, port: {name: http}}}}]}</code></pre></div></section>
+<section id="probes"><h2>Requests, limits and probes</h2><div class="row"><h3>What</h3><p>Every container has CPU/memory requests and limits plus readiness and liveness probes.</p></div><div class="row why"><h3>Why</h3><p>Requests let the scheduler place pods correctly, and limits stop a runaway query from starving the node. Readiness keeps traffic off pods that are not ready; liveness restarts hung ones.</p></div><div class="row"><h3>The code</h3><table class="simple"><tr><th>Workload</th><th>Requests</th><th>Limits</th><th>Readiness / liveness</th></tr><tr><td>postgis</td><td>250m / 512Mi</td><td>2 / 2Gi</td><td><code>pg_isready</code></td></tr><tr><td>harvester</td><td>250m / 512Mi</td><td>1 / 2Gi</td><td>(Job: deadline + backoffLimit 2)</td></tr><tr><td>featureserv</td><td>50m / 64Mi</td><td>500m / 256Mi</td><td>HTTP <code>/collections.json</code>, <code>/</code></td></tr><tr><td>martin</td><td>100m / 128Mi</td><td>1 / 512Mi</td><td>HTTP <code>/health</code></td></tr><tr><td>mcp</td><td>50m / 128Mi</td><td>1 / 1Gi</td><td>TCP :8000</td></tr></table><p>These are starting points, not measurements from a cluster. Tune them from <code>kubectl top pods</code>.</p></div><div class="row gotcha"><h3>Gotchas</h3><ul><li>The harvester's memory peaks while it assembles land-use polygons. If it is OOMKilled, raise its limit rather than the page size.</li></ul></div></section>
+<section id="steps"><h2>Step by step</h2><div class="row"><h3>What</h3><p>Build the images, create a local cluster, apply the stack, load one small layer, and check the APIs.</p></div><div class="row why"><h3>Why</h3><p>This is the shortest path from zero to a working cluster. Each command is plain <code>kubectl</code>/<code>kind</code>.</p></div><div class="row"><h3>The code</h3><pre><code># 0. tools: docker (or podman), kind (or k3d), kubectl
+git clone https://github.com/knightchrism/sjrwmd-open-data &amp;&amp; cd sjrwmd-open-data
+
+# 1. build images and a throwaway cluster
+docker build -t sjrwmd-harvest:dev .
+docker build -t sjrwmd-mcp:dev mcp/
+kind create cluster --name sjrwmd
+kind load docker-image sjrwmd-harvest:dev sjrwmd-mcp:dev --name sjrwmd   # k3d: k3d image import ...
+
+# 2. preview, then apply
+kubectl kustomize deploy/k8s/overlays/local | less
+kubectl apply -k deploy/k8s/overlays/local
+kubectl -n sjrwmd rollout status statefulset/postgis
+kubectl -n sjrwmd get pods
+
+# 3. harvest one small layer (management_area: 133 features)
+kubectl -n sjrwmd apply -f deploy/k8s/overlays/local/harvest-one.yaml
+kubectl -n sjrwmd wait --for=condition=complete job/harvest-one --timeout=10m
+kubectl -n sjrwmd logs job/harvest-one
+kubectl -n sjrwmd rollout restart deploy/featureserv deploy/martin   # pick up the new table
+
+# 4. check the APIs
+kubectl -n sjrwmd port-forward svc/featureserv 9000:9000 &amp;
+kubectl -n sjrwmd port-forward svc/martin 3000:3000 &amp;
+kubectl -n sjrwmd port-forward svc/mcp 8000:8000 &amp;
+curl -s localhost:9000/collections.json | jq &#x27;.collections[].id&#x27;
+curl -s &quot;localhost:9000/collections/sjrwmd.management_area/items.json?limit=1&quot; | jq &#x27;.features[0].properties&#x27;
+curl -s localhost:3000/catalog | jq &#x27;keys&#x27;
+
+# 5. tear down
+kind delete cluster --name sjrwmd
+
+# cloud: push images to your registry, edit the images/hosts, then
+kubectl apply -k deploy/k8s/overlays/cloud</code></pre></div><div class="row gotcha"><h3>Gotchas</h3><ul><li>On Apple Silicon or ARM nodes, build multi-arch images (<code>docker buildx build --platform linux/amd64,linux/arm64</code>).</li><li><code>pg_featureserv</code> and Martin only see tables that exist when they start. Restart them after the first harvest: <code>kubectl -n sjrwmd rollout restart deploy/featureserv deploy/martin</code>.</li></ul></div></section>
+<section id="scaling"><h2>Scaling notes</h2><div class="row"><h3>What</h3><p>How each piece grows.</p></div><div class="row why"><h3>Why</h3><p>Most traffic here is reads, so scale the stateless readers first and the database last.</p></div><div class="row"><h3>The code</h3><ul><li><b>featureserv, martin, mcp:</b> stateless; raise replicas or add a HorizontalPodAutoscaler on CPU. Each holds a small connection pool, so watch total connections against Postgres <code>max_connections</code> (default 100); add PgBouncer if you go past ~10 pods.</li><li><b>Tiles:</b> a CDN in front of Martin helps far more than extra replicas.</li><li><b>PostGIS:</b> scale up (CPU/RAM) first. For read replicas and failover, move to CloudNativePG with <code>instances: 3</code> and point readers at its <code>-ro</code> Service.</li><li><b>Harvester:</b> one Job at a time. <code>workers: 2</code> in <code>layers.yaml</code> is deliberately polite to SJRWMD's servers; do not raise it just because the cluster can.</li><li><b>Static site:</b> GitHub Pages and the PMTiles need no cluster at all and scale for free.</li></ul></div></section>
+<section id="cost"><h2>Cost notes (estimates)</h2><div class="row"><h3>What</h3><p>Rough monthly costs. <b>These are estimates</b> based on typical 2026 list prices, not quotes or measured bills. Check your provider's calculator.</p></div><div class="row why"><h3>Why</h3><p>For read-mostly public data the cheapest option is often no cluster at all.</p></div><div class="row"><h3>The code</h3><table class="simple"><tr><th>Option</th><th>Estimated monthly cost (USD)</th><th>Notes</th></tr><tr><td>GitHub Pages + release assets (current site)</td><td>$0</td><td>Static map, downloads, DuckDB-backed MCP</td></tr><tr><td>Local kind/k3d</td><td>$0</td><td>Your laptop; about 2 GB RAM for the whole stack</td></tr><tr><td>Single small VM with docker compose</td><td>~$10–25</td><td>2 vCPU / 4 GB; simplest always-on option</td></tr><tr><td>k3s on one VM</td><td>~$15–30</td><td>Same VM size; Kubernetes APIs without a control-plane fee</td></tr><tr><td>Managed Kubernetes (EKS/GKE/AKS), 2 small nodes</td><td>~$75–200</td><td>Control-plane fee (about $73 on EKS; GKE and AKS have free tiers) + nodes + 20 Gi disk + load balancer (~$18–25)</td></tr><tr><td>+ CloudNativePG with 3 instances and S3 backups</td><td>+~$30–80</td><td>Extra node capacity, volumes, object storage</td></tr></table></div><div class="row gotcha"><h3>Gotchas</h3><ul><li>Egress is usually the surprise line item. Serve big downloads from release assets or a CDN, not from the cluster.</li><li>The load balancer behind an Ingress is billed even when idle.</li></ul></div></section>
+<section id="tested"><h2>What was actually tested</h2>
+<div class="row"><p>On Oct 28, 2026, on the build machine (no Docker or other container runtime was available there, so <b>no live cluster was created</b>):</p><ul>
+<li><code>kubectl kustomize</code> (kubectl v1.37.2) rendered both overlays: <b>12 resources</b> (local) and <b>13</b> (cloud).</li>
+<li><a href="https://github.com/yannh/kubeconform">kubeconform</a> v0.8.0 <code>-strict</code> validated every rendered resource against the Kubernetes schemas: <b>12/12 and 13/13 valid, 0 errors</b>.</li>
+<li>The MCP server's streamable-HTTP mode was run for real (<code>SJRWMD_MCP_TRANSPORT=streamable-http</code>): an MCP client listed 7 tools and ran <code>find_near</code> over <code>http://…/mcp</code>.</li>
+<li>The harvester command the one-off Job runs (<code>harvest.py --only management_area</code>) was run against a local PostGIS (no container): 133 of 133 features fetched, matching the server, in 3.3 s.</li><li><code>harvest-one.yaml</code> also passes kubeconform.</li></ul>
+<p>Not yet tested: applying to a running cluster, image builds, the harvester Job, and port-forward curls. The step-by-step commands above are what to run on a machine with Docker and kind.</p></div></section>
+</main></div>
+<footer>Data: <a href="https://www.sjrwmd.com">St. Johns River Water Management District</a>, Florida public records (Chapter 119, F.S.). Unofficial mirror, not affiliated with or endorsed by SJRWMD, provided as-is with no warranty.
+See the <a href="https://www.sjrwmd.com/disclaimer/">SJRWMD disclaimer</a> and <a href="https://github.com/knightchrism/sjrwmd-open-data/blob/main/DATA-LICENSE.md">DATA-LICENSE</a>. Code: MIT.</footer>
+<script type="module">
+const dark = localStorage.getItem("theme") ? localStorage.getItem("theme") === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+document.documentElement.classList.toggle("dark", dark);
+document.getElementById("theme").onclick = () => { const d = !document.documentElement.classList.contains("dark"); localStorage.setItem("theme", d ? "dark" : "light"); location.reload(); };
+const links = [...document.querySelectorAll("nav.toc a")];
+const obs = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) links.forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + e.target.id)); }), { rootMargin: "-20% 0px -70% 0px" });
+document.querySelectorAll("main section").forEach(s => obs.observe(s));
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+mermaid.initialize({ startOnLoad: true, theme: dark ? "dark" : "neutral", securityLevel: "strict" });
+</script>
+</body></html>

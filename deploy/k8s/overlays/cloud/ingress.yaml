@@ -1,0 +1,20 @@
+# Example only: ingress-nginx + cert-manager. One host per service so no path rewriting is needed.
+# Replace example.org with your domain.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sjrwmd
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"   # MCP streams responses
+    nginx.ingress.kubernetes.io/limit-rps: "10"
+spec:
+  ingressClassName: nginx
+  tls: [{hosts: [features.example.org, tiles.example.org, mcp.example.org], secretName: sjrwmd-tls}]
+  rules:
+    - host: features.example.org
+      http: {paths: [{path: /, pathType: Prefix, backend: {service: {name: featureserv, port: {name: http}}}}]}
+    - host: tiles.example.org
+      http: {paths: [{path: /, pathType: Prefix, backend: {service: {name: martin, port: {name: http}}}}]}
+    - host: mcp.example.org
+      http: {paths: [{path: /mcp, pathType: Prefix, backend: {service: {name: mcp, port: {name: http}}}}]}

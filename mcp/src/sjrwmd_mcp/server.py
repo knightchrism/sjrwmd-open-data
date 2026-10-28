@@ -72,7 +72,16 @@ def count_by(layer: str, field: str, limit: int = DEFAULT_LIMIT) -> dict:
     return _wrap(backend().count_by(layer, field, limit), layer=layer, field=field)
 
 def main():
-    mcp.run()
+    """stdio by default; set SJRWMD_MCP_TRANSPORT=streamable-http (plus HOST/PORT) to serve http://HOST:PORT/mcp."""
+    import os
+    transport = os.environ.get("SJRWMD_MCP_TRANSPORT", "stdio")
+    if transport != "stdio":
+        mcp.settings.host = os.environ.get("SJRWMD_MCP_HOST", "127.0.0.1")
+        mcp.settings.port = int(os.environ.get("SJRWMD_MCP_PORT", "8000"))
+        if mcp.settings.host not in ("127.0.0.1", "localhost"):
+            # behind a cluster Service/Ingress the Host header is not localhost
+            mcp.settings.transport_security = None
+    mcp.run(transport=transport)
 
 if __name__ == "__main__":
     main()

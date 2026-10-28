@@ -1,0 +1,17 @@
+# Managed cluster (EKS/GKE/AKS/...). Push images to a registry, set your host and storage class.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources: [../../base, ingress.yaml]
+replicas:
+  - {name: featureserv, count: 2}
+  - {name: martin, count: 2}
+  - {name: mcp, count: 2}
+patches:
+  - target: {kind: StatefulSet, name: postgis}
+    patch: |-
+      - op: replace
+        path: /spec/volumeClaimTemplates/0/spec/resources/requests/storage
+        value: 20Gi
+      - op: add
+        path: /spec/volumeClaimTemplates/0/spec/storageClassName
+        value: standard-rwo   # gp3 on EKS, managed-csi on AKS

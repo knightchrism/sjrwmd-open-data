@@ -1,0 +1,26 @@
+# One-off Job: harvest a single small layer (management_area, 133 features). Not part of the kustomization.
+#   kubectl -n sjrwmd apply -f deploy/k8s/overlays/local/harvest-one.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: harvest-one
+  namespace: sjrwmd
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: harvest
+          image: sjrwmd-harvest:dev
+          imagePullPolicy: IfNotPresent
+          args: ["--only", "management_area"]
+          env:
+            - {name: PGHOST, value: postgis}
+            - {name: PGDATABASE, value: sjrwmd}
+            - {name: PGUSER, value: sjrwmd_loader}
+            - name: PGPASSWORD
+              valueFrom: {secretKeyRef: {name: sjrwmd-db, key: LOADER_PASSWORD}}
+          resources:
+            requests: {cpu: 100m, memory: 256Mi}
+            limits: {cpu: "1", memory: 1Gi}

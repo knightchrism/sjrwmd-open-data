@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: sjrwmd
+labels:
+  - pairs: {app.kubernetes.io/part-of: sjrwmd-open-data}
+resources:
+  - namespace.yaml
+  - secret.example.yaml
+  - postgis.yaml
+  - harvester-cronjob.yaml
+  - featureserv.yaml
+  - martin.yaml
+  - mcp.yaml
+configMapGenerator:
+  - name: postgis-initdb          # copy of ../../../sql/01_init.sql (kustomize can't read outside this folder)
+    files: [initdb/01_init.sql]

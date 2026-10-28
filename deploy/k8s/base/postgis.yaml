@@ -1,0 +1,54 @@
+# Single-instance PostGIS. For HA, backups and failover use the CloudNativePG operator instead
+# (Cluster resource with imageName ghcr.io/cloudnative-pg/postgis:17) -- see the "Run on Kubernetes" tab.
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgis
+spec:
+  clusterIP: None
+  selector: {app: postgis}
+  ports: [{name: pg, port: 5432}]
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgis
+spec:
+  serviceName: postgis
+  replicas: 1
+  selector: {matchLabels: {app: postgis}}
+  template:
+    metadata: {labels: {app: postgis}}
+    spec:
+      securityContext: {fsGroup: 999}
+      containers:
+        - name: postgis
+          image: postgis/postgis:17-3.5
+          ports: [{name: pg, containerPort: 5432}]
+          env:
+            - {name: POSTGRES_DB, value: sjrwmd}
+            - {name: POSTGRES_USER, value: postgres}
+            - name: POSTGRES_PASSWORD
+              valueFrom: {secretKeyRef: {name: sjrwmd-db, key: POSTGRES_PASSWORD}}
+            - {name: PGDATA, value: /var/lib/postgresql/data/pgdata}
+          volumeMounts:
+            - {name: data, mountPath: /var/lib/postgresql/data}
+            - {name: initdb, mountPath: /docker-entrypoint-initdb.d, readOnly: true}
+          resources:
+            requests: {cpu: 250m, memory: 512Mi}
+            limits: {cpu: "2", memory: 2Gi}
+          readinessProbe:
+            exec: {command: [pg_isready, -U, postgres, -d, sjrwmd]}
+            periodSeconds: 10
+          livenessProbe:
+            exec: {command: [pg_isready, -U, postgres, -d, sjrwmd]}
+            initialDelaySeconds: 30
+            periodSeconds: 20
+      volumes:
+        - name: initdb
+          configMap: {name: postgis-initdb}
+  volumeClaimTemplates:
+    - metadata: {name: data}
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources: {requests: {storage: 10Gi}}   # 15 layers ~1.2 GB incl. indexes; headroom for --all

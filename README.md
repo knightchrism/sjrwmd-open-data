@@ -82,6 +82,14 @@ It reads the published GeoParquet with DuckDB (no database needed), or your Post
 **Claude Desktop / Cursor:** same command under `"mcpServers"` (see [API-MCP.md](docs/API-MCP.md#other-clients)). A public web chat would need a hosted model, so none is included.
 Answers come from an unofficial copy of SJRWMD data; verify anything important.
 
+## ☸️ Run on Kubernetes
+
+`deploy/k8s/` has a Kustomize base (namespace, PostGIS StatefulSet, weekly harvester CronJob, pg_featureserv, Martin, MCP server over streamable HTTP) plus `local` and `cloud` overlays. Walkthrough: [Run on Kubernetes](https://knightchrism.github.io/sjrwmd-open-data/k8s.html).
+
+```bash
+kubectl apply -k deploy/k8s/overlays/local
+```
+
 ## Quickstart
 ```bash
 git clone https://github.com/knightchrism/sjrwmd-open-data && cd sjrwmd-open-data

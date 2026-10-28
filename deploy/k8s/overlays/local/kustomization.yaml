@@ -1,0 +1,19 @@
+# kind / k3d / minikube / Docker Desktop. Images built locally and loaded into the cluster
+# (kind load docker-image ... / k3d image import ...). Access via kubectl port-forward.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources: [../../base]
+images:
+  - {name: ghcr.io/knightchrism/sjrwmd-harvest, newName: sjrwmd-harvest, newTag: dev}
+  - {name: ghcr.io/knightchrism/sjrwmd-mcp, newName: sjrwmd-mcp, newTag: dev}
+patches:
+  - target: {kind: StatefulSet, name: postgis}
+    patch: |-
+      - op: replace
+        path: /spec/volumeClaimTemplates/0/spec/resources/requests/storage
+        value: 3Gi
+  - target: {kind: CronJob, name: harvester}
+    patch: |-
+      - op: add
+        path: /spec/suspend
+        value: true

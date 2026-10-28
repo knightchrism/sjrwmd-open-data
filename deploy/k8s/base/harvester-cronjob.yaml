@@ -1,0 +1,31 @@
+# Weekly harvest. Unchanged layers are skipped (~1 s each); a full first load of the 15 layers took ~883 s of layer time.
+# Run once by hand:  kubectl -n sjrwmd create job harvest-now --from=cronjob/harvester
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: harvester
+spec:
+  schedule: "0 6 * * 1"          # Mondays 06:00 (cluster time zone, usually UTC)
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 7200
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: harvest
+              image: ghcr.io/knightchrism/sjrwmd-harvest:latest   # build from the repo Dockerfile
+              args: []                                             # e.g. ["--only", "management_area"]
+              env:
+                - {name: PGHOST, value: postgis}
+                - {name: PGDATABASE, value: sjrwmd}
+                - {name: PGUSER, value: sjrwmd_loader}
+                - name: PGPASSWORD
+                  valueFrom: {secretKeyRef: {name: sjrwmd-db, key: LOADER_PASSWORD}}
+              resources:
+                requests: {cpu: 250m, memory: 512Mi}
+                limits: {cpu: "1", memory: 2Gi}
