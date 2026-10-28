@@ -1,0 +1,31 @@
+# DISABLED: manual trigger only, and the job is gated off until hosting is chosen.
+# To enable: set repository variable HARVEST_ENABLED=true, add a PG connection secret, and uncomment `schedule`.
+name: weekly-update
+on:
+  workflow_dispatch:
+  # schedule:
+  #   - cron: "17 7 * * 1"   # Mondays 07:17 UTC
+jobs:
+  harvest:
+    if: ${{ vars.HARVEST_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    services:
+      db:
+        image: postgis/postgis:17-3.5
+        env: {POSTGRES_DB: sjrwmd, POSTGRES_PASSWORD: ci_only}
+        ports: ["5432:5432"]
+        options: --health-cmd "pg_isready -U postgres" --health-interval 5s --health-retries 20
+    env: {PGHOST: localhost, PGPORT: "5432", PGDATABASE: sjrwmd, PGUSER: postgres, PGPASSWORD: ci_only}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: sudo apt-get update && sudo apt-get install -y postgresql-client gdal-bin
+      - run: psql -f sql/01_init.sql
+      - run: pip install -r requirements.txt
+      - run: python harvest.py
+      - run: psql -f qc/qc.sql
+      - run: bash scripts/export.sh dist
+      - uses: actions/upload-artifact@v4
+        with: {name: sjrwmd-export, path: dist/, retention-days: 7}

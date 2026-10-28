@@ -1,0 +1,22 @@
+# Harvest configuration.
+base_url: https://services.arcgis.com/s8wtJX9suxFen6TA/ArcGIS/rest/services
+target_srid: 3086            # Florida GDL Albers (meters); a <table>_4326 view is created for web serving
+page_size: 1000              # features per request (capped by the layer's maxRecordCount)
+request_delay_s: 0.3         # polite pause between requests
+workers: 2                   # layers harvested in parallel
+keep_raw_attrs: false        # also store all source fields in an `attrs` jsonb column
+inventory: esri_inventory.csv  # every layer in the org (scripts/enumerate_esri.py regenerates it)
+
+# Phase 1 layers get friendly view names in schema `sjrwmd` (key = service/layer_id)
+aliases:
+  SJRWMD_Management_Area_viewLayer/0: management_area
+  SJRWMD_Individual_Parcel/0: individual_parcel
+  Consumptive_Use_Permit_CUP_Boundary/0: cup_boundary
+  Consumption_Use_Permit__CUP/0: cup_station
+  Environmental_Resource_Permit_ERP/0: erp
+  Regulatory_Conservation_Easement/0: conservation_easement
+  Water_Use_Allocated/0: water_use_allocated
+  Environmental_Data_Retrieval_Station/0: edr_station
+  Water_Resource_Information_WRI_Station/0: wri_station
+  Active_Groundwater_Monitoring_Network_Water_Level_Event_Type/0: gwmn_active_water_level
+  Active_Groundwater_Monitoring_Network_Water_Quality_Event_Type/0: gwmn_active_water_quality

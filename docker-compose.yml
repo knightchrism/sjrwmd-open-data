@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgis/postgis:17-3.5
+    environment:
+      POSTGRES_DB: sjrwmd
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change_me_postgres}
+    ports: ["${PG_HOST_PORT:-5432}:5432"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./sql:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d sjrwmd"]
+      interval: 5s
+      retries: 20
+  featureserv:
+    image: pramsey/pg_featureserv:latest
+    environment:
+      DATABASE_URL: postgres://sjrwmd_reader:change_me_reader@db:5432/sjrwmd
+    ports: ["9000:9000"]
+    depends_on: {db: {condition: service_healthy}}
+  martin:
+    image: ghcr.io/maplibre/martin:latest
+    command: ["postgres://sjrwmd_reader:change_me_reader@db:5432/sjrwmd"]
+    ports: ["3000:3000"]
+    depends_on: {db: {condition: service_healthy}}
+volumes:
+  pgdata:
