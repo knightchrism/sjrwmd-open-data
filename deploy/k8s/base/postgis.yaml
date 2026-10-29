@@ -20,7 +20,8 @@ spec:
   template:
     metadata: {labels: {app: postgis}}
     spec:
-      securityContext: {fsGroup: 999}
+      securityContext: {fsGroup: 999, seccompProfile: {type: RuntimeDefault}}
+      automountServiceAccountToken: false
       containers:
         - name: postgis
           image: postgis/postgis:17-3.5
@@ -30,7 +31,12 @@ spec:
             - {name: POSTGRES_USER, value: postgres}
             - name: POSTGRES_PASSWORD
               valueFrom: {secretKeyRef: {name: sjrwmd-db, key: POSTGRES_PASSWORD}}
+            - name: LOADER_PASSWORD
+              valueFrom: {secretKeyRef: {name: sjrwmd-db, key: LOADER_PASSWORD}}
+            - name: READER_PASSWORD
+              valueFrom: {secretKeyRef: {name: sjrwmd-db, key: READER_PASSWORD}}
             - {name: PGDATA, value: /var/lib/postgresql/data/pgdata}
+          securityContext: {allowPrivilegeEscalation: false}
           volumeMounts:
             - {name: data, mountPath: /var/lib/postgresql/data}
             - {name: initdb, mountPath: /docker-entrypoint-initdb.d, readOnly: true}

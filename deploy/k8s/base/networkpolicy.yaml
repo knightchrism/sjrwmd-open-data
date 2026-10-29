@@ -1,0 +1,40 @@
+# Default-deny ingress for the namespace, then allow only what each component needs.
+# Requires a CNI that enforces NetworkPolicy (Calico, Cilium, GKE Dataplane V2, AWS VPC CNI with policy enabled...).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+spec:
+  podSelector: {}
+  policyTypes: [Ingress]
+---
+# PostGIS: only the three read APIs and the harvester may connect.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: postgis-allow-clients
+spec:
+  podSelector: {matchLabels: {app: postgis}}
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector: {matchExpressions: [{key: app, operator: In, values: [featureserv, martin, mcp]}]}
+        - podSelector: {matchExpressions: [{key: job-name, operator: Exists}]}   # harvester CronJob runs + harvest-one
+      ports: [{port: 5432, protocol: TCP}]
+---
+# Read APIs: reachable from inside the namespace (kubectl port-forward also works) and from the ingress controller.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: apis-allow-http
+spec:
+  podSelector: {matchExpressions: [{key: app, operator: In, values: [featureserv, martin, mcp]}]}
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector: {}
+        - namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: ingress-nginx}}
+      ports:
+        - {port: 9000, protocol: TCP}
+        - {port: 3000, protocol: TCP}
+        - {port: 8000, protocol: TCP}

@@ -8,13 +8,21 @@ spec:
   template:
     metadata: {labels: {app: featureserv}}
     spec:
+      securityContext: {runAsNonRoot: true, runAsUser: 1001, runAsGroup: 1001, seccompProfile: {type: RuntimeDefault}}
+      automountServiceAccountToken: false
       containers:
         - name: featureserv
-          image: pramsey/pg_featureserv:latest
+          image: pramsey/pg_featureserv:20250917@sha256:2f1cf3adbf159b440098b7b4d5c75d9679baae5c79aed7560a84a15aecddf886
           ports: [{name: http, containerPort: 9000}]
           env:
             - name: DATABASE_URL
               valueFrom: {secretKeyRef: {name: sjrwmd-db, key: READER_URL}}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: [ALL]}
+          volumeMounts:
+            - {name: tmp, mountPath: /tmp}
           resources:
             requests: {cpu: 50m, memory: 64Mi}
             limits: {cpu: 500m, memory: 256Mi}
@@ -25,6 +33,9 @@ spec:
             httpGet: {path: /, port: http}
             initialDelaySeconds: 15
             periodSeconds: 30
+      volumes:
+        - name: tmp
+          emptyDir: {sizeLimit: 64Mi}
 ---
 apiVersion: v1
 kind: Service

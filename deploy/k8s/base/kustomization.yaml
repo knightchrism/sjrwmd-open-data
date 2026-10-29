@@ -5,12 +5,13 @@ labels:
   - pairs: {app.kubernetes.io/part-of: sjrwmd-open-data}
 resources:
   - namespace.yaml
-  - secret.example.yaml
+  # secret.example.yaml is NOT listed: create the sjrwmd-db Secret out of band (see that file)
   - postgis.yaml
   - harvester-cronjob.yaml
   - featureserv.yaml
   - martin.yaml
   - mcp.yaml
+  - networkpolicy.yaml
 configMapGenerator:
   - name: postgis-initdb          # copy of ../../../sql/01_init.sql (kustomize can't read outside this folder)
-    files: [initdb/01_init.sql]
+    files: [initdb/01_init.sql, initdb/02_role_passwords.sh]

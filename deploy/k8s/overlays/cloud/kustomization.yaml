@@ -15,3 +15,8 @@ patches:
       - op: add
         path: /spec/volumeClaimTemplates/0/spec/storageClassName
         value: standard-rwo   # gp3 on EKS, managed-csi on AKS
+  - target: {kind: Deployment, name: mcp}
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/env/3/value
+        value: "mcp.example.org,mcp:*,mcp.sjrwmd:*,mcp.sjrwmd.svc:*,mcp.sjrwmd.svc.cluster.local:*"   # your public MCP host first

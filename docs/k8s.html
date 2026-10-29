@@ -67,19 +67,26 @@ flowchart LR
 kind: Namespace
 metadata:
   name: sjrwmd</code></pre></div></section>
-<section id="secret"><h2>Secret (placeholders only)</h2><div class="row"><h3>What</h3><p>One Secret <code>sjrwmd-db</code> holds the superuser password, the loader password, and the reader connection URL that the three APIs use.</p></div><div class="row why"><h3>Why</h3><p>The services read credentials from <code>secretKeyRef</code>, so no password is baked into an image or a Deployment. The file in git uses the same <code>change_me_*</code> placeholders as docker compose.</p></div><div class="row"><h3>Alternatives</h3><ul><li><b>Sealed Secrets</b> (encrypted YAML safe to commit)</li><li><b>External Secrets Operator</b> pulling from AWS Secrets Manager, GCP Secret Manager or Azure Key Vault</li><li><b>CloudNativePG</b> generates the app user secret for you (see below)</li></ul></div><div class="row"><h3>The code</h3><pre><code># PLACEHOLDERS ONLY. Replace before any real deployment, e.g.
-#   kubectl -n sjrwmd create secret generic sjrwmd-db --from-literal=... --dry-run=client -o yaml | kubeseal ...
-# or use External Secrets / your cloud secret manager. Never commit real values.
-# The role passwords must match those set by initdb/01_init.sql (change them there too, or ALTER ROLE after init).
+<section id="secret"><h2>Secret (placeholders only)</h2><div class="row"><h3>What</h3><p>One Secret <code>sjrwmd-db</code> holds the superuser password, the loader and reader passwords, and the reader connection URL that the three APIs use. The public ingress additionally requires basic auth from the Secret <code>sjrwmd-basic-auth</code>.</p></div><div class="row why"><h3>Why</h3><p>The services read credentials from <code>secretKeyRef</code>, so no password is baked into an image or a Deployment. No password is committed: <code>secret.example.yaml</code> only documents the required keys and is not applied by kustomize, so you create the Secret yourself (or with Sealed Secrets / External Secrets).</p></div><div class="row"><h3>Alternatives</h3><ul><li><b>Sealed Secrets</b> (encrypted YAML safe to commit)</li><li><b>External Secrets Operator</b> pulling from AWS Secrets Manager, GCP Secret Manager or Azure Key Vault</li><li><b>CloudNativePG</b> generates the app user secret for you (see below)</li></ul></div><div class="row"><h3>The code</h3><pre><code># NOT applied by kustomize (no committed credentials). Create the Secret yourself before `kubectl apply -k`, e.g.:
+#   READER_PW=$(openssl rand -hex 24)
+#   kubectl -n sjrwmd create secret generic sjrwmd-db \
+#     --from-literal=POSTGRES_PASSWORD=&quot;$(openssl rand -hex 24)&quot; \
+#     --from-literal=LOADER_PASSWORD=&quot;$(openssl rand -hex 24)&quot; \
+#     --from-literal=READER_PASSWORD=&quot;$READER_PW&quot; \
+#     --from-literal=READER_URL=&quot;postgres://sjrwmd_reader:${READER_PW}@postgis:5432/sjrwmd&quot;
+# or use Sealed Secrets / External Secrets / your cloud secret manager. Never commit real values.
+# LOADER_PASSWORD and READER_PASSWORD are applied by initdb/02_role_passwords.sh on first start only;
+# if you rotate them later, also run ALTER ROLE ... PASSWORD. This file documents the required keys:
 apiVersion: v1
 kind: Secret
 metadata:
   name: sjrwmd-db
 type: Opaque
 stringData:
-  POSTGRES_PASSWORD: change_me_postgres
-  LOADER_PASSWORD: change_me_loader
-  READER_URL: postgres://sjrwmd_reader:change_me_reader@postgis:5432/sjrwmd</code></pre></div><div class="row gotcha"><h3>Gotchas</h3><ul><li>The role passwords are created by <code>01_init.sql</code> on <i>first</i> start only. If you change the Secret later, also run <code>ALTER ROLE … PASSWORD</code>.</li><li>Base64 in a Secret is encoding, not encryption. Enable etcd encryption or use one of the alternatives in production.</li></ul></div></section>
+  POSTGRES_PASSWORD: &quot;&quot;   # required
+  LOADER_PASSWORD: &quot;&quot;     # required
+  READER_PASSWORD: &quot;&quot;     # required
+  READER_URL: &quot;&quot;          # required: postgres://sjrwmd_reader:&lt;READER_PASSWORD&gt;@postgis:5432/sjrwmd</code></pre></div><div class="row gotcha"><h3>Gotchas</h3><ul><li>The role passwords are set by <code>02_role_passwords.sh</code> on <i>first</i> start only (init aborts if they are missing). If you change the Secret later, also run <code>ALTER ROLE … PASSWORD</code>.</li><li>Base64 in a Secret is encoding, not encryption. Enable etcd encryption or use one of the alternatives in production.</li></ul></div></section>
 <section id="postgis"><h2>PostGIS as a StatefulSet</h2><div class="row"><h3>What</h3><p><code>postgis/postgis:17-3.5</code> in a 1-replica StatefulSet with a <code>volumeClaimTemplate</code> (10 Gi in the base) and a headless Service <code>postgis</code>. The init SQL is mounted from a ConfigMap into <code>/docker-entrypoint-initdb.d</code>.</p></div><div class="row why"><h3>Why</h3><p>A StatefulSet gives the pod a stable name and its own PersistentVolumeClaim that survives restarts and rescheduling. The 15 layers use about 1.2 GB with indexes (land use alone is 447 MB), so 10 Gi leaves room for growth or <code>--all</code>.</p></div><div class="row"><h3>Alternatives</h3><ul><li><b><a href="https://cloudnative-pg.io">CloudNativePG</a></b>: an operator that runs Postgres with streaming replicas, automatic failover, and backups/PITR to S3, GCS or Azure. Use the <code>ghcr.io/cloudnative-pg/postgis</code> image and add <code>postgis</code> in <code>bootstrap.initdb.postInitApplicationSQL</code>. This is the recommended choice for anything beyond a demo.</li><li><b>Managed Postgres</b> (RDS, Cloud SQL, Azure Flexible Server; all support PostGIS): delete <code>postgis.yaml</code> and point the Secret URLs at it.</li></ul></div><div class="row"><h3>The code</h3><pre><code># Single-instance PostGIS. For HA, backups and failover use the CloudNativePG operator instead
 # (Cluster resource with imageName ghcr.io/cloudnative-pg/postgis:17) -- see the &quot;Run on Kubernetes&quot; tab.
 apiVersion: v1
@@ -185,7 +192,7 @@ spec:
     spec:
       containers:
         - name: featureserv
-          image: pramsey/pg_featureserv:latest
+          image: pramsey/pg_featureserv:20250917@sha256:2f1cf3adbf159b440098b7b4d5c75d9679baae5c79aed7560a84a15aecddf886
           ports: [{name: http, containerPort: 9000}]
           env:
             - name: DATABASE_URL
@@ -220,7 +227,7 @@ spec:
     spec:
       containers:
         - name: martin
-          image: ghcr.io/maplibre/martin:latest
+          image: ghcr.io/maplibre/martin:v0.18.1@sha256:7f3f9f4423a598de4545ec3c5cf49964e35cad853e730952d9c47b6d162179a6
           ports: [{name: http, containerPort: 3000}]
           env:
             - name: DATABASE_URL       # martin reads DATABASE_URL and auto-publishes tables/views
@@ -294,15 +301,30 @@ EXPOSE 8000
 ENTRYPOINT [&quot;sjrwmd-mcp&quot;]</code></pre><pre><code>// VS Code .vscode/mcp.json pointing at the cluster
 {&quot;servers&quot;: {&quot;sjrwmd&quot;: {&quot;type&quot;: &quot;http&quot;, &quot;url&quot;: &quot;https://mcp.example.org/mcp&quot;}}}</code></pre></div><div class="row gotcha"><h3>Gotchas</h3><ul><li>The HTTP endpoint has no authentication built in. Keep it cluster-internal, or put it behind your Ingress auth (OAuth2 proxy, basic auth, IP allowlist) before exposing it.</li><li>The SDK's DNS-rebinding guard rejects non-localhost Host headers, so the server turns it off when bound to <code>0.0.0.0</code>. Rely on the Ingress host rules instead.</li><li>Streamable HTTP keeps sessions in memory. With 2+ replicas, enable sticky sessions on the Ingress or keep 1 replica.</li></ul></div></section>
 <section id="ingress"><h2>Ingress example</h2><div class="row"><h3>What</h3><p>The cloud overlay adds an ingress-nginx Ingress with cert-manager TLS and one host per service: <code>features.</code>, <code>tiles.</code> and <code>mcp.</code>.</p></div><div class="row why"><h3>Why</h3><p>Separate hosts avoid path rewriting. pg_featureserv and Martin generate absolute links and expect to be served at <code>/</code>. Rate limiting and a longer read timeout (for streamed MCP responses) are set as annotations.</p></div><div class="row"><h3>Alternatives</h3><ul><li>Gateway API <code>HTTPRoute</code></li><li>Cloud load balancer Services (<code>type: LoadBalancer</code>), one per service, which cost more</li></ul></div><div class="row"><h3>The code</h3><pre><code># Example only: ingress-nginx + cert-manager. One host per service so no path rewriting is needed.
-# Replace example.org with your domain.
+# Replace example.org with your domain (here AND in the SJRWMD_MCP_ALLOWED_HOSTS patch in kustomization.yaml).
+#
+# AUTH IS REQUIRED: every host uses HTTP basic auth from the Secret `sjrwmd-basic-auth` (htpasswd format, key &quot;auth&quot;).
+# Create it before applying (bcrypt hashes only; the plaintext never goes in git):
+#   htpasswd -B -c auth alice          # or: docker run --rm httpd:2 htpasswd -nbB alice 'S3cret!' &gt; auth
+#   kubectl -n sjrwmd create secret generic sjrwmd-basic-auth --from-file=auth
+# Without that Secret ingress-nginx answers 503 (fails closed). Clients send `Authorization: Basic base64(user:pass)`;
+# e.g. an MCP client config: {&quot;type&quot;: &quot;http&quot;, &quot;url&quot;: &quot;https://mcp.example.org/mcp&quot;, &quot;headers&quot;: {&quot;Authorization&quot;: &quot;Basic ...&quot;}}
+# For SSO instead, swap the three auth-* annotations for oauth2-proxy (auth-url / auth-signin).
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: sjrwmd
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: sjrwmd-basic-auth
+    nginx.ingress.kubernetes.io/auth-realm: &quot;sjrwmd: authentication required&quot;
+    nginx.ingress.kubernetes.io/ssl-redirect: &quot;true&quot;
+    nginx.ingress.kubernetes.io/force-ssl-redirect: &quot;true&quot;
+    nginx.ingress.kubernetes.io/proxy-body-size: &quot;1m&quot;
     nginx.ingress.kubernetes.io/proxy-read-timeout: &quot;300&quot;   # MCP streams responses
     nginx.ingress.kubernetes.io/limit-rps: &quot;10&quot;
+    nginx.ingress.kubernetes.io/limit-connections: &quot;20&quot;
 spec:
   ingressClassName: nginx
   tls: [{hosts: [features.example.org, tiles.example.org, mcp.example.org], secretName: sjrwmd-tls}]

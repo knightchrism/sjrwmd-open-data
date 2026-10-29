@@ -2,6 +2,8 @@
 
 # 💧 SJRWMD Open Data Mirror
 
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/knightchrism/sjrwmd-open-data/badge)](https://scorecard.dev/viewer/?uri=github.com/knightchrism/sjrwmd-open-data)
+
 **15 Florida water-management GIS layers, 727,495 features: harvested from ArcGIS REST into PostGIS, served as PMTiles on a static map, free to download.**
 
 [![View the map](https://img.shields.io/badge/▶_View_the_map-0b7285?style=for-the-badge)](https://knightchrism.github.io/sjrwmd-open-data/)
@@ -87,13 +89,15 @@ Answers come from an unofficial copy of SJRWMD data; verify anything important.
 `deploy/k8s/` has a Kustomize base (namespace, PostGIS StatefulSet, weekly harvester CronJob, pg_featureserv, Martin, MCP server over streamable HTTP) plus `local` and `cloud` overlays. Walkthrough: [Run on Kubernetes](https://knightchrism.github.io/sjrwmd-open-data/k8s.html).
 
 ```bash
+# create the sjrwmd-db Secret first (see deploy/k8s/base/secret.example.yaml); no passwords are committed
 kubectl apply -k deploy/k8s/overlays/local
 ```
+The `cloud` overlay's public ingress requires HTTP basic auth (Secret `sjrwmd-basic-auth`, see `deploy/k8s/overlays/cloud/ingress.yaml`) and the MCP server only accepts Host headers listed in `SJRWMD_MCP_ALLOWED_HOSTS`.
 
 ## Quickstart
 ```bash
 git clone https://github.com/knightchrism/sjrwmd-open-data && cd sjrwmd-open-data
-cp .env.example .env                  # set your own passwords (.env is git-ignored)
+cp .env.example .env                  # set POSTGRES/LOADER/READER passwords (required; .env is git-ignored)
 docker compose up -d db               # PostGIS 17-3.5, runs sql/01_init.sql
 python -m venv .venv && .venv/bin/pip install -r requirements.txt
 set -a; . ./.env; set +a
