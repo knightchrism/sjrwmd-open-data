@@ -121,4 +121,4 @@ The full walkthrough (ArcGIS REST, paging, reprojection, typed tables, provenanc
 ## Credits
 - **Data:** © [St. Johns River Water Management District](https://www.sjrwmd.com), Florida public records (Ch. 119, F.S.). This is an unofficial copy, not affiliated with or endorsed by SJRWMD, provided as-is with no warranty. See the [SJRWMD disclaimer](https://www.sjrwmd.com/disclaimer/) and [DATA-LICENSE.md](DATA-LICENSE.md). Authoritative source: [data-floridaswater.opendata.arcgis.com](https://data-floridaswater.opendata.arcgis.com).
 - **Built with:** PostGIS, GDAL, [tippecanoe](https://github.com/felt/tippecanoe), [PMTiles](https://github.com/protomaps/PMTiles), [MapLibre GL JS](https://maplibre.org), Shapely, psycopg. Basemap: Esri Light/Dark Gray Canvas.
-- **Author:** Christopher Knight ([KnightGeo](https://github.com/knightchrism)). Code under the [MIT License](LICENSE).
+- **Author:** Christopher Knight ([GeoKnight GIS](https://github.com/knightchrism)). Code under the [MIT License](LICENSE).
