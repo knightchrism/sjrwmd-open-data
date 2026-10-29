@@ -8,13 +8,21 @@ spec:
   template:
     metadata: {labels: {app: martin}}
     spec:
+      securityContext: {runAsNonRoot: true, runAsUser: 10001, runAsGroup: 10001, seccompProfile: {type: RuntimeDefault}}
+      automountServiceAccountToken: false
       containers:
         - name: martin
-          image: ghcr.io/maplibre/martin:latest
+          image: ghcr.io/maplibre/martin:v0.18.1@sha256:7f3f9f4423a598de4545ec3c5cf49964e35cad853e730952d9c47b6d162179a6
           ports: [{name: http, containerPort: 3000}]
           env:
             - name: DATABASE_URL       # martin reads DATABASE_URL and auto-publishes tables/views
               valueFrom: {secretKeyRef: {name: sjrwmd-db, key: READER_URL}}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: [ALL]}
+          volumeMounts:
+            - {name: tmp, mountPath: /tmp}
           resources:
             requests: {cpu: 100m, memory: 128Mi}
             limits: {cpu: "1", memory: 512Mi}
@@ -25,6 +33,9 @@ spec:
             httpGet: {path: /health, port: http}
             initialDelaySeconds: 10
             periodSeconds: 30
+      volumes:
+        - name: tmp
+          emptyDir: {sizeLimit: 64Mi}
 ---
 apiVersion: v1
 kind: Service

@@ -1,13 +1,28 @@
 # Example only: ingress-nginx + cert-manager. One host per service so no path rewriting is needed.
-# Replace example.org with your domain.
+# Replace example.org with your domain (here AND in the SJRWMD_MCP_ALLOWED_HOSTS patch in kustomization.yaml).
+#
+# AUTH IS REQUIRED: every host uses HTTP basic auth from the Secret `sjrwmd-basic-auth` (htpasswd format, key "auth").
+# Create it before applying (bcrypt hashes only; the plaintext never goes in git):
+#   htpasswd -B -c auth alice          # or: docker run --rm httpd:2 htpasswd -nbB alice 'S3cret!' > auth
+#   kubectl -n sjrwmd create secret generic sjrwmd-basic-auth --from-file=auth
+# Without that Secret ingress-nginx answers 503 (fails closed). Clients send `Authorization: Basic base64(user:pass)`;
+# e.g. an MCP client config: {"type": "http", "url": "https://mcp.example.org/mcp", "headers": {"Authorization": "Basic ..."}}
+# For SSO instead, swap the three auth-* annotations for oauth2-proxy (auth-url / auth-signin).
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: sjrwmd
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: sjrwmd-basic-auth
+    nginx.ingress.kubernetes.io/auth-realm: "sjrwmd: authentication required"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "1m"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"   # MCP streams responses
     nginx.ingress.kubernetes.io/limit-rps: "10"
+    nginx.ingress.kubernetes.io/limit-connections: "20"
 spec:
   ingressClassName: nginx
   tls: [{hosts: [features.example.org, tiles.example.org, mcp.example.org], secretName: sjrwmd-tls}]

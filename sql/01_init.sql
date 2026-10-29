@@ -1,3 +1,4 @@
+-- Roles are created without a password; 02_role_passwords.sh sets them from LOADER_PASSWORD / READER_PASSWORD.
 CREATE EXTENSION IF NOT EXISTS postgis;
 CREATE SCHEMA IF NOT EXISTS sjrwmd;
 CREATE SCHEMA IF NOT EXISTS meta;
@@ -5,9 +6,9 @@ CREATE SCHEMA IF NOT EXISTS qc;
 
 DO $$BEGIN
   IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='sjrwmd_loader') THEN
-    CREATE ROLE sjrwmd_loader LOGIN PASSWORD 'change_me_loader'; END IF;
+    CREATE ROLE sjrwmd_loader LOGIN; END IF;
   IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='sjrwmd_reader') THEN
-    CREATE ROLE sjrwmd_reader LOGIN PASSWORD 'change_me_reader'; END IF;
+    CREATE ROLE sjrwmd_reader LOGIN; END IF;
 END$$;
 GRANT USAGE, CREATE ON SCHEMA sjrwmd, meta, qc TO sjrwmd_loader;
 GRANT USAGE ON SCHEMA sjrwmd TO sjrwmd_reader;

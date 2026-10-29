@@ -16,6 +16,8 @@ spec:
       template:
         spec:
           restartPolicy: Never
+          automountServiceAccountToken: false
+          securityContext: {runAsNonRoot: true, runAsUser: 10001, runAsGroup: 10001, seccompProfile: {type: RuntimeDefault}}
           containers:
             - name: harvest
               image: ghcr.io/knightchrism/sjrwmd-harvest:latest   # build from the repo Dockerfile
@@ -26,6 +28,15 @@ spec:
                 - {name: PGUSER, value: sjrwmd_loader}
                 - name: PGPASSWORD
                   valueFrom: {secretKeyRef: {name: sjrwmd-db, key: LOADER_PASSWORD}}
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities: {drop: [ALL]}
+              volumeMounts:
+                - {name: tmp, mountPath: /tmp}
               resources:
                 requests: {cpu: 250m, memory: 512Mi}
                 limits: {cpu: "1", memory: 2Gi}
+          volumes:
+            - name: tmp
+              emptyDir: {sizeLimit: 256Mi}

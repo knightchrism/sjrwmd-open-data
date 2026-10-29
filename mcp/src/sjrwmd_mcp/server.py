@@ -71,17 +71,59 @@ def count_by(layer: str, field: str, limit: int = DEFAULT_LIMIT) -> dict:
     """Count features grouped by a field's values, most common first (e.g. erp by county or prmt_stts)."""
     return _wrap(backend().count_by(layer, field, limit), layer=layer, field=field)
 
+_LOCAL_HOSTS = ["127.0.0.1:*", "localhost:*", "[::1]:*"]
+_LOCAL_ORIGINS = ["http://127.0.0.1:*", "http://localhost:*", "http://[::1]:*"]
+SECURITY_HEADERS = [
+    (b"x-content-type-options", b"nosniff"),
+    (b"x-frame-options", b"DENY"),
+    (b"referrer-policy", b"no-referrer"),
+    (b"content-security-policy", b"default-src 'none'; frame-ancestors 'none'"),
+    (b"cross-origin-resource-policy", b"same-origin"),
+    (b"cache-control", b"no-store"),
+]
+
+def _csv_env(name: str) -> list[str]:
+    import os
+    return [v.strip() for v in os.environ.get(name, "").split(",") if v.strip()]
+
+def transport_security_from_env():
+    """DNS-rebinding / Host-header protection stays ON. Localhost is always allowed; add the names clients use to reach
+    the server (k8s Service name, public ingress host) via SJRWMD_MCP_ALLOWED_HOSTS / SJRWMD_MCP_ALLOWED_ORIGINS
+    (comma-separated; "host:*" matches any port)."""
+    from mcp.server.transport_security import TransportSecuritySettings
+    return TransportSecuritySettings(
+        enable_dns_rebinding_protection=True,
+        allowed_hosts=_LOCAL_HOSTS + _csv_env("SJRWMD_MCP_ALLOWED_HOSTS"),
+        allowed_origins=_LOCAL_ORIGINS + _csv_env("SJRWMD_MCP_ALLOWED_ORIGINS"))
+
+def with_security_headers(app):
+    """ASGI wrapper that adds conservative security headers to every HTTP response."""
+    async def wrapped(scope, receive, send):
+        if scope["type"] != "http":
+            return await app(scope, receive, send)
+        async def send_with_headers(message):
+            if message["type"] == "http.response.start":
+                names = {k.lower() for k, _ in message.get("headers", [])}
+                message.setdefault("headers", [])
+                message["headers"] = list(message["headers"]) + [h for h in SECURITY_HEADERS if h[0] not in names]
+            await send(message)
+        return await app(scope, receive, send_with_headers)
+    return wrapped
+
 def main():
     """stdio by default; set SJRWMD_MCP_TRANSPORT=streamable-http (plus HOST/PORT) to serve http://HOST:PORT/mcp."""
     import os
     transport = os.environ.get("SJRWMD_MCP_TRANSPORT", "stdio")
-    if transport != "stdio":
-        mcp.settings.host = os.environ.get("SJRWMD_MCP_HOST", "127.0.0.1")
-        mcp.settings.port = int(os.environ.get("SJRWMD_MCP_PORT", "8000"))
-        if mcp.settings.host not in ("127.0.0.1", "localhost"):
-            # behind a cluster Service/Ingress the Host header is not localhost
-            mcp.settings.transport_security = None
-    mcp.run(transport=transport)
+    if transport == "stdio":
+        return mcp.run(transport=transport)
+    mcp.settings.host = os.environ.get("SJRWMD_MCP_HOST", "127.0.0.1")
+    mcp.settings.port = int(os.environ.get("SJRWMD_MCP_PORT", "8000"))
+    mcp.settings.transport_security = transport_security_from_env()
+    if transport != "streamable-http":
+        return mcp.run(transport=transport)
+    import uvicorn
+    uvicorn.run(with_security_headers(mcp.streamable_http_app()), host=mcp.settings.host, port=mcp.settings.port,
+                log_level=mcp.settings.log_level.lower(), server_header=False, proxy_headers=False)
 
 if __name__ == "__main__":
     main()

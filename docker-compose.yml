@@ -1,11 +1,21 @@
+# All passwords are required (no defaults): copy .env.example to .env and set them first.
+# Ports bind to 127.0.0.1 by default; set BIND_ADDR=0.0.0.0 in .env only if you really need LAN access.
+x-hardening: &hardening
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
+  tmpfs: [/tmp]
 services:
   db:
     image: postgis/postgis:17-3.5
     environment:
       POSTGRES_DB: sjrwmd
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change_me_postgres}
-    ports: ["${PG_HOST_PORT:-5432}:5432"]
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      LOADER_PASSWORD: ${LOADER_PASSWORD:?set LOADER_PASSWORD in .env}
+      READER_PASSWORD: ${READER_PASSWORD:?set READER_PASSWORD in .env}
+    ports: ["${BIND_ADDR:-127.0.0.1}:${PG_HOST_PORT:-5432}:5432"]
+    security_opt: ["no-new-privileges:true"]
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./sql:/docker-entrypoint-initdb.d:ro
@@ -14,15 +24,20 @@ services:
       interval: 5s
       retries: 20
   featureserv:
-    image: pramsey/pg_featureserv:latest
+    <<: *hardening
+    image: pramsey/pg_featureserv:20250917@sha256:2f1cf3adbf159b440098b7b4d5c75d9679baae5c79aed7560a84a15aecddf886
     environment:
-      DATABASE_URL: postgres://sjrwmd_reader:change_me_reader@db:5432/sjrwmd
-    ports: ["9000:9000"]
+      DATABASE_URL: postgres://sjrwmd_reader:${READER_PASSWORD:?set READER_PASSWORD in .env}@db:5432/sjrwmd
+    ports: ["${BIND_ADDR:-127.0.0.1}:9000:9000"]
+    mem_limit: 256m
     depends_on: {db: {condition: service_healthy}}
   martin:
-    image: ghcr.io/maplibre/martin:latest
-    command: ["postgres://sjrwmd_reader:change_me_reader@db:5432/sjrwmd"]
-    ports: ["3000:3000"]
+    <<: *hardening
+    image: ghcr.io/maplibre/martin:v0.18.1@sha256:7f3f9f4423a598de4545ec3c5cf49964e35cad853e730952d9c47b6d162179a6
+    environment:
+      DATABASE_URL: postgres://sjrwmd_reader:${READER_PASSWORD:?set READER_PASSWORD in .env}@db:5432/sjrwmd
+    ports: ["${BIND_ADDR:-127.0.0.1}:3000:3000"]
+    mem_limit: 512m
     depends_on: {db: {condition: service_healthy}}
 volumes:
   pgdata:
