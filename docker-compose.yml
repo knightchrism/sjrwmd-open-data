@@ -33,7 +33,7 @@ services:
     depends_on: {db: {condition: service_healthy}}
   martin:
     <<: *hardening
-    image: ghcr.io/maplibre/martin:v0.18.1@sha256:7f3f9f4423a598de4545ec3c5cf49964e35cad853e730952d9c47b6d162179a6
+    image: ghcr.io/maplibre/martin:1.16.1@sha256:59902019bf9038926ff0c71174237d6852e64c457830a6349abe7090be8818ca
     environment:
       DATABASE_URL: postgres://sjrwmd_reader:${READER_PASSWORD:?set READER_PASSWORD in .env}@db:5432/sjrwmd
     ports: ["${BIND_ADDR:-127.0.0.1}:3000:3000"]
