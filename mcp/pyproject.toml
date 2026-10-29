@@ -10,7 +10,7 @@ readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
 authors = [{ name = "Christopher Knight (GeoKnight GIS)" }]
-dependencies = ["mcp>=1.2,<2", "duckdb>=1.1", "pytz"]
+dependencies = ["mcp>=1.2,<3", "duckdb>=1.1", "pytz"]
 keywords = ["mcp", "gis", "duckdb", "postgis", "florida", "open-data"]
 
 [project.optional-dependencies]
