@@ -20,11 +20,11 @@ spec:
   template:
     metadata: {labels: {app: postgis}}
     spec:
-      securityContext: {fsGroup: 999, seccompProfile: {type: RuntimeDefault}}
+      securityContext: {runAsNonRoot: true, runAsUser: 999, runAsGroup: 999, fsGroup: 999, seccompProfile: {type: RuntimeDefault}}
       automountServiceAccountToken: false
       containers:
         - name: postgis
-          image: postgis/postgis:17-3.5
+          image: postgis/postgis:17-3.5@sha256:01a6a70e41e6c4467c8f55f6063555ed72db2d6662cd0d571040d42eadaeb6f6
           ports: [{name: pg, containerPort: 5432}]
           env:
             - {name: POSTGRES_DB, value: sjrwmd}
@@ -36,10 +36,15 @@ spec:
             - name: READER_PASSWORD
               valueFrom: {secretKeyRef: {name: sjrwmd-db, key: READER_PASSWORD}}
             - {name: PGDATA, value: /var/lib/postgresql/data/pgdata}
-          securityContext: {allowPrivilegeEscalation: false}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: [ALL]}
           volumeMounts:
             - {name: data, mountPath: /var/lib/postgresql/data}
             - {name: initdb, mountPath: /docker-entrypoint-initdb.d, readOnly: true}
+            - {name: run, mountPath: /var/run/postgresql}
+            - {name: tmp, mountPath: /tmp}
           resources:
             requests: {cpu: 250m, memory: 512Mi}
             limits: {cpu: "2", memory: 2Gi}
@@ -53,6 +58,8 @@ spec:
       volumes:
         - name: initdb
           configMap: {name: postgis-initdb}
+        - {name: run, emptyDir: {}}
+        - {name: tmp, emptyDir: {}}
   volumeClaimTemplates:
     - metadata: {name: data}
       spec:
