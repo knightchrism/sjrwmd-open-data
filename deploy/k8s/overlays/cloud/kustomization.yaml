@@ -5,7 +5,6 @@ resources: [../../base, ingress.yaml, pdb.yaml]
 replicas:
   - {name: featureserv, count: 2}
   - {name: martin, count: 2}
-  - {name: mcp, count: 2}
 patches:
   - target: {kind: StatefulSet, name: postgis}
     patch: |-
@@ -15,11 +14,6 @@ patches:
       - op: add
         path: /spec/volumeClaimTemplates/0/spec/storageClassName
         value: standard-rwo   # gp3 on EKS, managed-csi on AKS
-  - target: {kind: Deployment, name: mcp}
-    patch: |-
-      - op: replace
-        path: /spec/template/spec/containers/0/env/3/value
-        value: "mcp.example.org,mcp:*,mcp.sjrwmd:*,mcp.sjrwmd.svc:*,mcp.sjrwmd.svc.cluster.local:*"   # your public MCP host first
   - target: {kind: Deployment, name: featureserv}   # spread replicas across nodes
     patch: |-
       - op: add
@@ -42,14 +36,3 @@ patches:
                 podAffinityTerm:
                   topologyKey: kubernetes.io/hostname
                   labelSelector: {matchLabels: {app: martin}}
-  - target: {kind: Deployment, name: mcp}   # spread replicas across nodes
-    patch: |-
-      - op: add
-        path: /spec/template/spec/affinity
-        value:
-          podAntiAffinity:
-            preferredDuringSchedulingIgnoredDuringExecution:
-              - weight: 100
-                podAffinityTerm:
-                  topologyKey: kubernetes.io/hostname
-                  labelSelector: {matchLabels: {app: mcp}}

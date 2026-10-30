@@ -57,42 +57,17 @@ flowchart LR
   D --> F["GitHub Pages<br/>MapLibre GL + pmtiles.js"]
   E --> F
   C -.->|optional| G["pg_featureserv · Martin"]
-  E -->|"DuckDB"| H["sjrwmd-mcp<br/>MCP server"]
-  C -.->|"DATABASE_URL"| H
-  H --> I["Copilot · Claude · Cursor"]
 ```
-
-## 🤖 Ask the data with AI (MCP)
-`sjrwmd-mcp` is a read-only [MCP](https://modelcontextprotocol.io) server for these 15 layers: `find_near`, `features_in_bbox`, `search_attributes`, `count_by`, `get_feature`, `describe_layer`, `list_layers`.
-It reads the published GeoParquet with DuckDB (no database needed), or your PostGIS via `DATABASE_URL`. See the [recorded example runs](https://knightchrism.github.io/sjrwmd-open-data/#demo) and [docs/API-MCP.md](docs/API-MCP.md).
-
-### Use with GitHub Copilot in VS Code
-1. Install [uv](https://docs.astral.sh/uv/getting-started/installation/) (for `uvx`).
-2. Clone this repo and open it in VS Code: [`.vscode/mcp.json`](.vscode/mcp.json) is already here. Or add it to any workspace:
-   ```json
-   { "servers": { "sjrwmd": { "type": "stdio", "command": "uvx",
-       "args": ["--from", "git+https://github.com/knightchrism/sjrwmd-open-data#subdirectory=mcp", "sjrwmd-mcp"] } } }
-   ```
-   Click **Start** above the server entry.
-3. Open Copilot Chat, switch to **Agent** mode, and tick the **sjrwmd** tools in the tools picker.
-4. Ask:
-   - *"Which permitted water-use wells are within 2 miles of downtown DeLand?"* → `find_near` returns wells sorted by distance, with type, status and permit project.
-   - *"Which counties have the most ERP permits?"* → `count_by`: Duval 15,438 · Brevard 12,520 · Orange 12,382 · …
-   - *"Show the trails in the Lake Norris Conservation Area."* → `search_attributes` + `features_in_bbox`: 6 trail segments with blaze, uses and miles.
-   - *"Which monitoring stations are within 3 miles of Lake George?"* → `find_near` on `edr_station`.
-
-**Claude Desktop / Cursor:** same command under `"mcpServers"` (see [API-MCP.md](docs/API-MCP.md#other-clients)). A public web chat would need a hosted model, so none is included.
-Answers come from an unofficial copy of SJRWMD data; verify anything important.
 
 ## ☸️ Run on Kubernetes
 
-`deploy/k8s/` has a Kustomize base (namespace, PostGIS StatefulSet, weekly harvester CronJob, pg_featureserv, Martin, MCP server over streamable HTTP) plus `local` and `cloud` overlays. Walkthrough: [Run on Kubernetes](https://knightchrism.github.io/sjrwmd-open-data/k8s.html).
+`deploy/k8s/` has a Kustomize base (namespace, PostGIS StatefulSet, weekly harvester CronJob, pg_featureserv, Martin) plus `local` and `cloud` overlays. Walkthrough: [Run on Kubernetes](https://knightchrism.github.io/sjrwmd-open-data/k8s.html).
 
 ```bash
 # create the sjrwmd-db Secret first (see deploy/k8s/base/secret.example.yaml); no passwords are committed
 kubectl apply -k deploy/k8s/overlays/local
 ```
-The `cloud` overlay's public ingress requires HTTP basic auth (Secret `sjrwmd-basic-auth`, see `deploy/k8s/overlays/cloud/ingress.yaml`) and the MCP server only accepts Host headers listed in `SJRWMD_MCP_ALLOWED_HOSTS`.
+The `cloud` overlay's public ingress requires HTTP basic auth (Secret `sjrwmd-basic-auth`, see `deploy/k8s/overlays/cloud/ingress.yaml`).
 
 ## Quickstart
 ```bash
@@ -117,8 +92,7 @@ The full walkthrough (ArcGIS REST, paging, reprojection, typed tables, provenanc
 | `harvest.py`, `layers.yaml` | Harvester and the 15-layer selection (with a reason per layer) |
 | `sql/01_init.sql`, `qc/qc.sql` | Schemas, roles, registry; load-count check |
 | `scripts/build_tiles.sh`, `scripts/export.sh`, `scripts/build_site_data.py` | PMTiles, downloads, site catalog |
-| `docs/` | The static site (MapLibre GL, pmtiles.js); `docs/demo/` recorded MCP runs |
-| `mcp/`, `.vscode/mcp.json` | The `sjrwmd-mcp` server (DuckDB or PostGIS), tests, VS Code config |
+| `docs/` | The static site (MapLibre GL, pmtiles.js) |
 | `docker-compose.yml` | PostGIS, pg_featureserv, Martin |
 | `.github/workflows/weekly-update.yml` | Weekly refresh, **disabled** until enabled with the `HARVEST_ENABLED` variable |
 

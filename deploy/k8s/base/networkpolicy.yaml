@@ -8,7 +8,7 @@ spec:
   podSelector: {}
   policyTypes: [Ingress]
 ---
-# PostGIS: only the three read APIs and the harvester may connect.
+# PostGIS: only the two read APIs and the harvester may connect.
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -18,7 +18,7 @@ spec:
   policyTypes: [Ingress]
   ingress:
     - from:
-        - podSelector: {matchExpressions: [{key: app, operator: In, values: [featureserv, martin, mcp]}]}
+        - podSelector: {matchExpressions: [{key: app, operator: In, values: [featureserv, martin]}]}
         - podSelector: {matchExpressions: [{key: job-name, operator: Exists}]}   # harvester CronJob runs + harvest-one
       ports: [{port: 5432, protocol: TCP}]
 ---
@@ -28,7 +28,7 @@ kind: NetworkPolicy
 metadata:
   name: apis-allow-http
 spec:
-  podSelector: {matchExpressions: [{key: app, operator: In, values: [featureserv, martin, mcp]}]}
+  podSelector: {matchExpressions: [{key: app, operator: In, values: [featureserv, martin]}]}
   policyTypes: [Ingress]
   ingress:
     - from:
@@ -37,4 +37,3 @@ spec:
       ports:
         - {port: 9000, protocol: TCP}
         - {port: 3000, protocol: TCP}
-        - {port: 8000, protocol: TCP}

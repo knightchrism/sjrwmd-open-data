@@ -41,13 +41,5 @@ table#dltable{border-collapse:collapse;width:100%}#dltable th,#dltable td{paddin
  .mobile{display:block;width:100%;margin-bottom:8px;background:var(--bg);color:var(--ink);border-color:var(--line)}#side.closed>*:not(#collapse){display:none}.legend{bottom:28px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 .view[hidden]{display:none!important}
-.steps li{margin:10px 0}.steps pre,.prose pre{background:#0f1720;color:#e6edf3;padding:12px;border-radius:8px;overflow:auto;font-size:12.5px}
+.prose pre{background:#0f1720;color:#e6edf3;padding:12px;border-radius:8px;overflow:auto;font-size:12.5px}
 code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.92em}table.simple{border-collapse:collapse;width:100%}table.simple td,table.simple th{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left}
-.demo{background:var(--panel);border:1px solid var(--line);border-radius:14px;margin:18px 0;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.05)}
-.demo .q{padding:14px 16px;font-size:16px;font-weight:600;border-bottom:1px solid var(--line)}.demo .q small{display:block;font-weight:400;color:var(--mute);font-size:12px}
-.demo .grid{display:grid;grid-template-columns:1.25fr 1fr}.demo .calls{padding:12px 16px;min-width:0}.demo .mini{min-height:300px;border-left:1px solid var(--line)}
-.call{font:12.5px ui-monospace,Menlo,Consolas,monospace;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin:6px 0;white-space:pre-wrap;word-break:break-word}
-.call b{color:var(--accent)}.res{max-height:260px;overflow:auto;margin:6px 0 12px}.res table{border-collapse:collapse;width:100%;font-size:12px}.res th,.res td{border-bottom:1px solid var(--line);padding:4px 6px;text-align:left}.res th{color:var(--mute);position:sticky;top:0;background:var(--panel)}
-.demo details{font-size:12px;margin-bottom:8px}.demo details pre{max-height:240px;overflow:auto;background:var(--bg);padding:8px;border-radius:6px}
-.tag{display:inline-block;font-size:11px;padding:1px 8px;border-radius:999px;background:var(--bg);border:1px solid var(--line);color:var(--mute);margin-left:6px}
-@media (max-width:800px){.demo .grid{grid-template-columns:1fr}.demo .mini{border-left:0;border-top:1px solid var(--line)}}

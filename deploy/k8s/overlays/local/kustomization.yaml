@@ -5,7 +5,6 @@ kind: Kustomization
 resources: [../../base]
 images:
   - {name: ghcr.io/knightchrism/sjrwmd-harvest, newName: sjrwmd-harvest, newTag: dev}
-  - {name: ghcr.io/knightchrism/sjrwmd-mcp, newName: sjrwmd-mcp, newTag: dev}
 patches:
   - target: {kind: StatefulSet, name: postgis}
     patch: |-

@@ -1,9 +1,0 @@
-{
-  "servers": {
-    "sjrwmd": {
-      "type": "stdio",
-      "command": "uvx",
-      "args": ["--from", "git+https://github.com/knightchrism/sjrwmd-open-data#subdirectory=mcp", "sjrwmd-mcp"]
-    }
-  }
-}

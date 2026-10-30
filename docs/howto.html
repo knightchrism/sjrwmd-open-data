@@ -27,7 +27,7 @@ pre.mermaid{background:transparent!important;color:inherit;text-align:center}
 </style></head><body>
 <header class="top">
   <a class="brand" href="./"><img src="img/favicon.svg" alt="" width="28" height="28"><span>SJRWMD <b>Open Data</b> Mirror</span></a>
-  <nav class="tabs"><a href="./">Map</a><a href="./#downloads">Data downloads</a><a href="./#demo">Try it with AI</a><a href="./#mcp">AI / MCP</a><a class="on" href="howto.html">How it was loaded into PostGIS</a><a href="k8s.html">Run on Kubernetes</a><a href="./#about">About</a></nav>
+  <nav class="tabs"><a href="./">Map</a><a href="./#downloads">Data downloads</a><a class="on" href="howto.html">How it was loaded into PostGIS</a><a href="k8s.html">Run on Kubernetes</a><a href="./#about">About</a></nav>
   <button id="theme" class="btn ghost" aria-label="Toggle dark or light theme">◐</button>
 </header>
 <div class="layout">
@@ -35,7 +35,7 @@ pre.mermaid{background:transparent!important;color:inherit;text-align:center}
 <main>
 <section id="overview" style="border:0;margin:0">
 <h1>How it was loaded into PostGIS</h1>
-<p class="lead">Every step from SJRWMD's ArcGIS REST services to PostGIS, map tiles, downloads and an MCP server. For each one: what we do, why, what else we considered, the actual code from <a href="https://github.com/knightchrism/sjrwmd-open-data">the repo</a>, and the gotchas we hit. All numbers are from the Oct 28, 2026 run.</p>
+<p class="lead">Every step from SJRWMD's ArcGIS REST services to PostGIS, map tiles and downloads. For each one: what we do, why, what else we considered, the actual code from <a href="https://github.com/knightchrism/sjrwmd-open-data">the repo</a>, and the gotchas we hit. All numbers are from the Oct 28, 2026 run.</p>
 <div class="facts"><div><b>15</b>layers</div><div><b>727,495</b>features</div><div><b>15 / 15</b>counts match</div><div><b>883 s</b>harvest (sum of layers, 2 workers)</div></div>
 <div class="diagram"><pre class="mermaid">flowchart LR
   A[&quot;SJRWMD ArcGIS Online&lt;br/&gt;REST FeatureServers&quot;] --&gt;|&quot;returnIdsOnly, then OBJECTID-range pages&lt;br/&gt;Esri JSON, outSR=3086, 0.3 s delay, retries&quot;| B[&quot;harvest.py&lt;br/&gt;ring assembly, typed columns,&lt;br/&gt;provenance, hash&quot;]
@@ -44,8 +44,7 @@ pre.mermaid{background:transparent!important;color:inherit;text-align:center}
   C --&gt;|&quot;ogr2ogr to GeoJSONSeq, tippecanoe&quot;| D[&quot;PMTiles, 1 per layer&lt;br/&gt;275 MB in docs/tiles&quot;]
   C --&gt;|&quot;ogr2ogr&quot;| E[&quot;GeoPackage · GeoParquet · CSV&lt;br/&gt;GitHub release, 1.9 GB&quot;]
   D --&gt;|&quot;HTTP range requests&quot;| F[&quot;GitHub Pages&lt;br/&gt;MapLibre + pmtiles.js&quot;]
-  E --&gt; F
-  E --&gt;|&quot;DuckDB&quot;| M[&quot;sjrwmd-mcp&quot;]</pre></div>
+  E --&gt; F</pre></div>
 </section>
 <section id="source"><h2>1. Picking the source: ArcGIS REST, not Hub downloads</h2>
 <div class="row"><h3>What we do</h3><p>Read every layer straight from SJRWMD's ArcGIS Online REST services: <code>https://services.arcgis.com/s8wtJX9suxFen6TA/ArcGIS/rest/services</code> (230 FeatureServers, 454 layers, 7,158,579 features in our inventory). The Hub, <a href='https://data-floridaswater.opendata.arcgis.com'>data-floridaswater.opendata.arcgis.com</a>, is used only for metadata: 175 datasets, matched to 342 layers, and their item ids go into <code>_hub_item_id</code>.</p></div>
@@ -58,7 +57,7 @@ curl -s &quot;$L/query?where=1%3D1&amp;returnCountOnly=true&amp;f=json&quot;    
 <div class="row gotcha"><h3>Gotchas we hit</h3><ul><li>Several services are "view layers" (e.g. <code>SJRWMD_Management_Area_viewLayer</code>) rather than the underlying hosted layer; they are what's public, so we read those.</li><li>Hub dataset ids don't map 1:1 to layers (175 datasets cover 342 of 454 layers), so <code>_hub_item_id</code> is null for some rows.</li></ul></div></section><section id="discover"><h2>2. Discovering layers and fields</h2>
 <div class="row"><h3>What we do</h3><p><code>scripts/enumerate_esri.py</code> walks the services directory, reads every layer's JSON, and writes <code>esri_inventory.csv</code> (service, layer id, geometry type, feature count, <code>maxRecordCount</code>, change tracking, last edit, hub item id). <code>layers.yaml</code> then selects 15 of them with a one-line reason each and a short alias.</p></div>
 <div class="row why"><h3>Why</h3><p>A machine-generated inventory makes the selection reviewable and repeatable, and gives each layer's field list and paging limit up front. The 15 were chosen for usefulness and clean API use: 5 polygon, 5 point, 5 line, with stable ids, typed dates and status fields, and joinable permit numbers.</p></div>
-<div class="row"><h3>Alternatives considered</h3><ul><li><b>Mirroring all 454 layers:</b> we started that and stopped. Many are derived products or near-duplicates, and the long tail adds hours without adding value for the map or the MCP server.</li><li><b>Hand-picking from the Hub UI:</b> no record of field types or limits, hard to repeat.</li></ul></div>
+<div class="row"><h3>Alternatives considered</h3><ul><li><b>Mirroring all 454 layers:</b> we started that and stopped. Many are derived products or near-duplicates, and the long tail adds hours without adding value for the map or the downloads.</li><li><b>Hand-picking from the Hub UI:</b> no record of field types or limits, hard to repeat.</li></ul></div>
 <div class="row"><h3>The code in this repo</h3><pre><code class="yaml"># layers.yaml (excerpt)
 base_url: https://services.arcgis.com/s8wtJX9suxFen6TA/ArcGIS/rest/services
 target_srid: 3086
@@ -130,7 +129,7 @@ FROM sjrwmd.sjrwmd_management_area_viewlayer_0 t;</code></pre></div>
 <tr><td>Single / Double</td><td>real / double precision</td></tr><tr><td>String, GUID, GlobalID, XML</td><td>text</td></tr>
 <tr><td>Date, TimestampOffset</td><td>timestamptz (from epoch ms)</td></tr><tr><td>DateOnly</td><td>date</td></tr><tr><td>TimeOnly</td><td>time</td></tr>
 <tr><td>Geometry / Blob / Raster</td><td>skipped (geometry goes to <code>geom</code>)</td></tr></table></div>
-<div class="row why"><h3>Why</h3><p>Typed columns make <code>WHERE prmt_decision_dt &gt;= '2020-01-01'</code>, numeric sorting and sums work correctly, and they carry through to GeoPackage, GeoParquet and the MCP server's field list.</p></div>
+<div class="row why"><h3>Why</h3><p>Typed columns make <code>WHERE prmt_decision_dt &gt;= '2020-01-01'</code>, numeric sorting and sums work correctly, and they carry through to the GeoPackage and GeoParquet exports.</p></div>
 <div class="row"><h3>Alternatives considered</h3><ul><li><b>One <code>jsonb</code> attributes column:</b> flexible, but every query needs casts, and exports and tile attributes lose their types. It is still available with <code>keep_raw_attrs: true</code>.</li><li><b>Everything as text:</b> what CSV-based loaders produce; dates sort as strings and numbers as text.</li></ul></div>
 <div class="row"><h3>The code in this repo</h3><pre><code class="python">TYPES = {&quot;esriFieldTypeSmallInteger&quot;: &quot;smallint&quot;, &quot;esriFieldTypeInteger&quot;: &quot;integer&quot;, &quot;esriFieldTypeBigInteger&quot;: &quot;bigint&quot;,
          &quot;esriFieldTypeSingle&quot;: &quot;real&quot;, &quot;esriFieldTypeDouble&quot;: &quot;double precision&quot;, &quot;esriFieldTypeString&quot;: &quot;text&quot;,
@@ -145,7 +144,7 @@ def norm(v, ftype):
         except (OverflowError, OSError, ValueError): return None
     return v</code></pre></div>
 <div class="row gotcha"><h3>Gotchas we hit</h3><ul><li>Field names are lower-cased and sanitized into SQL identifiers; collisions get a trailing underscore.</li><li>Some date fields hold out-of-range sentinel values that overflow Python's datetime; those become NULL instead of failing the load.</li><li>A schema signature (md5 of columns, types, geometry type and SRID) is stored so a changed schema triggers a rebuild rather than a broken upsert.</li></ul></div></section><section id="keys"><h2>7. Primary keys and OBJECTID stability</h2>
-<div class="row"><h3>What we do</h3><p>Use the layer's OBJECTID as <code>source_oid bigint PRIMARY KEY</code>. It is the key for paging, upserts, deletes, <code>get_feature</code> in the MCP server and the <code>id</code> in every API result.</p></div>
+<div class="row"><h3>What we do</h3><p>Use the layer's OBJECTID as <code>source_oid bigint PRIMARY KEY</code>. It is the key for paging, upserts, deletes, and the <code>id</code> in every API result.</p></div>
 <div class="row why"><h3>Why</h3><p>OBJECTID is present on every layer, unique and indexed by the server, so it is the one key we can always page and diff on.</p></div>
 <div class="row"><h3>Alternatives considered</h3><ul><li><b>GlobalID:</b> more stable across republishing, but not present on every layer (Management Area has one; many permit layers don't).</li><li><b>Business keys such as permit numbers:</b> not unique; one permit can have several sequences and polygons.</li><li><b>A surrogate serial key:</b> would break every link back to the source.</li></ul></div>
 <div class="row"><h3>The code in this repo</h3><pre><code class="sql">CREATE TABLE IF NOT EXISTS sjrwmd.environmental_resource_permit_erp_0 (
@@ -163,9 +162,9 @@ def norm(v, ftype):
 FROM meta.harvest_run ORDER BY run_id DESC LIMIT 5;
 -- a rerun with nothing changed on the server:
 -- {&quot;name&quot;: &quot;sjrwmd_management_area_viewlayer_0&quot;, &quot;status&quot;: &quot;skipped&quot;, &quot;server&quot;: 133, &quot;secs&quot;: 1.1}</code></pre></div>
-<div class="row gotcha"><h3>Gotchas we hit</h3><ul><li><code>_hash</code> covers the raw attributes and the raw Esri geometry, so it changes only when the source does, not when our parsing code changes.</li><li>Provenance columns are excluded from the map tiles and MCP results (they would bloat every tile and response) but kept in the GeoPackage.</li></ul></div></section><section id="index"><h2>9. Spatial index (GiST)</h2>
+<div class="row gotcha"><h3>Gotchas we hit</h3><ul><li><code>_hash</code> covers the raw attributes and the raw Esri geometry, so it changes only when the source does, not when our parsing code changes.</li><li>Provenance columns are excluded from the map tiles (they would bloat every tile) but kept in the GeoPackage.</li></ul></div></section><section id="index"><h2>9. Spatial index (GiST)</h2>
 <div class="row"><h3>What we do</h3><p>Create a GiST index on <code>geom</code> for every table as it is created.</p></div>
-<div class="row why"><h3>Why</h3><p>GiST indexes bounding boxes, so <code>ST_DWithin</code>, <code>ST_Intersects</code> and <code>&amp;&amp;</code> only examine nearby features. That is what makes the example queries, pg_featureserv, Martin and the MCP server's PostGIS backend fast. Sizes from our run: land use 2020 has a 14 MB GiST index on a 447 MB table; ERP 4.4 MB on 178 MB; CUP stations 4.0 MB on 80 MB.</p></div>
+<div class="row why"><h3>Why</h3><p>GiST indexes bounding boxes, so <code>ST_DWithin</code>, <code>ST_Intersects</code> and <code>&amp;&amp;</code> only examine nearby features. That is what makes the example queries, pg_featureserv and Martin fast. Sizes from our run: land use 2020 has a 14 MB GiST index on a 447 MB table; ERP 4.4 MB on 178 MB; CUP stations 4.0 MB on 80 MB.</p></div>
 <div class="row"><h3>Alternatives considered</h3><ul><li><b>SP-GiST or BRIN:</b> useful for special cases (very large, spatially sorted point tables); GiST is the general-purpose default and fine at this size.</li><li><b>No index:</b> every spatial query scans every row.</li></ul></div>
 <div class="row"><h3>The code in this repo</h3><pre><code class="sql">CREATE INDEX IF NOT EXISTS environmental_resource_permit_erp_0_gix
   ON sjrwmd.environmental_resource_permit_erp_0 USING gist (geom);
@@ -173,7 +172,7 @@ FROM meta.harvest_run ORDER BY run_id DESC LIMIT 5;
 -- uses the index: permits within 1 km of a point
 SELECT cur_prmt_id, prmt_proj_nm FROM sjrwmd.erp e
 WHERE ST_DWithin(e.geom, ST_Transform(ST_SetSRID(ST_MakePoint(-81.38, 28.54), 4326), 3086), 1000);</code></pre></div>
-<div class="row gotcha"><h3>Gotchas we hit</h3><ul><li>Queries must compare in the table's SRID (3086). Wrapping the column in <code>ST_Transform(geom, 4326)</code> defeats the index; transform the query point instead.</li><li>The 4326 views can't use the index for spatial filters, so the MCP PostGIS backend queries the 3086 views.</li></ul></div></section><section id="incremental"><h2>10. Incremental updates: lastEditDate skip + hash-diff upsert</h2>
+<div class="row gotcha"><h3>Gotchas we hit</h3><ul><li>Queries must compare in the table's SRID (3086). Wrapping the column in <code>ST_Transform(geom, 4326)</code> defeats the index; transform the query point instead.</li><li>The 4326 views can't use the index for spatial filters, so spatial queries should use the 3086 tables.</li></ul></div></section><section id="incremental"><h2>10. Incremental updates: lastEditDate skip + hash-diff upsert</h2>
 <div class="row"><h3>What we do</h3><p>Before downloading, compare the layer's <code>editingInfo.lastEditDate</code>, server count and schema signature with the previous successful run; if all three match, skip it. Otherwise load everything into a temporary staging table with <code>COPY</code>, upsert rows whose hash changed, insert new ones, and delete rows that disappeared, all in one transaction.</p></div>
 <div class="row why"><h3>Why</h3><p>Most layers change rarely, so a weekly run should cost a few metadata requests per layer (a skipped layer took 1.1 s). When a layer did change, the hash diff touches only changed rows, and the single transaction means readers never see a half-loaded table.</p></div>
 <div class="row"><h3>Alternatives considered</h3><ul><li><b><code>extractChanges</code> / change tracking:</b> only 19 services (41 layers) in the inventory have it enabled, so it can't be the general mechanism.</li><li><b>Drop and reload every time:</b> simple, but it rewrites every row, churns indexes, and briefly empties the table.</li><li><b>Query by <code>last_edited_date</code>:</b> not every layer has editor tracking, and it misses deletes.</li></ul></div>
@@ -202,7 +201,7 @@ land_use_2020              loaded 309325 of 309325 OK
 ...                        (15 of 15 OK)</code></pre></div>
 <div class="row gotcha"><h3>Gotchas we hit</h3><ul><li>The count is captured at the start of the run; a layer edited mid-harvest can mismatch legitimately, and the next run fixes it.</li></ul></div></section><section id="exports"><h2>12. Exports: GeoPackage, GeoParquet and CSV</h2>
 <div class="row"><h3>What we do</h3><p><code>scripts/export.sh</code> writes three files per layer with GDAL and publishes them as GitHub release assets: GeoPackage in EPSG:3086 with provenance columns, GeoParquet (ZSTD) in EPSG:4326, and a zipped CSV with WKT geometry in EPSG:4326, plus <code>SHA256SUMS</code>. 1.9 GB in total; the largest file is the land-use GeoPackage at 519 MB.</p></div>
-<div class="row why"><h3>Why</h3><p>Each format serves a different audience. <b>GeoPackage</b> is the open, single-file format QGIS and ArcGIS Pro open natively, with no shapefile limits. <b>GeoParquet</b> is columnar and compressed, the fastest option for DuckDB, GeoPandas and cloud tools (and what the MCP server reads). <b>CSV</b> opens anywhere, including Excel. ERP is 214 MB as GeoPackage, 75 MB as GeoParquet and 86 MB as zipped CSV.</p></div>
+<div class="row why"><h3>Why</h3><p>Each format serves a different audience. <b>GeoPackage</b> is the open, single-file format QGIS and ArcGIS Pro open natively, with no shapefile limits. <b>GeoParquet</b> is columnar and compressed, the fastest option for DuckDB, GeoPandas and cloud tools. <b>CSV</b> opens anywhere, including Excel. ERP is 214 MB as GeoPackage, 75 MB as GeoParquet and 86 MB as zipped CSV.</p></div>
 <div class="row"><h3>Alternatives considered</h3><ul><li><b>Shapefile:</b> 10-character field names, 2 GB limit, no real date-time, several files per layer.</li><li><b>GeoJSON:</b> human-readable but large and slow for 300k polygons; the map uses PMTiles instead.</li><li><b>The <code>pg_dump</code> only:</b> useful for PostGIS users, useless for everyone else.</li></ul></div>
 <div class="row"><h3>The code in this repo</h3><pre><code class="bash">ogr2ogr -f GPKG    &quot;$OUT/$a.gpkg&quot;    &quot;$PG&quot; &quot;sjrwmd.$t&quot;      -nln &quot;$a&quot;
 ogr2ogr -f Parquet &quot;$OUT/$a.parquet&quot; &quot;$PG&quot; &quot;sjrwmd.${t}_4326&quot; -nln &quot;$a&quot; -lco COMPRESSION=ZSTD

@@ -7,7 +7,7 @@ workers: 2                   # layers harvested in parallel
 keep_raw_attrs: false        # also store all source fields in an `attrs` jsonb column
 inventory: esri_inventory.csv  # every layer in the org (scripts/enumerate_esri.py regenerates it)
 
-# The 15 published layers (5 polygon, 5 point, 5 line), chosen for public usefulness and for an API/MCP layer:
+# The 15 published layers (5 polygon, 5 point, 5 line), chosen for public usefulness and for API access:
 # authoritative and current, listed on the Hub, stable OBJECTID/GlobalID, typed attributes with dates or status,
 # and useful for spatial questions (near, within a county or parcel, by date or status). Latest vintage only.
 # key = service/layer_id, value = friendly view name in schema `sjrwmd`.

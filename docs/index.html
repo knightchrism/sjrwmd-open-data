@@ -22,8 +22,6 @@
   <nav class="tabs" role="tablist" aria-label="Sections">
     <a href="#map" data-tab="map" role="tab">Map</a>
     <a href="#downloads" data-tab="downloads" role="tab">Data downloads</a>
-    <a href="#demo" data-tab="demo" role="tab">Try it with AI</a>
-    <a href="#mcp" data-tab="mcp" role="tab">AI / MCP</a>
     <a href="howto.html">How it was loaded into PostGIS</a><a href="k8s.html">Run on Kubernetes</a>
     <a href="#about" data-tab="about" role="tab">About</a>
   </nav>
@@ -51,80 +49,6 @@
   </div>
 </section>
 
-<section id="view-demo" class="view page" hidden>
-  <div class="wrap">
-    <h1>Try it with AI</h1>
-    <p class="lead">These are <b>recorded example runs</b>: real calls to the <code>sjrwmd</code> MCP server over stdio, saved with their exact arguments and JSON output
-    (<a href="https://github.com/knightchrism/sjrwmd-open-data/tree/main/docs/demo">docs/demo/*.json</a>). This is what an AI assistant such as GitHub Copilot receives when it calls these tools.
-    Nothing here is generated or edited by a model; tables are trimmed to a few columns. To ask your own questions, <a href="#mcp">set it up in VS Code</a>.</p>
-    <div id="demos"></div>
-  </div>
-</section>
-
-<section id="view-mcp" class="view page" hidden>
-  <div class="wrap prose">
-    <h1>AI / MCP</h1>
-    <p class="lead"><code>sjrwmd-mcp</code> is a small, read-only <a href="https://modelcontextprotocol.io">Model Context Protocol</a> server. Any MCP-capable assistant can call it to query the 15 layers:
-    find features near a point, in a bounding box, by attribute, or count them by a field. By default it reads the published GeoParquet with DuckDB (no database needed); set <code>DATABASE_URL</code> to use your own PostGIS instead.</p>
-
-    <h2>Use with GitHub Copilot in VS Code</h2>
-    <ol class="steps">
-      <li><b>Install <a href="https://docs.astral.sh/uv/getting-started/installation/">uv</a></b> (it provides <code>uvx</code>), and use VS Code with the GitHub Copilot extension.</li>
-      <li><b>Add the server.</b> Clone this repo and open it in VS Code: it already contains <code>.vscode/mcp.json</code>. Or create that file in any workspace:
-<pre><code>{
-  "servers": {
-    "sjrwmd": {
-      "type": "stdio",
-      "command": "uvx",
-      "args": ["--from", "git+https://github.com/knightchrism/sjrwmd-open-data#subdirectory=mcp", "sjrwmd-mcp"]
-    }
-  }
-}</code></pre>
-        VS Code shows a <b>Start</b> link above the server entry; click it (or run <i>MCP: List Servers</i>). The first start downloads the package; each layer's data (0.06–310 MB) is cached in <code>~/.cache/sjrwmd-mcp</code> the first time it is queried.</li>
-      <li><b>Open Copilot Chat in Agent mode.</b> Open the Chat view (Ctrl+Alt+I / ⌃⌘I) and pick <b>Agent</b> in the mode dropdown.</li>
-      <li><b>Enable the tools.</b> Click the tools icon in the chat box and make sure the <b>sjrwmd</b> tools are checked (list_layers, describe_layer, find_near, features_in_bbox, get_feature, search_attributes, count_by). Copilot asks for approval the first time it runs a tool.</li>
-      <li><b>Ask questions.</b> For example (results below are from the <a href="#demo">recorded runs</a>):
-        <ul>
-          <li>"Which permitted water-use wells are within 2 miles of downtown DeLand?" → <code>find_near</code> on <code>cup_station</code> returns wells sorted by <code>distance_miles</code>, with permit ids, station type and status.</li>
-          <li>"Which counties have the most ERP permits?" → <code>count_by</code> returns Duval 15,438, Brevard 12,520, Orange 12,382, …</li>
-          <li>"Show the trails in the Lake Norris Conservation Area." → <code>search_attributes</code> finds the area, then <code>features_in_bbox</code> returns 6 trail segments with blaze colour, allowed uses and miles.</li>
-          <li>"Which monitoring stations are near Lake George?" → <code>find_near</code> on <code>edr_station</code> returns station names, category and active/inactive status.</li>
-        </ul></li>
-    </ol>
-
-    <h2>Other clients</h2>
-    <p><b>Claude Desktop</b> (<code>claude_desktop_config.json</code>) and <b>Cursor</b> (<code>~/.cursor/mcp.json</code> or <code>.cursor/mcp.json</code>) use the same command:</p>
-<pre><code>{
-  "mcpServers": {
-    "sjrwmd": {
-      "command": "uvx",
-      "args": ["--from", "git+https://github.com/knightchrism/sjrwmd-open-data#subdirectory=mcp", "sjrwmd-mcp"]
-    }
-  }
-}</code></pre>
-    <p>Run it by hand: <code>uvx --from "git+https://github.com/knightchrism/sjrwmd-open-data#subdirectory=mcp" sjrwmd-mcp</code> (speaks MCP over stdio). With pip: <code>pip install "git+https://github.com/knightchrism/sjrwmd-open-data#subdirectory=mcp"</code>.</p>
-
-    <h2>Tools</h2>
-    <table class="simple"><tr><th>Tool</th><th>What it does</th></tr>
-      <tr><td><code>list_layers</code></td><td>The 15 layers with type, feature count and field names</td></tr>
-      <tr><td><code>describe_layer(layer)</code></td><td>Fields with types, source and download links</td></tr>
-      <tr><td><code>find_near(layer, lat, lon, radius_miles)</code></td><td>Features within a radius (max 50 mi), nearest first</td></tr>
-      <tr><td><code>features_in_bbox(layer, bbox)</code></td><td>Features intersecting [min_lon, min_lat, max_lon, max_lat]</td></tr>
-      <tr><td><code>get_feature(layer, id)</code></td><td>One feature with its GeoJSON geometry</td></tr>
-      <tr><td><code>search_attributes(layer, field, value | contains)</code></td><td>Exact or case-insensitive substring match</td></tr>
-      <tr><td><code>count_by(layer, field)</code></td><td>Counts per value, most common first</td></tr></table>
-    <p>Results are "GeoJSON-lite": attributes plus a centroid lat/lon, and full geometry only when asked (<code>include_geometry</code>). Limits default to 50 and cap at 500.</p>
-
-    <h2>Safety</h2>
-    <p>Read-only by design: fixed SQL templates, layer and field names checked against a whitelist, every user value passed as a bound parameter, and on PostGIS a read-only session with a 30 s statement timeout.</p>
-
-    <h2>What about a chat box on this page?</h2>
-    <p>A public web chat would need a hosted language model (and someone paying for it), so it is not included. The server runs on your machine, inside the assistant you already use.</p>
-
-    <p class="credit">The data is an <b>unofficial</b> copy of St. Johns River Water Management District public records, credited to SJRWMD, with no warranty. AI answers can be wrong; check important results against <a href="https://data-floridaswater.opendata.arcgis.com">SJRWMD's official data</a>. Full docs: <a href="https://github.com/knightchrism/sjrwmd-open-data/blob/main/docs/API-MCP.md">API-MCP.md</a>.</p>
-  </div>
-</section>
-
 <section id="view-about" class="view page" hidden>
   <div class="wrap prose">
     <h1>About</h1>
@@ -143,6 +67,5 @@
   </div>
 </section>
 <script src="app.js"></script>
-<script src="demo.js"></script>
 </body>
 </html>
