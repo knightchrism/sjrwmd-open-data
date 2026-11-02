@@ -127,4 +127,4 @@ The full walkthrough (ArcGIS REST, paging, reprojection, typed tables, provenanc
 
 ## License
 
-Copyright (c) 2026 Christopher Knight / GeoKnight GIS. All rights reserved. The code may be viewed but not copied, modified or redistributed without written permission ([info@geoknightgis.com](mailto:info@geoknightgis.com)); see [LICENSE](LICENSE). The SJRWMD data is public agency data and is not covered by this notice. No copying or reuse without written permission; see [LICENSE](LICENSE). Third-party libraries and data keep their own licenses and terms (listed in [LICENSE](LICENSE)).
+Copyright (c) 2026 Christopher Knight / GeoKnight GIS. All rights reserved. The code may be viewed but not copied, modified or redistributed without written permission ([info@geoknightgis.com](mailto:info@geoknightgis.com)); see [LICENSE](LICENSE). The SJRWMD data is public agency data and is not covered by this notice. Third-party libraries and data keep their own licenses and terms (listed in [LICENSE](LICENSE)).
