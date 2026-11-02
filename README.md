@@ -11,7 +11,7 @@
 [![View the map](https://img.shields.io/badge/▶_View_the_map-0b7285?style=for-the-badge)](https://knightchrism.github.io/sjrwmd-open-data/)
 [![Download data](https://img.shields.io/badge/⬇_Download_data-1c7ed6?style=for-the-badge)](https://knightchrism.github.io/sjrwmd-open-data/#downloads)
 
-[![License: MIT](https://img.shields.io/badge/code-MIT-blue.svg)](LICENSE)
+[![License: All rights reserved](https://img.shields.io/badge/code-All%20rights%20reserved-blue.svg)](LICENSE)
 [![Data: SJRWMD](https://img.shields.io/badge/data-SJRWMD%20public%20records-2f9e44.svg)](DATA-LICENSE.md)
 [![Last update](https://img.shields.io/badge/last%20harvest-2026--10--28-orange.svg)](https://knightchrism.github.io/sjrwmd-open-data/)
 [![Layers](https://img.shields.io/badge/layers%20mirrored-15%20of%20454-0b7285.svg)](#-project-status--roadmap)
@@ -124,3 +124,7 @@ The full walkthrough (ArcGIS REST, paging, reprojection, typed tables, provenanc
 - **Data:** © [St. Johns River Water Management District](https://www.sjrwmd.com), Florida public records (Ch. 119, F.S.). This is an unofficial copy, not affiliated with or endorsed by SJRWMD, provided as-is with no warranty. See the [SJRWMD disclaimer](https://www.sjrwmd.com/disclaimer/) and [DATA-LICENSE.md](DATA-LICENSE.md). Authoritative source: [data-floridaswater.opendata.arcgis.com](https://data-floridaswater.opendata.arcgis.com).
 - **Built with:** PostGIS, GDAL, [tippecanoe](https://github.com/felt/tippecanoe), [PMTiles](https://github.com/protomaps/PMTiles), [MapLibre GL JS](https://maplibre.org), Shapely, psycopg. Basemap: Esri Light/Dark Gray Canvas.
 - **Author:** Christopher Knight, [GeoKnight GIS](https://geoknightgis.com) · [info@geoknightgis.com](mailto:info@geoknightgis.com) · GitHub [@knightchrism](https://github.com/knightchrism). Code under the [MIT License](LICENSE).
+
+## License
+
+Copyright (c) 2026 GeoKnight GIS. All rights reserved. No copying or reuse without written permission; see [LICENSE](LICENSE). Third-party libraries and data keep their own licenses and terms (listed in [LICENSE](LICENSE)).

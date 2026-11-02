@@ -1,6 +1,6 @@
 # Data license and disclaimer
 
-The **code** in this repository is MIT licensed (see `LICENSE`). The **data** is not covered by that license.
+The **code** in this repository is proprietary: Copyright (c) 2026 GeoKnight GIS. All rights reserved (see `LICENSE`). The **data** is not covered by that license.
 
 ## Source
 All data is retrieved from the St. Johns River Water Management District's (SJRWMD) public ArcGIS Online services
