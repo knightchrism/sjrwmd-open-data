@@ -1,17 +1,21 @@
-Copyright (c) 2026 GeoKnight GIS. All rights reserved.
+Copyright (c) 2026 Christopher Knight / GeoKnight GIS. All rights reserved.
 
-This software and its source code, documentation and associated files are
-proprietary to GeoKnight GIS. No part of it may be copied, modified, merged,
-published, distributed, sublicensed, sold or otherwise reused, in whole or in
-part, without the prior written permission of GeoKnight GIS. Viewing this
-repository or its public demo does not grant any license.
+The source code in this repository may be viewed, but it may not be copied,
+modified, merged, published, distributed, sublicensed, sold or otherwise
+reused, in whole or in part, without prior written permission.
+Viewing this repository or its public site does not grant any license.
 
-Contact: info@geoknightgis.com
+Contact for permission: info@geoknightgis.com
+
+Data
+----
+The GIS data mirrored here is public agency data from the St. Johns River
+Water Management District (SJRWMD), a Florida public record (Chapter 119,
+F.S.). It is NOT covered by this notice. Credit: St. Johns River Water
+Management District. This is an unofficial mirror, not affiliated with or
+endorsed by SJRWMD. See DATA-LICENSE.md and https://www.sjrwmd.com/disclaimer/.
 
 Third-party notices
 -------------------
-This license covers only GeoKnight GIS's own work. Bundled or referenced
-third-party libraries, fonts and data remain under their own licenses and
-terms, which are not changed by this notice:
-
-- Third-party libraries, fonts and data keep their own licenses and terms (see DATA-LICENSE.md).
+Bundled or referenced third-party libraries, fonts and basemaps keep their
+own licenses and terms, which this notice does not change.

@@ -123,8 +123,8 @@ The full walkthrough (ArcGIS REST, paging, reprojection, typed tables, provenanc
 ## Credits
 - **Data:** © [St. Johns River Water Management District](https://www.sjrwmd.com), Florida public records (Ch. 119, F.S.). This is an unofficial copy, not affiliated with or endorsed by SJRWMD, provided as-is with no warranty. See the [SJRWMD disclaimer](https://www.sjrwmd.com/disclaimer/) and [DATA-LICENSE.md](DATA-LICENSE.md). Authoritative source: [data-floridaswater.opendata.arcgis.com](https://data-floridaswater.opendata.arcgis.com).
 - **Built with:** PostGIS, GDAL, [tippecanoe](https://github.com/felt/tippecanoe), [PMTiles](https://github.com/protomaps/PMTiles), [MapLibre GL JS](https://maplibre.org), Shapely, psycopg. Basemap: Esri Light/Dark Gray Canvas.
-- **Author:** Christopher Knight, [GeoKnight GIS](https://geoknightgis.com) · [info@geoknightgis.com](mailto:info@geoknightgis.com) · GitHub [@knightchrism](https://github.com/knightchrism). Code under the [MIT License](LICENSE).
+- **Author:** Christopher Knight, [GeoKnight GIS](https://geoknightgis.com) · [info@geoknightgis.com](mailto:info@geoknightgis.com) · GitHub [@knightchrism](https://github.com/knightchrism). Code: © 2026 Christopher Knight / GeoKnight GIS, all rights reserved ([LICENSE](LICENSE)).
 
 ## License
 
-Copyright (c) 2026 GeoKnight GIS. All rights reserved. No copying or reuse without written permission; see [LICENSE](LICENSE). Third-party libraries and data keep their own licenses and terms (listed in [LICENSE](LICENSE)).
+Copyright (c) 2026 Christopher Knight / GeoKnight GIS. All rights reserved. The code may be viewed but not copied, modified or redistributed without written permission ([info@geoknightgis.com](mailto:info@geoknightgis.com)); see [LICENSE](LICENSE). The SJRWMD data is public agency data and is not covered by this notice. No copying or reuse without written permission; see [LICENSE](LICENSE). Third-party libraries and data keep their own licenses and terms (listed in [LICENSE](LICENSE)).
