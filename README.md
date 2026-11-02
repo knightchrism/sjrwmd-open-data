@@ -2,9 +2,11 @@
 
 # 💧 SJRWMD Open Data Mirror
 
+**by [GeoKnight GIS](https://geoknightgis.com)** · an unofficial, community-built mirror
+
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/knightchrism/sjrwmd-open-data/badge)](https://scorecard.dev/viewer/?uri=github.com/knightchrism/sjrwmd-open-data)
 
-**15 Florida water-management GIS layers, 727,495 features: harvested from ArcGIS REST into PostGIS, served as PMTiles on a static map, free to download.**
+**15 Florida water-management GIS layers, 727,495 features: harvested from ArcGIS REST into PostGIS, served as PMTiles on a static map, free to download as GeoPackage, GeoParquet and CSV.**
 
 [![View the map](https://img.shields.io/badge/▶_View_the_map-0b7285?style=for-the-badge)](https://knightchrism.github.io/sjrwmd-open-data/)
 [![Download data](https://img.shields.io/badge/⬇_Download_data-1c7ed6?style=for-the-badge)](https://knightchrism.github.io/sjrwmd-open-data/#downloads)
@@ -12,6 +14,9 @@
 [![License: MIT](https://img.shields.io/badge/code-MIT-blue.svg)](LICENSE)
 [![Data: SJRWMD](https://img.shields.io/badge/data-SJRWMD%20public%20records-2f9e44.svg)](DATA-LICENSE.md)
 [![Last update](https://img.shields.io/badge/last%20harvest-2026--10--28-orange.svg)](https://knightchrism.github.io/sjrwmd-open-data/)
+[![Layers](https://img.shields.io/badge/layers%20mirrored-15%20of%20454-0b7285.svg)](#-project-status--roadmap)
+[![Features](https://img.shields.io/badge/features-727%2C495%20checked-2f9e44.svg)](#the-15-layers)
+[![Release](https://img.shields.io/badge/release-data--2026--10--28-1c7ed6.svg)](https://github.com/knightchrism/sjrwmd-open-data/releases/tag/data-2026-10-28)
 [![GitHub Pages](https://img.shields.io/badge/site-GitHub%20Pages-222.svg?logo=github)](https://knightchrism.github.io/sjrwmd-open-data/)
 ![PostGIS](https://img.shields.io/badge/PostGIS-3.x-336791.svg?logo=postgresql&logoColor=white)
 ![MapLibre](https://img.shields.io/badge/MapLibre-GL%20JS-396cb2.svg)
@@ -45,7 +50,25 @@ Every load is checked against the server's feature count; **all 15 match**.
 | 〰️ **Management-area trails**<br><sub>Public recreation trails on district lands</sub> | Line | 401 | `sjrwmd.management_area_trail` | [GeoPackage](https://github.com/knightchrism/sjrwmd-open-data/releases/download/data-2026-10-28/management_area_trail.gpkg) · [GeoParquet](https://github.com/knightchrism/sjrwmd-open-data/releases/download/data-2026-10-28/management_area_trail.parquet) · [CSV](https://github.com/knightchrism/sjrwmd-open-data/releases/download/data-2026-10-28/management_area_trail.csv.zip) |
 | 〰️ **Upper Floridan potentiometric surface (2010)**<br><sub>Latest (Sep 2010) Upper Floridan aquifer potentiometric contours</sub> | Line | 141 | `sjrwmd.ufa_potentiometric_2010` | [GeoPackage](https://github.com/knightchrism/sjrwmd-open-data/releases/download/data-2026-10-28/ufa_potentiometric_2010.gpkg) · [GeoParquet](https://github.com/knightchrism/sjrwmd-open-data/releases/download/data-2026-10-28/ufa_potentiometric_2010.parquet) · [CSV](https://github.com/knightchrism/sjrwmd-open-data/releases/download/data-2026-10-28/ufa_potentiometric_2010.csv.zip) |
 
-GeoPackage is EPSG:3086 (Florida GDL Albers, meters); GeoParquet and CSV (WKT) are EPSG:4326. Checksums: `SHA256SUMS` in the release.
+GeoPackage is EPSG:3086 (Florida GDL Albers, meters); GeoParquet and CSV (WKT) are EPSG:4326. Checksums: `SHA256SUMS` in the [data-2026-10-28 release](https://github.com/knightchrism/sjrwmd-open-data/releases/tag/data-2026-10-28). Each layer's map tiles are a single PMTiles file in [`docs/tiles/`](docs/tiles).
+
+## 🗺️ The site
+| Tab | What's there |
+|---|---|
+| [Map](https://knightchrism.github.io/sjrwmd-open-data/) | All 15 layers on a dark/light basemap, streamed from PMTiles |
+| [Data downloads](https://knightchrism.github.io/sjrwmd-open-data/#downloads) | Every layer in three formats, with SJRWMD last-edit dates |
+| [How it was loaded](https://knightchrism.github.io/sjrwmd-open-data/howto.html) | Step-by-step ArcGIS REST → PostGIS walkthrough |
+| [Run on Kubernetes](https://knightchrism.github.io/sjrwmd-open-data/k8s.html) | Kustomize base with `local` and `cloud` overlays |
+| [About](https://knightchrism.github.io/sjrwmd-open-data/#about) | Layer choice, method, credit and disclaimer |
+
+## 📈 Project status & roadmap
+The SJRWMD open-data portal lists **454 vector layers with 7,158,579 features** (about 3.7 GB as GeoParquet, estimated). LiDAR and imagery are left out on purpose.
+
+- ✅ **Done:** 15 curated layers (727,495 features) loaded into PostGIS, count-checked against the server, published as PMTiles + downloads (release `data-2026-10-28`)
+- ✅ **Done:** static map site, PostGIS how-to, Kubernetes (Kustomize) deployment guide
+- 🔜 **Planned:** full mirror of all 454 portal layers (roadmap only; the 15 layers above are the current published scope)
+- 🔜 **Planned:** enable the weekly refresh workflow
+
 
 ## Architecture
 ```mermaid
@@ -81,6 +104,7 @@ psql -f qc/qc.sql                     # loaded vs. server counts
 bash scripts/build_tiles.sh docs/tiles && bash scripts/export.sh dist   # needs tippecanoe + GDAL
 python scripts/build_site_data.py && npx http-server docs              # preview the site
 ```
+Local run notes: [RUN.md](RUN.md).
 Options: `--only erp cup_station`, `--force`, `--all` (every layer in `esri_inventory.csv`).
 On Windows, clone into a local folder such as `C:\dev` (not OneDrive) and run the same steps in PowerShell with Docker Desktop.
 
@@ -99,4 +123,4 @@ The full walkthrough (ArcGIS REST, paging, reprojection, typed tables, provenanc
 ## Credits
 - **Data:** © [St. Johns River Water Management District](https://www.sjrwmd.com), Florida public records (Ch. 119, F.S.). This is an unofficial copy, not affiliated with or endorsed by SJRWMD, provided as-is with no warranty. See the [SJRWMD disclaimer](https://www.sjrwmd.com/disclaimer/) and [DATA-LICENSE.md](DATA-LICENSE.md). Authoritative source: [data-floridaswater.opendata.arcgis.com](https://data-floridaswater.opendata.arcgis.com).
 - **Built with:** PostGIS, GDAL, [tippecanoe](https://github.com/felt/tippecanoe), [PMTiles](https://github.com/protomaps/PMTiles), [MapLibre GL JS](https://maplibre.org), Shapely, psycopg. Basemap: Esri Light/Dark Gray Canvas.
-- **Author:** Christopher Knight ([GeoKnight GIS](https://github.com/knightchrism)). Code under the [MIT License](LICENSE).
+- **Author:** Christopher Knight, [GeoKnight GIS](https://geoknightgis.com) · [info@geoknightgis.com](mailto:info@geoknightgis.com) · GitHub [@knightchrism](https://github.com/knightchrism). Code under the [MIT License](LICENSE).
